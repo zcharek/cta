@@ -85,7 +85,7 @@ const ContactSection = () => {
     {
       icon: 'fas fa-envelope',
       title: 'Email',
-      content: 'info@techqa.com'
+      content: 'info@centraltestagency.com'
     }
   ];
 

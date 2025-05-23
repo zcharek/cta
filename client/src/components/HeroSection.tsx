@@ -13,7 +13,7 @@ const HeroSection = () => {
             transition={{ duration: 0.7 }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Elevate Your Digital Experience With <span className="text-primary">Expert Testing</span>
+              Elevate Your Software With <span className="text-primary">Professional Testing</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
               We provide comprehensive software testing and UX design solutions to ensure your products deliver exceptional user experiences and perform flawlessly.
