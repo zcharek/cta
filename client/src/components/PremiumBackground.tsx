@@ -59,13 +59,13 @@ const PremiumBackground = () => {
         this.size = Math.random() * 4 + 1;
         this.originalSize = this.size;
         
-        // Use professional colors
+        // All blue colors with increased intensity
         const colors = [
-          'rgba(59, 130, 246, 0.6)', // Primary blue
-          'rgba(99, 102, 241, 0.6)',  // Indigo
-          'rgba(16, 185, 129, 0.6)',  // Green
-          'rgba(59, 130, 246, 0.4)',  // Light blue
-          'rgba(139, 92, 246, 0.4)'   // Light purple
+          'rgba(37, 99, 235, 0.8)',   // Strong blue
+          'rgba(59, 130, 246, 0.8)',  // Primary blue
+          'rgba(96, 165, 250, 0.8)',  // Bright blue
+          'rgba(37, 99, 235, 0.6)',   // Medium blue
+          'rgba(147, 197, 253, 0.7)'  // Light blue
         ];
         
         this.color = colors[Math.floor(Math.random() * colors.length)];
@@ -102,22 +102,34 @@ const PremiumBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < mouse.radius) {
-            // Increase size when near mouse
-            this.size = this.originalSize * 1.5;
+            // Enhanced mouse interaction with size scaling and color intensity
+            // Increase size when near mouse - more dramatic effect
+            this.size = this.originalSize * 2.2;
             
             const forceDirectionX = dx / distance;
             const forceDirectionY = dy / distance;
             const force = (mouse.radius - distance) / mouse.radius;
             
-            const directionX = forceDirectionX * force * this.speedModifier;
-            const directionY = forceDirectionY * force * this.speedModifier;
+            // Stronger push effect for more interactivity
+            const pushIntensity = 1.8;
+            const directionX = forceDirectionX * force * this.speedModifier * pushIntensity;
+            const directionY = forceDirectionY * force * this.speedModifier * pushIntensity;
             
             this.x -= directionX;
             this.y -= directionY;
+            
+            // Make the color more vibrant on hover by increasing opacity
+            this.color = this.color.replace(/[\d.]+(?=\))/, '0.95');
           } else {
-            // Return to original size
+            // Smooth transition back to original size
             if (this.size > this.originalSize) {
-              this.size -= 0.1;
+              this.size -= 0.15;
+            }
+            
+            // Return color to original opacity more gradually
+            if (this.color.includes('0.95')) {
+              const originalOpacity = [0.8, 0.8, 0.8, 0.6, 0.7][Math.floor(Math.random() * 5)];
+              this.color = this.color.replace(/[\d.]+(?=\))/, originalOpacity.toString());
             }
           }
         }
@@ -146,8 +158,9 @@ const PremiumBackground = () => {
           
           if (distance < maxDistance) {
             const opacity = 1 - (distance/maxDistance);
-            currentCtx.strokeStyle = `rgba(133, 173, 229, ${opacity})`;
-            currentCtx.lineWidth = 1;
+            // Brighter blue connection lines
+            currentCtx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
+            currentCtx.lineWidth = 1.2;
             currentCtx.beginPath();
             currentCtx.moveTo(particlesArray[a].x, particlesArray[a].y);
             currentCtx.lineTo(particlesArray[b].x, particlesArray[b].y);
@@ -171,19 +184,14 @@ const PremiumBackground = () => {
       }
     }
 
-    // Create subtle background gradient
+    // Create clean white background
     function drawBackground() {
       if (!canvasRef.current || !canvasRef.current.getContext('2d')) return;
       const currentCanvas = canvasRef.current;
       const currentCtx = currentCanvas.getContext('2d')!;
       
-      // Create gradient
-      const gradient = currentCtx.createLinearGradient(0, 0, 0, currentCanvas.height);
-      gradient.addColorStop(0, 'rgba(15, 23, 42, 0.8)');
-      gradient.addColorStop(1, 'rgba(30, 41, 59, 0.8)');
-      
-      // Fill with gradient
-      currentCtx.fillStyle = gradient;
+      // Fill with white
+      currentCtx.fillStyle = 'rgba(255, 255, 255, 1)';
       currentCtx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
     }
 
