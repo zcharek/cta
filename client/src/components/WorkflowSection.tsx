@@ -4,22 +4,26 @@ const workflowSteps = [
   {
     number: 1,
     title: 'Requirements Analysis',
-    description: 'We begin by thoroughly understanding your project needs, target users, and business goals to develop a tailored testing strategy.'
+    description: 'We begin by thoroughly understanding your project needs, target users, and business goals to develop a tailored testing strategy.',
+    icon: 'fa-clipboard-list'
   },
   {
     number: 2,
     title: 'Test Planning',
-    description: 'Our team designs a comprehensive test plan outlining scope, approach, resources, schedule, and deliverables.'
+    description: 'Our team designs a comprehensive test plan outlining scope, approach, resources, schedule, and deliverables.',
+    icon: 'fa-tasks'
   },
   {
     number: 3,
     title: 'Test Execution',
-    description: 'We meticulously execute the test cases, document results, and identify issues with detailed reproduction steps.'
+    description: 'We meticulously execute the test cases, document results, and identify issues with detailed reproduction steps.',
+    icon: 'fa-vial'
   },
   {
     number: 4,
     title: 'Reporting & Recommendations',
-    description: 'We provide detailed reports with actionable insights and recommendations to improve your product quality.'
+    description: 'We provide detailed reports with actionable insights and recommendations to improve your product quality.',
+    icon: 'fa-chart-line'
   }
 ];
 
@@ -63,15 +67,31 @@ const WorkflowSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <div className="flex-shrink-0 mr-4 bg-primary rounded-full w-10 h-10 flex items-center justify-center text-white font-bold">
-                  {step.number}
-                </div>
-                <div>
+                <m.div 
+                  className="flex-shrink-0 mr-4 bg-primary rounded-full w-12 h-12 flex items-center justify-center text-white relative"
+                  whileHover={{ 
+                    scale: 1.1, 
+                    rotate: 5,
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <span className="absolute -top-2 -right-2 bg-secondary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
+                    {step.number}
+                  </span>
+                  <i className={`fas ${step.icon} text-xl`}></i>
+                </m.div>
+                <m.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.2 + (index * 0.1) }}
+                >
                   <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-gray-600">
                     {step.description}
                   </p>
-                </div>
+                </m.div>
               </m.div>
             ))}
           </div>
