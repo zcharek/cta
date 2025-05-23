@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 33% 99%; /* #F8FAFC */
+  --foreground: 222 47% 18%; /* #1E293B */
+
+  --muted: 210 40% 96.1%; /* #F8F9FA */
+  --muted-foreground: 215 16% 47%; /* #6B7280 */
+
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 222 47% 18%; /* #1E293B */
+
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 222 47% 18%; /* #1E293B */
+
+  --border: 214 32% 91%; /* #E2E8F0 */
+  --input: 214 32% 91%; /* #E2E8F0 */
+
+  --primary: 222 71% 33%; /* #1E3A8A */
+  --primary-foreground: 210 40% 98%; /* #FAFAFA */
+  --primary-light: 217 91% 53%; /* #2563EB */
+
+  --secondary: 214 100% 48%; /* #3B82F6 */
+  --secondary-light: 213 94% 68%; /* #60A5FA */
+  --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+
+  --accent: 210 40% 96.1%; /* #F8F9FA */
+  --accent-foreground: 222 47% 18%; /* #1E293B */
+
+  --destructive: 0 84% 60%; /* #EF4444 */
+  --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+
+  --success: 160 84% 39%; /* #10B981 */
+
+  --ring: 214 32% 91%; /* #E2E8F0 */
+
+  --radius: 0.5rem;
+
+  --chart-1: 222 71% 33%;
+  --chart-2: 214 100% 48%;
+  --chart-3: 213 94% 68%;
+  --chart-4: 213 94% 68%;
+  --chart-5: 222 71% 33%;
+
+  --sidebar-background: 222 47% 18%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 222 71% 33%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 214 100% 48%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 222 47% 25%;
+  --sidebar-ring: 222 71% 33%;
+}
+
+.dark {
+  --background: 222 47% 12%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 14%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 14%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217 91% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 213 94% 68%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 222 47% 18%;
+  --muted-foreground: 215 20.2% 75.1%;
+  --accent: 222 47% 18%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 222 47% 25%;
+  --input: 222 47% 25%;
+  --ring: 222 71% 33%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom Styles */
+.gradient-bg {
+  @apply bg-gradient-to-r from-primary to-primary-light;
+}
+
+.container {
+  @apply px-4 sm:px-6 lg:px-8 mx-auto;
+}
+
+.service-card:hover img {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
