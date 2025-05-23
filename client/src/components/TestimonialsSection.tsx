@@ -52,11 +52,25 @@ const TestimonialsSection = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <div className="flex items-center mb-4">
-                <i className="fas fa-quote-left text-secondary-light text-4xl mr-4"></i>
+                <m.i 
+                  className="fas fa-quote-left text-secondary-light text-4xl mr-4"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                />
                 <div>
                   <div className="mb-1">
                     {Array(testimonial.rating).fill(0).map((_, i) => (
-                      <i key={i} className="fas fa-star text-yellow-400"></i>
+                      <m.i 
+                        key={i} 
+                        className="fas fa-star text-yellow-400"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.3, delay: index * 0.2 + (i * 0.1) }}
+                        whileHover={{ scale: 1.2, rotate: 20 }}
+                      />
                     ))}
                   </div>
                   <h3 className="font-semibold">Outstanding Service</h3>

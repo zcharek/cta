@@ -61,11 +61,19 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+                }}
               >
                 <div className="flex items-center space-x-3">
-                  <div className="bg-success rounded-full p-2">
+                  <m.div 
+                    className="bg-success rounded-full p-2"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
                     <i className="fas fa-check text-white"></i>
-                  </div>
+                  </m.div>
                   <div>
                     <p className="font-semibold">100% Test Coverage</p>
                     <p className="text-sm text-gray-500">Comprehensive Quality</p>

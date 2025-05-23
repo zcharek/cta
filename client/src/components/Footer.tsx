@@ -20,18 +20,58 @@ const Footer = () => {
               Elevating digital experiences through expert testing and quality assurance solutions.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+              <m.a 
+                href="https://linkedin.com/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
+                whileHover={{ scale: 1.2, y: -3 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert('LinkedIn profile will be available after deployment.');
+                }}
+              >
                 <i className="fab fa-linkedin-in"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+              </m.a>
+              <m.a 
+                href="https://twitter.com/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
+                whileHover={{ scale: 1.2, y: -3 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert('Twitter profile will be available after deployment.');
+                }}
+              >
                 <i className="fab fa-twitter"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+              </m.a>
+              <m.a 
+                href="https://facebook.com/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
+                whileHover={{ scale: 1.2, y: -3 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert('Facebook profile will be available after deployment.');
+                }}
+              >
                 <i className="fab fa-facebook-f"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+              </m.a>
+              <m.a 
+                href="https://instagram.com/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
+                whileHover={{ scale: 1.2, y: -3 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert('Instagram profile will be available after deployment.');
+                }}
+              >
                 <i className="fab fa-instagram"></i>
-              </a>
+              </m.a>
             </div>
           </m.div>
           

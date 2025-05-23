@@ -29,10 +29,17 @@ const CTASection = () => {
                 Get Started
               </m.a>
               <m.a 
-                href="#" 
+                href="/services" 
                 className="px-8 py-3 border-2 border-white text-white rounded-md hover:bg-white/10 transition-all duration-200 text-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.getElementById('services');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 Learn More
               </m.a>

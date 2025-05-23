@@ -19,13 +19,18 @@ const CaseStudyCard = ({ title, description, image, altText, category, readTime 
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-primary/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <m.button 
+          <m.a 
+            href={`/case-studies/${title.toLowerCase().replace(/\s+/g, '-')}`}
             className="px-6 py-3 bg-white text-primary rounded-md font-medium"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={(e) => {
+              e.preventDefault();
+              alert('Case study details will be available after deployment.');
+            }}
           >
             View Case Study
-          </m.button>
+          </m.a>
         </div>
       </div>
       <div className="p-6">
@@ -39,10 +44,14 @@ const CaseStudyCard = ({ title, description, image, altText, category, readTime 
         <div className="flex justify-between items-center">
           <div className="flex items-center text-primary">
             <m.a 
-              href="#" 
+              href={`/case-studies/${title.toLowerCase().replace(/\s+/g, '-')}`}
               className="font-medium hover:underline flex items-center"
               whileHover={{ x: 5 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              onClick={(e) => {
+                e.preventDefault();
+                alert('Case study details will be available after deployment.');
+              }}
             >
               Read More
               <i className="fas fa-arrow-right ml-2 group-hover:ml-3 transition-all duration-300"></i>

@@ -69,11 +69,19 @@ const AboutSection = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.6 }}
+              whileHover={{ 
+                scale: 1.05, 
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+              }}
             >
               <div className="flex items-center space-x-3">
-                <div className="bg-secondary rounded-full p-3">
+                <m.div 
+                  className="bg-secondary rounded-full p-3"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.7 }}
+                >
                   <i className="fas fa-certificate text-white text-xl"></i>
-                </div>
+                </m.div>
                 <div>
                   <p className="font-semibold">ISO 9001 Certified</p>
                   <p className="text-sm text-gray-500">Quality Management</p>

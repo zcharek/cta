@@ -82,10 +82,14 @@ const PortfolioSection = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <m.a 
-            href="#" 
+            href="/case-studies" 
             className="inline-block px-8 py-3 border-2 border-primary text-primary rounded-md hover:bg-primary hover:text-white transition-all duration-200"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={(e) => {
+              e.preventDefault();
+              alert('All case studies will be available after deployment.');
+            }}
           >
             View All Case Studies
           </m.a>

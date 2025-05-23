@@ -24,10 +24,17 @@ const ServiceCard = ({ title, description, image, altText }: ServiceCardProps) =
         </p>
         <div className="flex items-center text-primary">
           <m.a 
-            href="#contact" 
+            href={`/services/${title.toLowerCase().replace(/\s+/g, '-')}`}
             className="font-medium hover:underline flex items-center"
             whileHover={{ x: 5 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            onClick={(e) => {
+              e.preventDefault();
+              const element = document.getElementById('contact');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
           >
             Learn More 
             <i className="fas fa-arrow-right ml-2 group-hover:ml-3 transition-all duration-300"></i>
