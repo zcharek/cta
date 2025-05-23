@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
-import InnovationBackground from "./components/InnovationBackground";
+import PremiumBackground from "./components/PremiumBackground";
 
 function Router() {
   return (
@@ -42,7 +42,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <div className="relative overflow-hidden">
-          <InnovationBackground />
+          <PremiumBackground />
           <Toaster />
           <Router />
         </div>
