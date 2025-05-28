@@ -1,7 +1,7 @@
 import { m } from "framer-motion";
 
 const partners = [
-  { name: "istqb", logo: "/istqb.webp" },
+  { name: "istqb", logo: "client/images/istqb.webp" },
   { name: "DataFlow", logo: "/logos/dataflow.png" },
   { name: "Web Solutions", logo: "/logos/web-solutions.png" },
   { name: "CodeCraft", logo: "/logos/codecraft.png" },

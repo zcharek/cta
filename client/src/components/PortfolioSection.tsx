@@ -11,7 +11,7 @@ const caseStudies = [
     altText: "E-commerce platform case study",
     category: "E-commerce",
     readTime: "10 min read",
-    pdf: "/pdf/test.pdf",
+    pdf: "client/pdf/test.pdf",
   },
   {
     title: "Medical Software Compliance Testing",
