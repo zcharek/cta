@@ -9,7 +9,7 @@ const stats = [
 
 const StatsSection = () => {
   return (
-    <section className="py-16 gradient-bg text-white">
+    <section className="py-16 gradient-primary text-white">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-center items-center gap-8 text-center">
           {stats.map((stat, index) => (
