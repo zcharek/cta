@@ -2,7 +2,16 @@ import { motion as m } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { contactFormSchema, type ContactFormValues } from '@shared/schema';
+import { contactFormSchema } from '@shared/schema';
+
+type ContactFormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  service: string;
+  message: string;
+};
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -24,14 +33,18 @@ export const ModernContact = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: ContactFormValues) => {
-      return apiRequest('/api/contact', {
+    mutationFn: async (data: ContactFormValues) => {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
