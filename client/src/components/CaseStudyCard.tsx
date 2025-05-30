@@ -158,13 +158,7 @@ const CaseStudyCard = ({
               )}
             </div>
 
-            {/* Footer */}
-            <div className="p-4 border-t border-gray-200 bg-gray-50 text-center">
-              <div className="text-sm text-gray-600">
-                <i className="fas fa-info-circle mr-2"></i>
-                Use arrow keys or mouse to navigate through pages
-              </div>
-            </div>
+
           </div>
         </div>
       )}
