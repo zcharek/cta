@@ -1,10 +1,38 @@
 import { useEffect, useRef, useState } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure worker for Vite
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-}
+// Simple PDF preview without worker to avoid loading issues
+const loadPDFPreview = async (pdfUrl: string, canvas: HTMLCanvasElement) => {
+  try {
+    // Dynamic import to avoid initial loading issues
+    const pdfjsLib = await import('pdfjs-dist');
+    
+    // Configure worker inline
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+    
+    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+    const page = await pdf.getPage(1);
+    
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Canvas context not available');
+    
+    const viewport = page.getViewport({ scale: 1 });
+    const scale = Math.min(400 / viewport.width, 240 / viewport.height);
+    const scaledViewport = page.getViewport({ scale });
+    
+    canvas.width = scaledViewport.width;
+    canvas.height = scaledViewport.height;
+    
+    await page.render({
+      canvasContext: context,
+      viewport: scaledViewport,
+    }).promise;
+    
+    return true;
+  } catch (error) {
+    console.error('Error rendering PDF preview:', error);
+    return false;
+  }
+};
 
 interface PdfPreviewProps {
   pdfUrl: string;
@@ -19,40 +47,17 @@ const PdfPreview = ({ pdfUrl, altText, className = "" }: PdfPreviewProps) => {
 
   useEffect(() => {
     const renderPdfPreview = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+      setIsLoading(true);
+      setError(null);
 
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-        const context = canvas.getContext('2d');
-        if (!context) return;
-
-        // Load the PDF document
-        const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-        
-        // Get the first page
-        const page = await pdf.getPage(1);
-        
-        // Set canvas dimensions to match the desired display size
-        const viewport = page.getViewport({ scale: 1 });
-        const scale = Math.min(400 / viewport.width, 240 / viewport.height);
-        const scaledViewport = page.getViewport({ scale });
-        
-        canvas.width = scaledViewport.width;
-        canvas.height = scaledViewport.height;
-        
-        // Render the page
-        const renderContext = {
-          canvasContext: context,
-          viewport: scaledViewport,
-        };
-        
-        await page.render(renderContext).promise;
+      const success = await loadPDFPreview(pdfUrl, canvas);
+      
+      if (success) {
         setIsLoading(false);
-      } catch (err) {
-        console.error('Error rendering PDF preview:', err);
+      } else {
         setError('Impossible de charger l\'aperçu du PDF');
         setIsLoading(false);
       }
