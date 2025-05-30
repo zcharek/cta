@@ -2,6 +2,7 @@
 
 import { m } from "framer-motion";
 import CaseStudyCard from "./CaseStudyCard";
+import { WebflowGrid, WebflowCardWrapper } from "./WebflowGrid";
 
 const caseStudies = [
   {
@@ -66,26 +67,22 @@ const PortfolioSection = () => {
           </p>
         </m.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-          {caseStudies.map((caseStudy, index) => (
-            <m.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <CaseStudyCard
-                title={caseStudy.title}
-                description={caseStudy.description}
-                image={caseStudy.image}
-                altText={caseStudy.altText}
-                category={caseStudy.category}
-                readTime={caseStudy.readTime}
-                pdf={caseStudy.pdf}
-              />
-            </m.div>
-          ))}
+        <div className="px-4">
+          <WebflowGrid cols={4} gap="md">
+            {caseStudies.map((caseStudy, index) => (
+              <WebflowCardWrapper key={index} delay={index * 0.1}>
+                <CaseStudyCard
+                  title={caseStudy.title}
+                  description={caseStudy.description}
+                  image={caseStudy.image}
+                  altText={caseStudy.altText}
+                  category={caseStudy.category}
+                  readTime={caseStudy.readTime}
+                  pdf={caseStudy.pdf}
+                />
+              </WebflowCardWrapper>
+            ))}
+          </WebflowGrid>
         </div>
 
         <m.div
