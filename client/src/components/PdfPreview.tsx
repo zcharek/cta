@@ -1,104 +1,57 @@
-import { useEffect, useRef, useState } from 'react';
+"use client";
 
-// Simple PDF preview without worker to avoid loading issues
-const loadPDFPreview = async (pdfUrl: string, canvas: HTMLCanvasElement) => {
-  try {
-    // Dynamic import to avoid initial loading issues
-    const pdfjsLib = await import('pdfjs-dist');
-    
-    // Configure worker inline
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
-    
-    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-    const page = await pdf.getPage(1);
-    
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('Canvas context not available');
-    
-    const viewport = page.getViewport({ scale: 1 });
-    const scale = Math.min(400 / viewport.width, 240 / viewport.height);
-    const scaledViewport = page.getViewport({ scale });
-    
-    canvas.width = scaledViewport.width;
-    canvas.height = scaledViewport.height;
-    
-    await page.render({
-      canvasContext: context,
-      viewport: scaledViewport,
-    }).promise;
-    
-    return true;
-  } catch (error) {
-    console.error('Error rendering PDF preview:', error);
-    return false;
-  }
-};
+import { useEffect, useState } from "react";
+import { getDocument } from "pdfjs-dist";
+import "pdfjs-dist/build/pdf.worker.entry";
 
 interface PdfPreviewProps {
   pdfUrl: string;
-  altText: string;
+  altText?: string;
   className?: string;
 }
 
-const PdfPreview = ({ pdfUrl, altText, className = "" }: PdfPreviewProps) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function PdfPreview({
+  pdfUrl,
+  altText,
+  className,
+}: PdfPreviewProps) {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    const renderPdfPreview = async () => {
-      setIsLoading(true);
-      setError(null);
+    const renderPdf = async () => {
+      try {
+        const loadingTask = getDocument(pdfUrl);
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
 
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+        if (!context) return;
 
-      const success = await loadPDFPreview(pdfUrl, canvas);
-      
-      if (success) {
-        setIsLoading(false);
-      } else {
-        setError('Impossible de charger l\'aperçu du PDF');
-        setIsLoading(false);
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({
+          canvasContext: context,
+          viewport: viewport,
+        }).promise;
+
+        const dataUrl = canvas.toDataURL("image/png");
+        setImageUrl(dataUrl);
+      } catch (error) {
+        console.error("Erreur de rendu PDF :", error);
       }
     };
 
-    renderPdfPreview();
+    renderPdf();
   }, [pdfUrl]);
 
-  if (error) {
-    return (
-      <div className={`bg-gray-200 flex items-center justify-center ${className}`}>
-        <div className="text-center p-4">
-          <i className="fas fa-file-pdf text-red-500 text-3xl mb-2"></i>
-          <p className="text-sm text-gray-600">Aperçu PDF indisponible</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`relative ${className}`}>
-      {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600">Chargement...</p>
-          </div>
-        </div>
-      )}
-      <canvas
-        ref={canvasRef}
-        className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-        aria-label={altText}
-      />
-      {!isLoading && (
-        <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-          PDF
-        </div>
-      )}
+  return imageUrl ? (
+    <img src={imageUrl} alt={altText || "Aperçu PDF"} className={className} />
+  ) : (
+    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+      Chargement...
     </div>
   );
-};
-
-export default PdfPreview;
+}
