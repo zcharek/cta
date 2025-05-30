@@ -11,18 +11,24 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Critical CSS for above-the-fold content */
+/* Critical CSS optimized for above-the-fold */
 .hero-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%);
 }
 
-/* Optimized animations */
+/* Performance optimizations */
 .will-change-transform {
   will-change: transform;
 }
 
 .will-change-auto {
   will-change: auto;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Improved text rendering */
@@ -41,15 +47,18 @@ body {
   border-radius: 1.5rem;
 }
 
-/* Webflow modern card system */
+/* Advanced Webflow card system */
 .modern-card {
   background: white;
   border-radius: 2rem;
   border: 1px solid rgba(226, 232, 240, 0.5);
-  box-shadow: 0 8px 30px -12px rgba(30, 58, 138, 0.08);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 30px -12px rgba(30, 58, 138, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .modern-card::before {
@@ -58,21 +67,41 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #1E3A8A, #3B82F6, #60A5FA);
+  height: 4px;
+  background: linear-gradient(90deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%);
   transform: scaleX(0);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: left;
+  border-radius: 2rem 2rem 0 0;
+}
+
+.modern-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 2rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(96, 165, 250, 0.1));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 .modern-card:hover::before {
   transform: scaleX(1);
 }
 
+.modern-card:hover::after {
+  opacity: 1;
+}
+
 .modern-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 25px 50px -12px rgba(30, 58, 138, 0.15);
-  border-color: rgba(37, 99, 235, 0.3);
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 
+    0 35px 60px -12px rgba(30, 58, 138, 0.25),
+    0 0 0 1px rgba(59, 130, 246, 0.1) inset;
+  border-color: rgba(37, 99, 235, 0.4);
 }
 
 /* Webflow container system */
@@ -104,14 +133,17 @@ body {
   background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
 }
 
-/* Webflow button system */
+/* Advanced Webflow button system */
 .btn-modern {
   border-radius: 1rem;
   font-weight: 600;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px -8px rgba(30, 58, 138, 0.3);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 25px -8px rgba(30, 58, 138, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .btn-modern::before {
@@ -121,23 +153,48 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.3), 
+    transparent
+  );
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-modern::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 .btn-modern:hover::before {
   left: 100%;
 }
 
-.btn-modern:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 15px 35px -5px rgba(30, 58, 138, 0.4);
+.btn-modern:hover::after {
+  opacity: 1;
 }
 
-/* Webflow section spacing */
+.btn-modern:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 
+    0 20px 40px -5px rgba(30, 58, 138, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Advanced Webflow section system */
 .webflow-section {
-  padding: 5rem 0;
+  padding: 6rem 0;
   position: relative;
+  overflow: hidden;
 }
 
 .webflow-section::before {
@@ -147,9 +204,68 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.02) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.02) 0%, transparent 50%);
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.03) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(248, 250, 252, 0.5) 0%, rgba(241, 245, 249, 0.5) 100%);
   pointer-events: none;
+}
+
+.webflow-section::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    conic-gradient(from 0deg at 50% 50%, 
+      transparent 0deg, 
+      rgba(30, 58, 138, 0.01) 60deg, 
+      transparent 120deg, 
+      rgba(59, 130, 246, 0.01) 180deg, 
+      transparent 240deg, 
+      rgba(96, 165, 250, 0.01) 300deg, 
+      transparent 360deg);
+  animation: rotate 60s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Performance optimized animations */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 :root {
