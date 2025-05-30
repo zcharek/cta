@@ -1,6 +1,5 @@
 import { m } from "framer-motion";
 import { useState } from "react";
-import PdfPreview from "./PdfPreview";
 
 interface CaseStudyCardProps {
   title: string;
@@ -39,18 +38,16 @@ const CaseStudyCard = ({
     <>
       <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full">
         <div className="relative h-64 overflow-hidden">
-          {pdf ? (
-            <PdfPreview
-              pdfUrl={pdf}
-              altText={altText}
-              className="w-full h-full"
-            />
-          ) : (
-            <img
-              src={image}
-              alt={altText}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+          <img
+            src={image}
+            alt={altText}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {pdf && (
+            <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-medium flex items-center">
+              <i className="fas fa-file-pdf mr-1"></i>
+              PDF
+            </div>
           )}
           <div className="absolute inset-0 bg-primary/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <m.a
