@@ -14,7 +14,7 @@ const CTASection = () => {
           <div className="absolute top-0 right-0 w-1/3 h-full opacity-10">
             <i className="fas fa-code text-white text-9xl absolute -top-5 -right-5"></i>
           </div>
-          <div className="relative z-10 max-w-3xl">
+          <div className="relative z-0 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Prêt à améliorer votre expérience digitale ?
             </h2>
