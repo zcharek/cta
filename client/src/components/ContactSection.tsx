@@ -35,14 +35,20 @@ const ContactSection = () => {
   });
 
   const contactMutation = useMutation({
-    mutationFn: (data: ContactFormValues) => {
-      return apiRequest("/api/contact", {
+    mutationFn: async (data: ContactFormValues) => {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'envoi");
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -61,6 +67,7 @@ const ContactSection = () => {
   });
 
   const onSubmit = (data: ContactFormValues) => {
+    console.log("Formulaire soumis avec les données:", data);
     contactMutation.mutate(data);
   };
 
