@@ -37,7 +37,7 @@ const CaseStudyCard = ({
   return (
     <>
       <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full">
-        <div className="relative h-64 overflow-hidden">
+        <div className="relative h-48 overflow-hidden">
           <img
             src={image}
             alt={altText}
@@ -58,12 +58,12 @@ const CaseStudyCard = ({
             </m.a>
           </div>
         </div>
-        <div className="p-6">
-          <span className="inline-block px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-medium mb-4">
+        <div className="p-4">
+          <span className="inline-block px-2 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-medium mb-3">
             {category}
           </span>
-          <h3 className="text-xl font-bold text-foreground mb-3">{title}</h3>
-          <p className="text-gray-600 mb-4">{description}</p>
+          <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
+          <p className="text-gray-600 text-sm mb-3 line-clamp-3">{description}</p>
           <div className="flex justify-between items-center">
             <div className="flex items-center text-primary">
               <m.a
