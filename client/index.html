@@ -12,11 +12,32 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://centraltestagency.com" />
     
-    <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     
-    <!-- Google Fonts -->
+    <!-- Font Awesome avec preload -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    
+    <!-- Google Fonts optimisées -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/generated-icon.png">
+    
+    <!-- Keywords SEO -->
+    <meta name="keywords" content="software testing, UX design, quality assurance, test automation, user experience, Central Test Agency">
+    <meta name="author" content="Central Test Agency">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Performance hints -->
+    <meta name="theme-color" content="#2563eb">
+    <link rel="preload" href="/images/cloudTest.jpg" as="image">
+    <link rel="preload" href="/images/IntroTest.jpg" as="image">
+    <link rel="preload" href="/images/mostError.jpg" as="image">
+    <link rel="preload" href="/images/ParameterTest.jpg" as="image">
   </head>
   <body>
     <div id="root"></div>
