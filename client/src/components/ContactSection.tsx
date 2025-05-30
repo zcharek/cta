@@ -114,11 +114,12 @@ const ContactSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="modern-card p-8">
+            <div className="modern-card p-8" style={{ pointerEvents: 'auto', userSelect: 'auto' }}>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-6"
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
