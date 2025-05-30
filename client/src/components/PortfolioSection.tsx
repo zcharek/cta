@@ -49,7 +49,7 @@ const caseStudies = [
 
 const PortfolioSection = () => {
   return (
-    <section id="portfolio" className="py-20 bg-background">
+    <section id="portfolio" className="py-20 bg-background relative z-10">
       <div className="container">
         <m.div
           className="text-center mb-16"
@@ -71,40 +71,13 @@ const PortfolioSection = () => {
           <WebflowGrid cols={4} gap="md">
             {caseStudies.map((caseStudy, index) => (
               <WebflowCardWrapper key={index} delay={index * 0.1}>
-                <CaseStudyCard
-                  title={caseStudy.title}
-                  description={caseStudy.description}
-                  image={caseStudy.image}
-                  altText={caseStudy.altText}
-                  category={caseStudy.category}
-                  readTime={caseStudy.readTime}
-                  pdf={caseStudy.pdf}
-                />
+                <CaseStudyCard {...caseStudy} />
               </WebflowCardWrapper>
             ))}
           </WebflowGrid>
         </div>
 
-        <m.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <m.a
-            href="/case-studies"
-            className="inline-block px-8 py-3 border-2 border-primary text-primary rounded-md hover:bg-primary hover:text-white transition-all duration-200"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={(e) => {
-              e.preventDefault();
-              alert("All case studies will be available after deployment.");
-            }}
-          >
-            View All Case Studies
-          </m.a>
-        </m.div>
+
       </div>
     </section>
   );
