@@ -23,7 +23,9 @@ const CaseStudyCard = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
+    console.log("openModal called, pdf:", pdf);
     if (pdf) {
+      console.log("Setting modal open to true");
       setIsModalOpen(true);
     } else {
       alert("Case study details will be available after deployment.");
@@ -46,19 +48,12 @@ const CaseStudyCard = ({
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/70 to-secondary/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out backdrop-blur-sm">
-            <m.a
-              href="#"
-              className="btn-modern px-6 py-3 bg-white text-primary"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              onClick={(e) => {
-                e.preventDefault();
-                openModal();
-              }}
+            <button
+              className="btn-modern px-6 py-3 bg-white text-primary hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+              onClick={openModal}
             >
               View Case Study
-            </m.a>
+            </button>
           </div>
         </div>
         <div className="p-4">
@@ -69,19 +64,13 @@ const CaseStudyCard = ({
           <p className="text-gray-600 text-sm mb-3 line-clamp-3">{description}</p>
           <div className="flex justify-between items-center">
             <div className="flex items-center text-primary">
-              <m.a
-                href="#"
-                className="font-medium hover:underline flex items-center"
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  openModal();
-                }}
+              <button
+                className="font-medium hover:underline flex items-center hover:translate-x-1 transition-all duration-200"
+                onClick={openModal}
               >
                 Read More
                 <i className="fas fa-arrow-right ml-2 group-hover:ml-3 transition-all duration-300"></i>
-              </m.a>
+              </button>
             </div>
             <div className="text-gray-500 text-sm">
               <i className="far fa-clock mr-1"></i> {readTime}
