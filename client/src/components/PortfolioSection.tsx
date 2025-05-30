@@ -66,7 +66,7 @@ const PortfolioSection = () => {
           </p>
         </m.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
           {caseStudies.map((caseStudy, index) => (
             <m.div
               key={index}

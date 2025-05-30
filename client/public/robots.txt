@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://centraltestagency.com/sitemap.xml
+
+# Block access to admin areas (if any exist in future)
+Disallow: /admin/
+Disallow: /api/
+
+# Allow crawling of important resources
+Allow: /images/
+Allow: /pdf/
