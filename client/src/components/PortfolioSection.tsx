@@ -11,7 +11,7 @@ const caseStudies = [
     altText: "E-commerce platform case study",
     category: "E-commerce",
     readTime: "10 min read",
-    pdf: "https://www.canva.com/design/DAGalguDjyA/fTORbn9iZrPcGbyKPim0Lw/edit?utm_content=DAGalguDjyA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
+    pdf: "/client/pdf/cloudTesting-compressed.pdf",
   },
   {
     title: "Medical Software Compliance Testing",
@@ -22,7 +22,7 @@ const caseStudies = [
     altText: "Healthcare application case study",
     category: "Healthcare",
     readTime: "8 min read",
-    pdf: "/case-studies/medical-compliance.pdf",
+    pdf: "/client/pdf/intoTesting-compressed.pdf",
   },
   {
     title: "Banking App Security Testing",
@@ -33,7 +33,7 @@ const caseStudies = [
     altText: "Banking app testing case study",
     category: "Finance",
     readTime: "12 min read",
-    pdf: "/case-studies/banking-security.pdf",
+    pdf: "/client/pdf/mostError-compressed.pdf",
   },
   {
     title: "Enterprise SaaS UX Optimization",
@@ -44,7 +44,7 @@ const caseStudies = [
     altText: "SaaS platform UX testing case study",
     category: "SaaS",
     readTime: "7 min read",
-    pdf: "/case-studies/saas-ux.pdf",
+    pdf: "/client/pdf/testParameter.pdf",
   },
 ];
 
