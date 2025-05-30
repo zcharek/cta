@@ -11,7 +11,7 @@ const caseStudies = [
     altText: "E-commerce platform case study",
     category: "E-commerce",
     readTime: "10 min read",
-    pdf: "client/pdf/test.pdf",
+    pdf: "https://www.canva.com/design/DAGalguDjyA/fTORbn9iZrPcGbyKPim0Lw/edit?utm_content=DAGalguDjyA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
   },
   {
     title: "Medical Software Compliance Testing",

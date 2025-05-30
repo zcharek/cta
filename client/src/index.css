@@ -3,47 +3,83 @@
 @tailwind utilities;
 
 :root {
-  --background: 210 33% 99%; /* #F8FAFC */
-  --foreground: 222 47% 18%; /* #1E293B */
+  /* Couleurs de fond et texte */
+  --background: 210 33% 99%;
+  /* #F8FAFC */
+  --foreground: 222 47% 18%;
+  /* #1E293B */
 
-  --muted: 210 40% 96.1%; /* #F8F9FA */
-  --muted-foreground: 215 16% 47%; /* #6B7280 */
+  /* Couleurs pour éléments désactivés */
+  --muted: 210 40% 96.1%;
+  /* #F8F9FA */
+  --muted-foreground: 215 16% 47%;
+  /* #6B7280 */
 
-  --popover: 0 0% 100%; /* #FFFFFF */
-  --popover-foreground: 222 47% 18%; /* #1E293B */
+  /* Couleurs pour popover */
+  --popover: 0 0% 100%;
+  /* #FFFFFF */
+  --popover-foreground: 222 47% 18%;
+  /* #1E293B */
 
-  --card: 0 0% 100%; /* #FFFFFF */
-  --card-foreground: 222 47% 18%; /* #1E293B */
+  /* Couleurs pour carte */
+  --card: 0 0% 100%;
+  /* #FFFFFF */
+  --card-foreground: 222 47% 18%;
+  /* #1E293B */
 
-  --border: 214 32% 91%; /* #E2E8F0 */
-  --input: 214 32% 91%; /* #E2E8F0 */
+  /* Couleurs des bordures et input */
+  --border: 214 32% 91%;
+  /* #E2E8F0 */
+  --input: 214 32% 91%;
+  /* #E2E8F0 */
 
-  --primary: 222 71% 33%; /* #1E3A8A */
-  --primary-foreground: 210 40% 98%; /* #FAFAFA */
-  --primary-light: 217 91% 53%; /* #2563EB */
+  /* Couleurs primaires */
+  --primary: 222 71% 33%;
+  /* #1E3A8A */
+  --primary-foreground: 210 40% 98%;
+  /* #FAFAFA */
+  --primary-light: 217 91% 53%;
+  /* #2563EB */
 
-  --secondary: 214 100% 48%; /* #3B82F6 */
-  --secondary-light: 213 94% 68%; /* #60A5FA */
-  --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+  /* Couleurs secondaires */
+  --secondary: 214 100% 48%;
+  /* #3B82F6 */
+  --secondary-light: 213 94% 68%;
+  /* #60A5FA */
+  --secondary-foreground: 0 0% 100%;
+  /* #FFFFFF */
 
-  --accent: 210 40% 96.1%; /* #F8F9FA */
-  --accent-foreground: 222 47% 18%; /* #1E293B */
+  /* Couleurs accent */
+  --accent: 210 40% 96.1%;
+  /* #F8F9FA */
+  --accent-foreground: 222 47% 18%;
+  /* #1E293B */
 
-  --destructive: 0 84% 60%; /* #EF4444 */
-  --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+  /* Couleurs destructives (erreurs) */
+  --destructive: 0 84% 60%;
+  /* #EF4444 */
+  --destructive-foreground: 0 0% 100%;
+  /* #FFFFFF */
 
-  --success: 160 84% 39%; /* #10B981 */
+  /* Couleur succès */
+  --success: 160 84% 39%;
+  /* #10B981 */
 
-  --ring: 214 32% 91%; /* #E2E8F0 */
+  /* Couleurs anneaux */
+  --ring: 214 32% 91%;
+  /* #E2E8F0 */
 
+  /* Rayon de bordure */
   --radius: 0.5rem;
 
+  /* Couleurs chart */
   --chart-1: 222 71% 33%;
   --chart-2: 214 100% 48%;
   --chart-3: 213 94% 68%;
   --chart-4: 213 94% 68%;
   --chart-5: 222 71% 33%;
 
+  /* Couleurs sidebar */
   --sidebar-background: 222 47% 18%;
   --sidebar-foreground: 0 0% 100%;
   --sidebar-primary: 222 71% 33%;
@@ -95,7 +131,23 @@
   @apply px-4 sm:px-6 lg:px-8 mx-auto;
 }
 
+.service-card img {
+  transition: transform 0.3s ease-in-out;
+}
+
 .service-card:hover img {
   transform: scale(1.05);
-  transition: transform 0.3s ease-in-out;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE & Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
 }

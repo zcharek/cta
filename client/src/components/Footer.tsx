@@ -3,10 +3,34 @@ import { m } from "framer-motion";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  const contactInfo = [
+    {
+      icon: "fas fa-map-marker-alt",
+      title: "Nos bureaux",
+      content: "Hydra, Alger\nParis, France",
+    },
+    {
+      icon: "fas fa-phone-alt",
+      title: "Phone",
+      content: "+33 (06) 44-71-16-78",
+    },
+    {
+      icon: "fas fa-envelope",
+      title: "Email",
+      content: "z.charek@gmail.com",
+    },
+  ];
+
+  const businessHours = [
+    { day: "Dimanche - Jeudi", hours: "9:00 - 18:00" },
+    { day: "Vendredi - Samedi", hours: "Fermé" },
+  ];
+
   return (
     <footer className="bg-[#1E293B] text-white py-12">
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          {/* Présentation agence */}
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -17,51 +41,71 @@ const Footer = () => {
               Central<span className="text-secondary">TestAgency</span>
             </div>
             <p className="text-gray-400 mb-6">
-              Elevating digital experiences through expert testing and quality
-              assurance solutions.
+              Améliorer les expériences numériques grâce à des solutions de
+              tests et d'assurance qualité expertes.
             </p>
-            <div className="flex space-x-4">
-              <m.a
+          </m.div>
+
+          {/* Informations de contact */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">
+              Informations de contact
+            </h4>
+            <div className="space-y-4">
+              {contactInfo.map((item, index) => (
+                <div key={index} className="flex items-start">
+                  <div className="w-8 h-8 flex items-center justify-center text-secondary mr-3">
+                    <i className={`${item.icon} text-base`}></i>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{item.title}</p>
+                    <p className="text-sm text-gray-400 whitespace-pre-line">
+                      {item.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Horaires */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">
+              Nos horaires de travail
+            </h4>
+            <div className="space-y-2">
+              {businessHours.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between text-sm text-gray-400"
+                >
+                  <span>{item.day} :</span>
+                  <span>{item.hours}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bas du footer */}
+        <div className="border-t border-gray-800 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            {/* LinkedIn à gauche */}
+            <div className="mb-4 md:mb-0">
+              <a
                 href="https://www.linkedin.com/company/central-test-agengy/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors duration-200"
-                whileHover={{ scale: 1.2, y: -3 }}
+                className="text-gray-400 hover:text-white transition-colors duration-200 text-lg"
               >
                 <i className="fab fa-linkedin-in"></i>
-              </m.a>
+              </a>
             </div>
-          </m.div>
 
-          {/* ... le reste du code reste inchangé ... */}
-          {/* Services, Company, Resources, Footer bottom section */}
-        </div>
-
-        <div className="border-t border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm mb-4 md:mb-0">
+            {/* Texte de copyright à droite */}
+            <p className="text-gray-400 text-sm text-right">
               &copy; {currentYear} Central Test Agency. All rights reserved.
             </p>
-            <div className="flex space-x-6">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-              >
-                Terms of Service
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-              >
-                Cookie Policy
-              </a>
-            </div>
           </div>
         </div>
       </div>

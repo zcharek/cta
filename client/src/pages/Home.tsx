@@ -1,20 +1,22 @@
-import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
-import StatsSection from '@/components/StatsSection';
-import ServicesSection from '@/components/ServicesSection';
-import WorkflowSection from '@/components/WorkflowSection';
-import AboutSection from '@/components/AboutSection';
-import TestimonialsSection from '@/components/TestimonialsSection';
-import PortfolioSection from '@/components/PortfolioSection';
-import CTASection from '@/components/CTASection';
-import ContactSection from '@/components/ContactSection';
-import Footer from '@/components/Footer';
-import { useEffect } from 'react';
+import Header from "@/components/Header";
+import HeroSection from "@/components/HeroSection";
+import StatsSection from "@/components/StatsSection";
+import ServicesSection from "@/components/ServicesSection";
+import WorkflowSection from "@/components/WorkflowSection";
+import AboutSection from "@/components/AboutSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import PortfolioSection from "@/components/PortfolioSection";
+import CTASection from "@/components/CTASection";
+import ContactSection from "@/components/ContactSection";
+import Footer from "@/components/Footer";
+import { useEffect } from "react";
+import TechCarousel from "@/components/tools";
 
 const Home = () => {
   // Set page title and description when component mounts
   useEffect(() => {
-    document.title = 'Central Test Agency - Software Testing & UX Design Solutions';
+    document.title =
+      "Central Test Agency - Software Testing & UX Design Solutions";
   }, []);
 
   return (
@@ -24,6 +26,7 @@ const Home = () => {
         <HeroSection />
         <StatsSection />
         <ServicesSection />
+        <TechCarousel />
         <WorkflowSection />
         <AboutSection />
         <TestimonialsSection />
