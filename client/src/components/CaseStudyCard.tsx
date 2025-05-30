@@ -150,7 +150,6 @@ const CaseStudyCard = ({
                 className="w-full h-[70vh]"
                 frameBorder="0"
                 onLoad={(e) => {
-                  // If iframe loads successfully, show it
                   const iframe = e.target as HTMLIFrameElement;
                   const container = iframe.parentElement;
                   if (container) {
@@ -162,7 +161,6 @@ const CaseStudyCard = ({
                   }
                 }}
                 onError={() => {
-                  // Keep fallback visible if iframe fails
                   console.log('PDF iframe failed to load, showing fallback');
                 }}
               />

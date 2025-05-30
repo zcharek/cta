@@ -1,3 +1,5 @@
+"use client";
+
 import { m } from "framer-motion";
 import CaseStudyCard from "./CaseStudyCard";
 
@@ -6,40 +8,24 @@ const caseStudies = [
     title: "Global Retail Platform Optimization",
     description:
       "How our comprehensive testing strategy helped a major retailer improve site performance and increase conversions by 35%.",
-    image: "/images/pdf-previews/cloudTesting-preview.svg",
-    altText: "Cloud testing strategy case study preview",
-    category: "E-commerce",
-    readTime: "10 min read",
     pdf: "/pdf/cloudTesting-compressed.pdf",
   },
   {
     title: "Medical Software Compliance Testing",
     description:
       "How we helped a healthcare provider ensure their patient management system met strict regulatory requirements.",
-    image: "/images/pdf-previews/intoTesting-preview.svg",
-    altText: "Introduction to testing methodology preview",
-    category: "Healthcare",
-    readTime: "8 min read",
     pdf: "/pdf/intoTesting-compressed.pdf",
   },
   {
     title: "Banking App Security Testing",
     description:
       "How our rigorous security testing helped a financial institution protect customer data and prevent potential breaches.",
-    image: "/images/pdf-previews/mostError-preview.svg",
-    altText: "Common testing errors analysis preview",
-    category: "Finance",
-    readTime: "12 min read",
     pdf: "/pdf/mostError-compressed.pdf",
   },
   {
     title: "Enterprise SaaS UX Optimization",
     description:
       "How we helped a leading SaaS provider transform their user experience, resulting in 28% higher user retention.",
-    image: "/images/pdf-previews/testParameter-preview.svg",
-    altText: "Test parameter optimization guide preview",
-    category: "SaaS",
-    readTime: "7 min read",
     pdf: "/pdf/testParameter.pdf",
   },
 ];
@@ -76,10 +62,6 @@ const PortfolioSection = () => {
               <CaseStudyCard
                 title={caseStudy.title}
                 description={caseStudy.description}
-                image={caseStudy.image}
-                altText={caseStudy.altText}
-                category={caseStudy.category}
-                readTime={caseStudy.readTime}
                 pdf={caseStudy.pdf}
               />
             </m.div>
