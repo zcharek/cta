@@ -1,11 +1,16 @@
 import Header from "@/components/Header";
-import { ModernHero } from "@/components/ModernHero";
-import { ModernServices } from "@/components/ModernServices";
-import { ModernPortfolio } from "@/components/ModernPortfolio";
-import { ModernContact } from "@/components/ModernContact";
+import HeroSection from "@/components/HeroSection";
+import StatsSection from "@/components/StatsSection";
+import ServicesSection from "@/components/ServicesSection";
+import WorkflowSection from "@/components/WorkflowSection";
+import AboutSection from "@/components/AboutSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import PortfolioSection from "@/components/PortfolioSection";
+import CTASection from "@/components/CTASection";
+import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import { useEffect } from "react";
-import PremiumBackground from "@/components/PremiumBackground";
+import TechCarousel from "@/components/tools";
 
 const Home = () => {
   // Set page title and description when component mounts
@@ -15,13 +20,18 @@ const Home = () => {
 
   return (
     <>
-      <PremiumBackground />
       <Header />
-      <main className="relative z-10">
-        <ModernHero />
-        <ModernServices />
-        <ModernPortfolio />
-        <ModernContact />
+      <main>
+        <HeroSection />
+        <StatsSection />
+        <ServicesSection />
+        <TechCarousel />
+        <WorkflowSection />
+        <AboutSection />
+        <TestimonialsSection />
+        <PortfolioSection />
+        <CTASection />
+        <ContactSection />
       </main>
       <Footer />
     </>

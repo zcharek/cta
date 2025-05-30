@@ -40,24 +40,7 @@ body {
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-/* Webflow-inspired modern components */
-.webflow-gradient {
-  background: linear-gradient(135deg, #10B981 0%, #059669 25%, #8B5CF6 75%, #7C3AED 100%);
-}
 
-.webflow-card {
-  background: rgba(39, 39, 42, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.webflow-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border-color: rgba(16, 185, 129, 0.3);
-}
 
 /* Enhanced shadows */
 .modern-shadow {
@@ -69,74 +52,74 @@ body {
 }
 
 :root {
-  /* Webflow-inspired modern dark theme */
-  --background: 240 10% 3.9%;
-  /* #0A0A0B */
-  --foreground: 0 0% 98%;
+  /* Couleurs de fond et texte */
+  --background: 210 33% 99%;
+  /* #F8FAFC */
+  --foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs pour éléments désactivés */
+  --muted: 210 40% 96.1%;
+  /* #F8F9FA */
+  --muted-foreground: 215 16% 47%;
+  /* #6B7280 */
+
+  /* Couleurs pour popover */
+  --popover: 0 0% 100%;
+  /* #FFFFFF */
+  --popover-foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs pour carte */
+  --card: 0 0% 100%;
+  /* #FFFFFF */
+  --card-foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs des bordures et input */
+  --border: 214 32% 91%;
+  /* #E2E8F0 */
+  --input: 214 32% 91%;
+  /* #E2E8F0 */
+
+  /* Couleurs primaires */
+  --primary: 222 71% 33%;
+  /* #1E3A8A */
+  --primary-foreground: 210 40% 98%;
   /* #FAFAFA */
+  --primary-light: 217 91% 53%;
+  /* #2563EB */
 
-  /* Modern muted colors */
-  --muted: 240 3.7% 15.9%;
-  /* #27272A */
-  --muted-foreground: 240 5% 64.9%;
-  /* #A1A1AA */
+  /* Couleurs secondaires */
+  --secondary: 214 100% 48%;
+  /* #3B82F6 */
+  --secondary-light: 213 94% 68%;
+  /* #60A5FA */
+  --secondary-foreground: 0 0% 100%;
+  /* #FFFFFF */
 
-  /* Card colors */
-  --card: 240 10% 3.9%;
-  /* #0A0A0B */
-  --card-foreground: 0 0% 98%;
-  /* #FAFAFA */
-  
-  /* Popover colors */
-  --popover: 240 10% 3.9%;
-  /* #0A0A0B */
-  --popover-foreground: 0 0% 98%;
-  /* #FAFAFA */
+  /* Couleurs accent */
+  --accent: 210 40% 96.1%;
+  /* #F8F9FA */
+  --accent-foreground: 222 47% 18%;
+  /* #1E293B */
 
-  /* Modern borders and inputs */
-  --border: 240 3.7% 15.9%;
-  /* #27272A */
-  --input: 240 3.7% 15.9%;
-  /* #27272A */
+  /* Couleurs destructives (erreurs) */
+  --destructive: 0 84% 60%;
+  /* #EF4444 */
+  --destructive-foreground: 0 0% 100%;
+  /* #FFFFFF */
 
-  /* Primary gradient colors */
-  --primary: 142 76% 36%;
-  /* #10B981 - Modern green */
-  --primary-foreground: 240 10% 3.9%;
-  /* #0A0A0B */
-  --primary-light: 142 86% 46%;
-  /* #34D399 */
-
-  /* Secondary modern colors */
-  --secondary: 263 70% 50%;
-  /* #8B5CF6 - Modern purple */
-  --secondary-light: 263 80% 60%;
-  /* #A78BFA */
-  --secondary-foreground: 0 0% 98%;
-  /* #FAFAFA */
-
-  /* Modern accent colors */
-  --accent: 240 3.7% 15.9%;
-  /* #27272A */
-  --accent-foreground: 0 0% 98%;
-  /* #FAFAFA */
-
-  /* Destructive colors */
-  --destructive: 0 62.8% 30.6%;
-  /* #DC2626 */
-  --destructive-foreground: 0 0% 98%;
-  /* #FAFAFA */
-
-  /* Success color */
-  --success: 142 76% 36%;
+  /* Couleur succès */
+  --success: 160 84% 39%;
   /* #10B981 */
 
-  /* Modern ring color */
-  --ring: 142 76% 36%;
-  /* #10B981 */
+  /* Couleurs anneaux */
+  --ring: 214 32% 91%;
+  /* #E2E8F0 */
 
-  /* Increased border radius for modern look */
-  --radius: 0.75rem;
+  /* Rayon de bordure */
+  --radius: 0.5rem;
 
   /* Couleurs chart */
   --chart-1: 222 71% 33%;
