@@ -98,10 +98,14 @@ const CaseStudyCard = ({
             <div className="flex-1 bg-gray-50">
               {pdf ? (
                 <iframe
-                  src={`${pdf.startsWith("/") ? pdf : `/${pdf}`}#toolbar=1&navpanes=1&scrollbar=1&zoom=page-fit`}
+                  src={`${pdf.startsWith("/") ? pdf : `/${pdf}`}#toolbar=1&navpanes=0&scrollbar=0&zoom=page-width&view=FitH&pagemode=none`}
                   title={`Case Study PDF - ${title}`}
                   className="w-full h-full border-0"
                   allow="fullscreen"
+                  style={{ 
+                    overflowX: 'auto',
+                    overflowY: 'hidden'
+                  }}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full">
@@ -114,22 +118,11 @@ const CaseStudyCard = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+            <div className="p-4 border-t border-gray-200 bg-gray-50 text-center">
               <div className="text-sm text-gray-600">
                 <i className="fas fa-info-circle mr-2"></i>
-                Use your browser's controls to zoom and navigate the PDF
+                Use arrow keys or mouse to navigate through pages
               </div>
-              {pdf && (
-                <a
-                  href={pdf.startsWith("/") ? pdf : `/${pdf}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-modern px-4 py-2 bg-primary text-white hover:bg-primary/90 transition-colors duration-200 text-sm"
-                >
-                  <i className="fas fa-external-link-alt mr-2"></i>
-                  Open in New Tab
-                </a>
-              )}
             </div>
           </div>
         </div>
