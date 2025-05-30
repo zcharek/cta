@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CaseStudyCardProps {
   title: string;
@@ -32,6 +32,36 @@ const CaseStudyCard = ({
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  // Empêcher le scroll du body quand la modal est ouverte
+  useEffect(() => {
+    if (isModalOpen) {
+      // Sauvegarder la position de scroll actuelle
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restaurer le scroll normal
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+      }
+    }
+
+    // Cleanup au démontage du composant
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen]);
 
   return (
     <>
