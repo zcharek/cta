@@ -25,12 +25,14 @@ import {
 } from "@/components/ui/select";
 
 const contactFormSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  company: z.string().min(1, "Company name is required"),
-  service: z.string().min(1, "Please select a service"),
-  message: z.string().min(10, "Message should be at least 10 characters"),
+  firstName: z.string().min(1, "Le prénom est requis"),
+  lastName: z.string().min(1, "Le nom est requis"),
+  email: z.string().email("Adresse e-mail invalide"),
+  company: z.string().min(1, "Le nom de l'entreprise est requis"),
+  service: z.string().min(1, "Veuillez sélectionner un service"),
+  message: z
+    .string()
+    .min(10, "Le message doit contenir au moins 10 caractères"),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
@@ -76,11 +78,14 @@ const ContactSection = () => {
   };
 
   const services = [
-    { value: "functional", label: "Tests Fonctionnels" },
-    { value: "ux", label: "Tests UX" },
-    { value: "automated", label: "Tests automatisés end-to-end" },
-    { value: "performance", label: "Tests API" },
-    { value: "other", label: "Autres services" },
+    { value: "Tests Fonctionnels", label: "Tests Fonctionnels" },
+    { value: "Tests UX", label: "Tests UX" },
+    {
+      value: "Tests automatisés End-to-End",
+      label: "Tests automatisés End-to-End",
+    },
+    { value: "Tests API", label: "Tests API" },
+    { value: "Autres services", label: "Autres services" },
   ];
 
   return (

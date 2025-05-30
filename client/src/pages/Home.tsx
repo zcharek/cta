@@ -15,8 +15,7 @@ import TechCarousel from "@/components/tools";
 const Home = () => {
   // Set page title and description when component mounts
   useEffect(() => {
-    document.title =
-      "Central Test Agency - Software Testing & UX Design Solutions";
+    document.title = "Central Test Agency - Software Testing";
   }, []);
 
   return (

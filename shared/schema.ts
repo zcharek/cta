@@ -1,4 +1,11 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -30,15 +37,19 @@ export const contactSubmissions = pgTable("contact_submissions", {
 });
 
 export const contactFormSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  company: z.string().min(1, "Company name is required"),
-  service: z.string().min(1, "Please select a service"),
-  message: z.string().min(10, "Message should be at least 10 characters")
+  firstName: z.string().min(1, "Le prénom est requis"),
+  lastName: z.string().min(1, "Le nom est requis"),
+  email: z.string().email("Adresse e-mail invalide"),
+  company: z.string().min(1, "Le nom de l'entreprise est requis"),
+  service: z.string().min(1, "Veuillez sélectionner un service"),
+  message: z
+    .string()
+    .min(10, "Le message doit contenir au moins 10 caractères"),
 });
 
-export const insertContactSubmissionSchema = createInsertSchema(contactSubmissions).pick({
+export const insertContactSubmissionSchema = createInsertSchema(
+  contactSubmissions,
+).pick({
   firstName: true,
   lastName: true,
   email: true,
