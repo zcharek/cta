@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface CaseStudyCardProps {
   title: string;
@@ -20,9 +20,12 @@ const CaseStudyCard = ({
   pdf,
 }: CaseStudyCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollPositionRef = useRef(0);
 
   const openModal = () => {
     if (pdf) {
+      // Sauvegarder la position de scroll avant d'ouvrir la modal
+      scrollPositionRef.current = window.scrollY;
       setIsModalOpen(true);
     } else {
       alert("Case study details will be available after deployment.");
@@ -35,34 +38,27 @@ const CaseStudyCard = ({
 
   // Empêcher le scroll et la sélection du body quand la modal est ouverte
   useEffect(() => {
-    const savedScrollY = window.scrollY;
-    
     if (isModalOpen) {
-      // Sauvegarder la position de scroll actuelle
+      // Bloquer le scroll
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.top = `-${scrollPositionRef.current}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
       document.body.style.userSelect = 'none';
       document.body.style.pointerEvents = 'none';
-      
-      // Stocker la position dans un attribut data
-      document.body.setAttribute('data-scroll-position', String(savedScrollY));
     } else {
       // Restaurer le scroll normal
-      const scrollPosition = document.body.getAttribute('data-scroll-position');
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.overflow = '';
       document.body.style.userSelect = '';
       document.body.style.pointerEvents = '';
-      document.body.removeAttribute('data-scroll-position');
       
-      // Restaurer la position de scroll exacte
-      if (scrollPosition) {
-        window.scrollTo(0, parseInt(scrollPosition, 10));
-      }
+      // Restaurer la position de scroll exacte avec un petit délai
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 0);
     }
 
     // Cleanup au démontage du composant
@@ -73,7 +69,6 @@ const CaseStudyCard = ({
       document.body.style.overflow = '';
       document.body.style.userSelect = '';
       document.body.style.pointerEvents = '';
-      document.body.removeAttribute('data-scroll-position');
     };
   }, [isModalOpen]);
 
