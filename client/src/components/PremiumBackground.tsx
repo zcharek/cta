@@ -22,9 +22,9 @@ const PremiumBackground = () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Particle properties
+    // Particle properties - réduit pour de meilleures performances
     const particlesArray: Particle[] = [];
-    const numberOfParticles = 80;
+    const numberOfParticles = 40;
     
     // Mouse position for interactive effect
     const mouse = {
@@ -154,7 +154,7 @@ const PremiumBackground = () => {
             ((particlesArray[a].x - particlesArray[b].x) ** 2) +
             ((particlesArray[a].y - particlesArray[b].y) ** 2);
           
-          const maxDistance = (currentCanvas.width/7) * (currentCanvas.height/7);
+          const maxDistance = (currentCanvas.width/9) * (currentCanvas.height/9);
           
           if (distance < maxDistance) {
             const opacity = 1 - (distance/maxDistance);
