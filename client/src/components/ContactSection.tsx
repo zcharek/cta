@@ -114,7 +114,7 @@ const ContactSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="modern-card p-8">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -228,10 +228,10 @@ const ContactSection = () => {
 
                   <Button
                     type="submit"
-                    className="w-full bg-primary hover:bg-primary-light"
+                    className="btn-modern w-full bg-primary hover:bg-primary-light text-white"
                     disabled={mutation.isPending}
                   >
-                    {mutation.isPending ? "Sending..." : "Envoyer la demande"}
+                    {mutation.isPending ? "Envoi en cours..." : "Envoyer la demande"}
                   </Button>
                 </form>
               </Form>

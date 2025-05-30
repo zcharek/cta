@@ -14,7 +14,7 @@ const ServiceCard = ({
   altText,
 }: ServiceCardProps) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group service-card h-full">
+    <div className="modern-card overflow-hidden group service-card h-full">
       <div className="h-48 overflow-hidden">
         <img
           src={image}

@@ -23,16 +23,16 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               <m.a
                 href="#services"
-                className="px-8 py-3 bg-primary text-white rounded-md hover:bg-primary-light transition-all duration-200 text-center shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.05 }}
+                className="btn-modern px-8 py-4 bg-primary text-white text-center gradient-primary"
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Nos Services
               </m.a>
               <m.a
                 href="#contact"
-                className="px-8 py-3 border-2 border-primary text-primary rounded-md hover:bg-primary hover:text-white transition-all duration-200 text-center"
-                whileHover={{ scale: 1.05 }}
+                className="btn-modern px-8 py-4 border-2 border-primary text-primary text-center hover:bg-primary hover:text-white"
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Contactez-nous
@@ -59,15 +59,11 @@ const HeroSection = () => {
               </div>
 
               <m.div
-                className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg hidden md:block"
+                className="absolute -bottom-6 -left-6 modern-card p-6 hidden md:block"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow:
-                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
+                whileHover={{ scale: 1.05 }}
               >
                 <div className="flex items-center space-x-3">
                   <m.div

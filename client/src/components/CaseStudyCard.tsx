@@ -36,7 +36,7 @@ const CaseStudyCard = ({
 
   return (
     <>
-      <div className="bg-white rounded-xl modern-shadow overflow-hidden hover:modern-shadow-lg transition-all duration-300 group h-full border border-gray-100">
+      <div className="modern-card overflow-hidden group h-full">
         <div className="relative h-48 overflow-hidden">
           <img
             src={image}
@@ -48,7 +48,7 @@ const CaseStudyCard = ({
           <div className="absolute inset-0 bg-gradient-to-br from-primary/70 to-secondary/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out backdrop-blur-sm">
             <m.a
               href="#"
-              className="px-6 py-3 bg-white/95 backdrop-blur text-primary rounded-lg font-medium shadow-lg border border-white/20"
+              className="btn-modern px-6 py-3 bg-white text-primary"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
