@@ -113,54 +113,27 @@ const CaseStudyCard = ({
               </button>
             </div>
 
-            <div className="p-6 text-center bg-gray-50">
-              <div className="mb-4">
-                <i className="fas fa-file-pdf text-red-500 text-4xl mb-3"></i>
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">Case Study Document</h4>
-                <p className="text-gray-600 mb-4">
-                  View our detailed case study analysis and findings.
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <a
-                  href={pdf.startsWith("/") ? pdf : `/${pdf}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200 font-medium"
-                >
-                  <i className="fas fa-external-link-alt mr-2"></i>
-                  Open PDF in New Tab
-                </a>
-                
-                <div className="text-sm text-gray-500">
-                  <p>The PDF will open in a new browser tab for the best viewing experience.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Try to embed PDF with better fallback */}
-            <div className="hidden">
+            {/* PDF Viewer */}
+            <div className="flex-1 bg-gray-100">
               <iframe
-                src={`${pdf.startsWith("/") ? pdf : `/${pdf}`}#toolbar=1&navpanes=0&scrollbar=1`}
+                src={`${pdf.startsWith("/") ? pdf : `/${pdf}`}#toolbar=1&navpanes=1&scrollbar=1&zoom=page-fit`}
                 title={`Case Study PDF - ${title}`}
-                className="w-full h-[70vh]"
-                frameBorder="0"
-                onLoad={(e) => {
-                  const iframe = e.target as HTMLIFrameElement;
-                  const container = iframe.parentElement;
-                  if (container) {
-                    container.classList.remove('hidden');
-                    const fallback = container.previousElementSibling;
-                    if (fallback) {
-                      (fallback as HTMLElement).style.display = 'none';
-                    }
-                  }
-                }}
-                onError={() => {
-                  console.log('PDF iframe failed to load, showing fallback');
-                }}
+                className="w-full h-[70vh] border-0"
+                allow="fullscreen"
               />
+            </div>
+            
+            {/* Fallback link */}
+            <div className="p-4 bg-gray-50 border-t text-center">
+              <a
+                href={pdf.startsWith("/") ? pdf : `/${pdf}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 font-medium text-sm"
+              >
+                <i className="fas fa-external-link-alt mr-1"></i>
+                Open in new tab if PDF doesn't display properly
+              </a>
             </div>
           </div>
         </div>
