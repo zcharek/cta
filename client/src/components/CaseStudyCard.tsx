@@ -33,7 +33,7 @@ const CaseStudyCard = ({
     setIsModalOpen(false);
   };
 
-  // Empêcher le scroll du body quand la modal est ouverte
+  // Empêcher le scroll et la sélection du body quand la modal est ouverte
   useEffect(() => {
     if (isModalOpen) {
       // Sauvegarder la position de scroll actuelle
@@ -42,6 +42,8 @@ const CaseStudyCard = ({
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
+      document.body.style.userSelect = 'none';
+      document.body.style.pointerEvents = 'none';
     } else {
       // Restaurer le scroll normal
       const scrollY = document.body.style.top;
@@ -49,6 +51,8 @@ const CaseStudyCard = ({
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.overflow = '';
+      document.body.style.userSelect = '';
+      document.body.style.pointerEvents = '';
       if (scrollY) {
         window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
       }
@@ -60,6 +64,8 @@ const CaseStudyCard = ({
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.overflow = '';
+      document.body.style.userSelect = '';
+      document.body.style.pointerEvents = '';
     };
   }, [isModalOpen]);
 
@@ -105,10 +111,12 @@ const CaseStudyCard = ({
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
           onClick={closeModal}
+          style={{ pointerEvents: 'auto' }}
         >
           <div
             className="bg-white rounded-xl max-w-7xl w-full h-[90vh] flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
+            style={{ pointerEvents: 'auto', userSelect: 'auto' }}
           >
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
