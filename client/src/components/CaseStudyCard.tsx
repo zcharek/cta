@@ -1,5 +1,6 @@
 import { m } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import * as pdfjsLib from 'pdfjs-dist';
 
 interface CaseStudyCardProps {
   title: string;
@@ -21,10 +22,54 @@ const CaseStudyCard = ({
   pdf,
 }: CaseStudyCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Set up PDF.js worker
+  useEffect(() => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  }, []);
+
+  const generatePdfPreview = async (pdfUrl: string) => {
+    if (!canvasRef.current) return;
+    
+    setLoadingPreview(true);
+    try {
+      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1); // Get first page
+      
+      const scale = 1.5;
+      const viewport = page.getViewport({ scale });
+      
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      if (!context) return;
+      
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      
+      await page.render({
+        canvasContext: context,
+        viewport: viewport
+      }).promise;
+      
+      // Convert canvas to image URL
+      const imageUrl = canvas.toDataURL('image/png');
+      setPdfPreview(imageUrl);
+    } catch (error) {
+      console.error('Error generating PDF preview:', error);
+    }
+    setLoadingPreview(false);
+  };
 
   const openModal = () => {
     if (pdf) {
       setIsModalOpen(true);
+      if (!pdfPreview) {
+        generatePdfPreview(pdf.startsWith("/") ? pdf : `/${pdf}`);
+      }
     } else {
       alert("Case study details will be available after deployment.");
     }
@@ -110,57 +155,69 @@ const CaseStudyCard = ({
               </button>
             </div>
 
-            <div className="p-6 text-center bg-gray-50">
-              <div className="mb-4">
-                <i className="fas fa-file-pdf text-red-500 text-4xl mb-3"></i>
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">Case Study Document</h4>
-                <p className="text-gray-600 mb-4">
-                  View our detailed case study analysis and findings.
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <a
-                  href={pdf.startsWith("/") ? pdf : `/${pdf}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200 font-medium"
-                >
-                  <i className="fas fa-external-link-alt mr-2"></i>
-                  Open PDF in New Tab
-                </a>
-                
-                <div className="text-sm text-gray-500">
-                  <p>The PDF will open in a new browser tab for the best viewing experience.</p>
+            <div className="p-6">
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* PDF Preview Section */}
+                <div className="lg:w-1/2">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Preview</h4>
+                  <div className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[300px] flex items-center justify-center">
+                    {loadingPreview ? (
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-3"></div>
+                        <p className="text-gray-600">Loading preview...</p>
+                      </div>
+                    ) : pdfPreview ? (
+                      <img
+                        src={pdfPreview}
+                        alt={`Preview of ${title}`}
+                        className="max-w-full max-h-[400px] object-contain rounded shadow-md"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <i className="fas fa-file-pdf text-red-500 text-4xl mb-3"></i>
+                        <p className="text-gray-600">PDF preview loading...</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Document Info Section */}
+                <div className="lg:w-1/2">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Case Study Document</h4>
+                  <p className="text-gray-600 mb-4">
+                    View our detailed case study analysis and findings for {title}.
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <a
+                      href={pdf.startsWith("/") ? pdf : `/${pdf}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200 font-medium w-full text-center"
+                    >
+                      <i className="fas fa-external-link-alt mr-2"></i>
+                      Open Full PDF
+                    </a>
+                    
+                    <a
+                      href={pdf.startsWith("/") ? pdf : `/${pdf}`}
+                      download
+                      className="inline-block px-6 py-3 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors duration-200 font-medium w-full text-center"
+                    >
+                      <i className="fas fa-download mr-2"></i>
+                      Download PDF
+                    </a>
+                    
+                    <div className="text-sm text-gray-500 text-center">
+                      <p>Click to open the complete document in a new tab</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Try to embed PDF with better fallback */}
-            <div className="hidden">
-              <iframe
-                src={`${pdf.startsWith("/") ? pdf : `/${pdf}`}#toolbar=1&navpanes=0&scrollbar=1`}
-                title={`Case Study PDF - ${title}`}
-                className="w-full h-[70vh]"
-                frameBorder="0"
-                onLoad={(e) => {
-                  // If iframe loads successfully, show it
-                  const iframe = e.target as HTMLIFrameElement;
-                  const container = iframe.parentElement;
-                  if (container) {
-                    container.classList.remove('hidden');
-                    const fallback = container.previousElementSibling;
-                    if (fallback) {
-                      (fallback as HTMLElement).style.display = 'none';
-                    }
-                  }
-                }}
-                onError={() => {
-                  // Keep fallback visible if iframe fails
-                  console.log('PDF iframe failed to load, showing fallback');
-                }}
-              />
-            </div>
+            {/* Hidden canvas for PDF rendering */}
+            <canvas ref={canvasRef} className="hidden" />
           </div>
         </div>
       )}
