@@ -89,7 +89,7 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-background">
+    <section id="contact" className="webflow-section bg-background">
       <div className="container">
         <m.div
           className="text-center mb-16"

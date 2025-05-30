@@ -3,7 +3,7 @@ import ThreeDElement from "./ThreeDElement";
 
 const HeroSection = () => {
   return (
-    <section id="home" className="pt-28 pb-20 lg:pt-40 lg:pb-28">
+    <section id="home" className="webflow-section pt-28 pb-20 lg:pt-40 lg:pb-28">
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <m.div

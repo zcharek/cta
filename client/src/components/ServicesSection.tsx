@@ -1,5 +1,6 @@
 import { m } from "framer-motion";
 import ServiceCard from "./ServiceCard";
+import { WebflowGrid, WebflowCardWrapper } from "./WebflowGrid";
 
 const services = [
   {
@@ -38,7 +39,7 @@ const services = [
 
 const ServicesSection = () => {
   return (
-    <section id="services" className="py-20 bg-background">
+    <section id="services" className="webflow-section bg-background">
       <div className="container">
         <m.div
           className="text-center mb-16"
@@ -57,23 +58,19 @@ const ServicesSection = () => {
           </p>
         </m.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
-          {services.map((service, index) => (
-            <m.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <ServiceCard
-                title={service.title}
-                description={service.description}
-                image={service.image}
-                altText={service.altText}
-              />
-            </m.div>
-          ))}
+        <div className="max-w-6xl mx-auto">
+          <WebflowGrid cols={2} gap="lg">
+            {services.map((service, index) => (
+              <WebflowCardWrapper key={index} delay={index * 0.1}>
+                <ServiceCard
+                  title={service.title}
+                  description={service.description}
+                  image={service.image}
+                  altText={service.altText}
+                />
+              </WebflowCardWrapper>
+            ))}
+          </WebflowGrid>
         </div>
       </div>
     </section>
