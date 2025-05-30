@@ -1,4 +1,4 @@
-import { LazyMotionWrapper, OptimizedImage } from "./PerformanceOptimized";
+import { m } from "framer-motion";
 
 interface ServiceCardProps {
   title: string;
@@ -14,16 +14,12 @@ const ServiceCard = ({
   altText,
 }: ServiceCardProps) => {
   return (
-    <LazyMotionWrapper
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="modern-card overflow-hidden group service-card h-full"
-    >
+    <div className="modern-card overflow-hidden group service-card h-full">
       <div className="h-48 overflow-hidden">
-        <OptimizedImage
+        <img
           src={image}
           alt={altText}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 gpu-accelerated"
         />
       </div>
       <div className="p-6">
@@ -31,7 +27,7 @@ const ServiceCard = ({
         <p className="text-gray-600 mb-4">{description}</p>
         {/* Bouton "Learn More" retiré */}
       </div>
-    </LazyMotionWrapper>
+    </div>
   );
 };
 
