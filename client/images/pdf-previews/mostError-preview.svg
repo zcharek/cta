@@ -1,0 +1,81 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="400" height="60" fill="#dc2626"/>
+  <text x="20" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">
+    Most Common Testing Errors
+  </text>
+  
+  <!-- Content area -->
+  <rect x="20" y="80" width="360" height="2" fill="#e2e8f0"/>
+  
+  <!-- Error categories -->
+  <rect x="20" y="100" width="110" height="70" fill="#fef2f2" rx="4"/>
+  <text x="30" y="120" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#dc2626">
+    Logic Errors
+  </text>
+  <text x="30" y="140" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Incorrect conditions
+  </text>
+  <text x="30" y="155" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Wrong calculations
+  </text>
+  <text x="30" y="170" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Invalid assumptions
+  </text>
+  
+  <rect x="145" y="100" width="110" height="70" fill="#fff7ed" rx="4"/>
+  <text x="155" y="120" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ea580c">
+    Data Errors
+  </text>
+  <text x="155" y="140" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Missing validation
+  </text>
+  <text x="155" y="155" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Type mismatches
+  </text>
+  <text x="155" y="170" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Boundary issues
+  </text>
+  
+  <rect x="270" y="100" width="110" height="70" fill="#fefce8" rx="4"/>
+  <text x="280" y="120" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ca8a04">
+    UI/UX Errors
+  </text>
+  <text x="280" y="140" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Poor usability
+  </text>
+  <text x="280" y="155" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Broken workflows
+  </text>
+  <text x="280" y="170" font-family="Arial, sans-serif" font-size="9" fill="#374151">
+    • Visual glitches
+  </text>
+  
+  <!-- Statistics section -->
+  <rect x="20" y="190" width="360" height="2" fill="#e2e8f0"/>
+  <text x="20" y="215" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1f2937">
+    Error Distribution
+  </text>
+  
+  <!-- Pie chart representation -->
+  <circle cx="200" cy="250" r="30" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+  <path d="M 200 220 A 30 30 0 0 1 226 235 L 200 250 Z" fill="#dc2626"/>
+  <path d="M 226 235 A 30 30 0 0 1 200 280 L 200 250 Z" fill="#ea580c"/>
+  <path d="M 200 280 A 30 30 0 1 1 200 220 L 200 250 Z" fill="#ca8a04"/>
+  
+  <!-- Legend -->
+  <rect x="250" y="230" width="10" height="10" fill="#dc2626"/>
+  <text x="265" y="239" font-family="Arial, sans-serif" font-size="9" fill="#374151">Logic 45%</text>
+  
+  <rect x="250" y="245" width="10" height="10" fill="#ea580c"/>
+  <text x="265" y="254" font-family="Arial, sans-serif" font-size="9" fill="#374151">Data 30%</text>
+  
+  <rect x="250" y="260" width="10" height="10" fill="#ca8a04"/>
+  <text x="265" y="269" font-family="Arial, sans-serif" font-size="9" fill="#374151">UI/UX 25%</text>
+  
+  <!-- PDF indicator -->
+  <circle cx="370" cy="30" r="15" fill="#dc2626"/>
+  <text x="365" y="35" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">PDF</text>
+</svg>
