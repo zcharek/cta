@@ -6,9 +6,9 @@ const HeroSection = () => {
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6 leading-tight">
               Offrez à Vos Utilisateurs la Qualité Qu'ils{" "}
-              <span className="text-primary">Méritent.</span>
+              <span className="text-blue-600">Méritent.</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
               Nous testons et optimisons vos produits pour garantir une
