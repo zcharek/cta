@@ -19,6 +19,9 @@ function Router() {
 
 function App() {
   useEffect(() => {
+    // Prevent flash of unstyled content
+    document.documentElement.classList.add('loaded');
+    
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(this: HTMLAnchorElement, e: Event) {
