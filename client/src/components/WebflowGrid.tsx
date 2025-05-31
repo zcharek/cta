@@ -46,14 +46,8 @@ export const WebflowCardWrapper = ({
   className = "" 
 }: WebflowCardWrapperProps) => {
   return (
-    <m.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay }}
-      className={className}
-    >
+    <div className={className}>
       {children}
-    </m.div>
+    </div>
   );
 };
