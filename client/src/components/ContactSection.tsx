@@ -2,8 +2,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { m } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
 const contactFormSchema = z.object({
@@ -85,13 +83,7 @@ const ContactSection = () => {
   return (
     <section id="contact" className="py-20 bg-gray-50">
       <div className="container">
-        <m.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Nous contacter
           </h2>
@@ -99,15 +91,10 @@ const ContactSection = () => {
             Prêt à améliorer la qualité de vos logiciels ? Contactez-nous pour
             une consultation gratuite.
           </p>
-        </m.div>
+        </div>
 
         <div className="max-w-3xl mx-auto">
-          <m.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <div>
             <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-lg">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -240,7 +227,7 @@ const ContactSection = () => {
                 </button>
               </form>
             </div>
-          </m.div>
+          </div>
         </div>
       </div>
     </section>
