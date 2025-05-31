@@ -13,8 +13,14 @@ html {
 
 /* Prevent flash of unstyled content */
 html {
+  visibility: hidden;
+  opacity: 0;
+}
+
+html.loaded {
   visibility: visible;
   opacity: 1;
+  transition: opacity 0.2s ease-in-out;
 }
 
 /* Critical CSS optimized for above-the-fold */
@@ -58,7 +64,7 @@ body {
   background: white;
   border-radius: 2rem;
   border: 1px solid rgba(226, 232, 240, 0.5);
-  box-shadow:
+  box-shadow: 
     0 8px 30px -12px rgba(30, 58, 138, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -107,7 +113,7 @@ body {
 
 .modern-card:hover {
   transform: translateY(-12px) scale(1.02);
-  box-shadow:
+  box-shadow: 
     0 35px 60px -12px rgba(30, 58, 138, 0.25),
     0 0 0 1px rgba(59, 130, 246, 0.1) inset;
   border-color: rgba(37, 99, 235, 0.4);
@@ -147,7 +153,7 @@ body {
   border-radius: 1rem;
   font-weight: 600;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
+  box-shadow: 
     0 8px 25px -8px rgba(30, 58, 138, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   position: relative;
@@ -162,10 +168,12 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent);
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.3), 
+    transparent
+  );
   transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -192,7 +200,7 @@ body {
 
 .btn-modern:hover {
   transform: translateY(-4px) scale(1.03);
-  box-shadow:
+  box-shadow: 
     0 20px 40px -5px rgba(30, 58, 138, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
@@ -211,7 +219,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background:
+  background: 
     radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.03) 0%, transparent 60%),
     radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 60%),
     linear-gradient(135deg, rgba(248, 250, 252, 0.5) 0%, rgba(241, 245, 249, 0.5) 100%);
@@ -225,14 +233,14 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background:
-    conic-gradient(from 0deg at 50% 50%,
-      transparent 0deg,
-      rgba(30, 58, 138, 0.01) 60deg,
-      transparent 120deg,
-      rgba(59, 130, 246, 0.01) 180deg,
-      transparent 240deg,
-      rgba(96, 165, 250, 0.01) 300deg,
+  background: 
+    conic-gradient(from 0deg at 50% 50%, 
+      transparent 0deg, 
+      rgba(30, 58, 138, 0.01) 60deg, 
+      transparent 120deg, 
+      rgba(59, 130, 246, 0.01) 180deg, 
+      transparent 240deg, 
+      rgba(96, 165, 250, 0.01) 300deg, 
       transparent 360deg);
   animation: rotate 120s linear infinite;
   pointer-events: none;
@@ -260,7 +268,6 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -272,7 +279,6 @@ body {
     opacity: 0;
     transform: translateY(40px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
