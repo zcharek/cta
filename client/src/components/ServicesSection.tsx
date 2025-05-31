@@ -49,10 +49,10 @@ const ServicesSection = () => {
           transition={{ duration: 0.5 }}
           style={{ willChange: "auto" }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#111827" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Nos services
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: "#4B5563" }}>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Nos experts certifiés ISTQB conçoivent et réalisent des tests de
             bout en bout, sur mesure, pour garantir la qualité totale de vos
             logiciels et de l'expérience utilisateur.
