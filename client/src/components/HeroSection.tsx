@@ -9,9 +9,9 @@ const HeroSection = () => {
           <m.div
             className="order-2 lg:order-1"
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            style={{ willChange: "auto" }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Offrez à Vos Utilisateurs la Qualité Qu'ils{" "}
@@ -44,7 +44,8 @@ const HeroSection = () => {
           <m.div
             className="order-1 lg:order-2 relative"
             initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
             <div className="relative">
@@ -62,7 +63,8 @@ const HeroSection = () => {
               <m.div
                 className="absolute -bottom-6 -left-6 modern-card p-6 hidden md:block"
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.8 }}
                 whileHover={{ scale: 1.05 }}
               >
