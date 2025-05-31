@@ -12,16 +12,6 @@ html {
 }
 
 /* Prevent flash of unstyled content */
-html {
-  visibility: hidden;
-  opacity: 0;
-}
-
-html.loaded {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.2s ease-in-out;
-}
 
 /* Critical CSS optimized for above-the-fold */
 .hero-gradient {
