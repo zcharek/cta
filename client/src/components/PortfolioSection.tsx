@@ -6,43 +6,42 @@ import { WebflowGrid, WebflowCardWrapper } from "./WebflowGrid";
 
 const caseStudies = [
   {
-    title: "Global Retail Platform Optimization",
+    title: "Accélérer la QA grâce aux Cloud-testing",
     description:
-      "How our comprehensive testing strategy helped a major retailer improve site performance and increase conversions by 35%.",
+      "Découvrez comment le Cloud-testing permet de raccourcir les cycles de test.",
     image: "/images/cloudTest.jpg",
-    altText: "Cloud testing strategy case study",
-    category: "E-commerce",
-    readTime: "10 min read",
+    altText: "Cloud-testing",
+    category: "QA / Cloud Testing",
+    readTime: "Lecture 4 min",
     pdf: "/pdf/cloudTesting-compressed.pdf",
   },
   {
-    title: "Medical Software Compliance Testing",
-    description:
-      "How we helped a healthcare provider ensure their patient management system met strict regulatory requirements.",
+    title: "C'est quoi le test logiciel !",
+    description: "Introduction aux tests logiciel",
     image: "/images/IntroTest.jpg",
-    altText: "Introduction to testing methodology",
-    category: "Healthcare",
-    readTime: "8 min read",
+    altText: "Introduction aux tests",
+    category: "Introduction",
+    readTime: "Lecture 6 min",
     pdf: "/pdf/intoTesting-compressed.pdf",
   },
   {
-    title: "Banking App Security Testing",
+    title: "Les erreurs les plus fréquentes dans un projet sans tests",
     description:
-      "How our rigorous security testing helped a financial institution protect customer data and prevent potential breaches.",
+      "Analyse des erreurs courantes qui surviennent lorsqu’un projet logiciel est lancé sans stratégie de test.",
     image: "/images/mostError.jpg",
-    altText: "Common testing errors analysis",
-    category: "Finance",
-    readTime: "12 min read",
+    altText: "Analyse des erreurs fréquentes en test logiciel",
+    category: "Erreurs fréquentes",
+    readTime: "12 min de lecture",
     pdf: "/pdf/mostError-compressed.pdf",
   },
   {
-    title: "Enterprise SaaS UX Optimization",
+    title: "Comprendre la pyramide des tests",
     description:
-      "How we helped a leading SaaS provider transform their user experience, resulting in 28% higher user retention.",
+      "Améliorer son expérience utilisateur en appliquant efficacement la pyramide des tests.",
     image: "/images/ParameterTest.jpg",
-    altText: "Test parameter optimization guide",
-    category: "SaaS",
-    readTime: "7 min read",
+    altText: "Guide d’optimisation des paramètres de test",
+    category: "Méthodologie",
+    readTime: "7 min de lecture",
     pdf: "/pdf/testParameter.pdf",
   },
 ];
@@ -76,8 +75,6 @@ const PortfolioSection = () => {
             ))}
           </WebflowGrid>
         </div>
-
-
       </div>
     </section>
   );
