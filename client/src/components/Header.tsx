@@ -25,14 +25,16 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             {/* Logo */}
-            <m.div
-              className="text-primary font-poppins font-semibold text-2xl"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              Central<span className="text-secondary">TestAgency</span>
-            </m.div>
+            <a href="/" className="hover:opacity-80 transition-opacity duration-200">
+              <m.div
+                className="text-primary font-poppins font-semibold text-2xl"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                Central<span className="text-secondary">TestAgency</span>
+              </m.div>
+            </a>
           </div>
 
           {/* Desktop Navigation */}

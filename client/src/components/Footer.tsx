@@ -117,12 +117,6 @@ const Footer = () => {
                 >
                   Politique de Confidentialité
                 </a>
-                <a
-                  href="/sitemap.xml"
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
-                >
-                  Plan du Site
-                </a>
               </div>
               <p className="text-gray-400 text-sm">
                 &copy; {currentYear} Central Test Agency. Tous droits réservés.
