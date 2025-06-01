@@ -475,6 +475,85 @@ const services = [
     ),
     image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
   },
+  {
+    title: "Tests Automatisés",
+    icon: "🤖",
+    description: "Création et maintenance de suites de tests automatisés robustes",
+    detailedDescription: (
+      <>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir nos services de tests automatisés ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">ROI optimisé</h4>
+            <p>
+              Réduction drastique des coûts de test à long terme grâce 
+              à l'automatisation des tâches répétitives.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Exécution rapide</h4>
+            <p>
+              Tests parallèles et distribués pour feedback instantané 
+              sur la qualité du code.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Couverture exhaustive</h4>
+            <p>
+              Scripts automatisés couvrant tous les scénarios critiques 
+              avec exécution systématique.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Intégration CI/CD native</h4>
+            <p>
+              Déclenchement automatique des tests à chaque commit 
+              pour validation continue.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Maintenance évolutive</h4>
+            <p>
+              Architecture de tests maintenable et évolutive 
+              s'adaptant aux changements de l'application.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Reporting détaillé</h4>
+            <p>
+              Tableaux de bord avec métriques de couverture, 
+              tendances et analyses de défaillance.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Notre approche de l'automatisation
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
+          <li>
+            <strong>Audit de faisabilité :</strong> Analyse des cas d'usage 
+            pour identifier les tests les plus adaptés à l'automatisation.
+          </li>
+          <li>
+            <strong>Framework sur-mesure :</strong> Conception d'une architecture 
+            de tests adaptée à votre stack technique et contraintes.
+          </li>
+          <li>
+            <strong>Développement progressif :</strong> Implémentation itérative 
+            avec validation continue de la valeur ajoutée.
+          </li>
+          <li>
+            <strong>Formation et transfert :</strong> Accompagnement de vos équipes 
+            pour maintenir et faire évoluer les tests automatisés.
+          </li>
+        </ul>
+      </>
+    ),
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
+  },
 ];
 
 const ServicesSection = () => {
