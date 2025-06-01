@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +11,25 @@ import Legal from "@/pages/Legal";
 import PremiumBackground from "./components/PremiumBackground";
 
 function Router() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    // Handle anchor scrolling when navigating to home page with hash
+    if (location === '/' && window.location.hash) {
+      const hash = window.location.hash;
+      // Wait for the component to render, then scroll
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    }
+  }, [location]);
+
   return (
     <Switch>
       <Route path="/" component={Home} />
