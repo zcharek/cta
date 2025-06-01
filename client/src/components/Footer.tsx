@@ -102,10 +102,32 @@ const Footer = () => {
               </a>
             </div>
 
-            {/* Texte de copyright à droite */}
-            <p className="text-gray-400 text-sm text-right">
-              &copy; {currentYear} Central Test Agency. All rights reserved.
-            </p>
+            {/* Texte de copyright et liens légaux à droite */}
+            <div className="text-right">
+              <div className="flex flex-wrap justify-end gap-4 mb-2">
+                <a
+                  href="/legal"
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Conditions Générales
+                </a>
+                <a
+                  href="/legal"
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Politique de Confidentialité
+                </a>
+                <a
+                  href="/sitemap.xml"
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Plan du Site
+                </a>
+              </div>
+              <p className="text-gray-400 text-sm">
+                &copy; {currentYear} Central Test Agency. Tous droits réservés.
+              </p>
+            </div>
           </div>
         </div>
       </div>

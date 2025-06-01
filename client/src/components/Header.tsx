@@ -49,6 +49,12 @@ const Header = () => {
             >
               Notre ADN
             </a>
+            <a
+              href="/faq"
+              className="font-medium text-foreground hover:text-primary transition-colors duration-200"
+            >
+              FAQ
+            </a>
 
             <a
               href="#contact"
@@ -102,11 +108,11 @@ const Header = () => {
               About
             </a>
             <a
-              href="#portfolio"
+              href="/faq"
               className="font-medium text-foreground hover:text-primary transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
-              Portfolio
+              FAQ
             </a>
             <a
               href="#contact"
