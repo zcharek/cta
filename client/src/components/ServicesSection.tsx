@@ -614,34 +614,65 @@ const ServicesSection = () => {
             onClick={() => setSelectedService(null)}
           >
             <div
-              className="bg-white max-w-5xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative"
+              className="bg-white max-w-6xl w-full max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl relative transform transition-all duration-300 scale-100"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8 rounded-t-2xl relative">
+              {/* Header avec gradient amélioré */}
+              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white p-10 rounded-t-3xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
                 <button
                   onClick={() => setSelectedService(null)}
-                  className="absolute top-4 right-4 text-white hover:text-gray-200 text-3xl font-bold transition-colors"
+                  className="absolute top-6 right-6 text-white hover:text-gray-200 text-4xl font-light transition-all duration-200 hover:scale-110 z-10"
                 >
                   ×
                 </button>
                 
-                <div className="flex items-center gap-6">
-                  <div className="bg-white p-4 rounded-xl shadow-lg">
-                    <span className="text-4xl">{selectedService.icon}</span>
+                <div className="flex items-center gap-8 relative z-10">
+                  <div className="bg-white/20 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/30">
+                    <span className="text-5xl">{selectedService.icon}</span>
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold mb-2">
+                    <h2 className="text-4xl font-bold mb-3 text-white drop-shadow-lg">
                       {selectedService.title}
                     </h2>
-                    <p className="text-blue-100 text-lg">
+                    <p className="text-blue-100 text-xl font-medium">
                       Solutions professionnelles de test logiciel
                     </p>
+                    <div className="mt-4 inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
+                      <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                      Service Premium
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-8 text-gray-800 leading-relaxed space-y-8">
-                {selectedService.detailedDescription}
+              {/* Contenu avec design amélioré */}
+              <div className="p-10 text-gray-800 leading-relaxed">
+                <div className="prose prose-lg max-w-none">
+                  {selectedService.detailedDescription}
+                </div>
+                
+                {/* Section CTA en bas */}
+                <div className="mt-12 p-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-blue-100">
+                  <div className="text-center">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-4">
+                      Intéressé par ce service ?
+                    </h4>
+                    <p className="text-gray-600 mb-6 text-lg">
+                      Contactez nos experts pour une consultation personnalisée et un devis sur mesure.
+                    </p>
+                    <button 
+                      onClick={() => {
+                        setSelectedService(null);
+                        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    >
+                      <span className="mr-2">💬</span>
+                      Demander un devis
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

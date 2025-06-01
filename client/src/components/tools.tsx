@@ -487,76 +487,88 @@ const TechCarousel = () => {
           aria-describedby="modal-desc"
         >
           <div
-            className="bg-white max-w-5xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative"
+            className="bg-white max-w-6xl w-full max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl relative transform transition-all duration-300 scale-100"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* En-tête avec gradient */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8 rounded-t-2xl relative">
+            {/* En-tête avec gradient amélioré */}
+            <div className="bg-gradient-to-br from-indigo-600 via-purple-700 to-pink-800 text-white p-10 rounded-t-3xl relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
               <button
                 onClick={() => setSelectedTool(null)}
                 aria-label="Fermer la modale"
-                className="absolute top-4 right-4 text-white hover:text-gray-200 text-3xl font-bold transition-colors"
+                className="absolute top-6 right-6 text-white hover:text-gray-200 text-4xl font-light transition-all duration-200 hover:scale-110 z-10"
               >
                 ×
               </button>
               
-              <div className="flex items-center gap-6">
-                <div className="bg-white p-3 rounded-xl shadow-lg">
+              <div className="flex items-center gap-8 relative z-10">
+                <div className="bg-white/20 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/30">
                   <img
                     src={selectedTool.logo}
                     alt={selectedTool.name}
-                    className="h-12 w-12 object-contain"
+                    className="h-20 w-20 object-contain filter brightness-0 invert"
                   />
                 </div>
                 <div>
                   <h2
                     id="modal-title"
-                    className="text-3xl font-bold mb-2"
+                    className="text-4xl font-bold mb-3 text-white drop-shadow-lg"
                   >
                     {selectedTool.name}
                   </h2>
-                  <p className="text-blue-100 text-lg">
-                    Tests automatisés et solutions professionnelles
+                  <p className="text-purple-100 text-xl font-medium">
+                    Framework professionnel de test automatisé
                   </p>
+                  <div className="mt-4 inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    Outil Certifié
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Contenu principal */}
+            {/* Contenu principal avec design amélioré */}
             <div
               id="modal-desc"
-              className="p-8 text-gray-800 leading-relaxed space-y-8"
+              className="p-10 text-gray-800 leading-relaxed"
             >
-              {selectedTool.description}
+              <div className="prose prose-lg max-w-none">
+                {selectedTool.description}
+              </div>
 
-              {/* Nos modèles de coopération */}
-              <section className="mt-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8">
-                <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">
-                  Nos modèles de coopération
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Nos modèles de coopération avec design premium */}
+              <section className="mt-12 bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50 rounded-3xl p-10 border border-purple-100">
+                <div className="text-center mb-8">
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                    Nos modèles de coopération
+                  </h3>
+                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Choisissez l'approche qui correspond le mieux à vos besoins et contraintes
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {cooperationModels.map((model, idx) => (
                     <div
                       key={idx}
-                      className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300 h-full"
+                      className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-purple-300 h-full transform hover:-translate-y-2"
                     >
-                      <div className="flex items-center mb-4">
-                        <div className={`w-3 h-3 rounded-full mr-3 ${
+                      <div className="flex items-center mb-6">
+                        <div className={`w-4 h-4 rounded-full mr-4 ${
                           idx === 0 ? 'bg-blue-500' : 
                           idx === 1 ? 'bg-green-500' : 'bg-purple-500'
                         }`}></div>
-                        <h4 className={`text-xl font-bold ${model.color}`}>
+                        <h4 className={`text-2xl font-bold ${model.color}`}>
                           {model.title}
                         </h4>
                       </div>
-                      <p className="text-sm font-medium mb-4 text-gray-600 italic">
+                      <p className="text-base font-medium mb-6 text-gray-600 italic">
                         {model.subtitle}
                       </p>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {model.points.map((point, i) => (
                           <li key={i} className="flex items-start text-gray-700">
-                            <span className="text-green-500 mr-2 mt-1">✓</span>
-                            <span className="text-sm">{point}</span>
+                            <span className="text-green-500 mr-3 mt-1 text-lg">✓</span>
+                            <span className="text-base leading-relaxed">{point}</span>
                           </li>
                         ))}
                       </ul>
@@ -564,6 +576,40 @@ const TechCarousel = () => {
                   ))}
                 </div>
               </section>
+
+              {/* Section CTA en bas */}
+              <div className="mt-12 p-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-100">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold text-gray-900 mb-4">
+                    Besoin d'expertise avec {selectedTool.name} ?
+                  </h4>
+                  <p className="text-gray-600 mb-6 text-lg">
+                    Nos experts certifiés peuvent vous accompagner dans l'implémentation et l'optimisation de vos tests.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button 
+                      onClick={() => {
+                        setSelectedTool(null);
+                        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    >
+                      <span className="mr-2">🚀</span>
+                      Demander une consultation
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSelectedTool(null);
+                        document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="inline-flex items-center px-8 py-4 bg-white text-purple-700 font-semibold rounded-xl border-2 border-purple-200 hover:bg-purple-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    >
+                      <span className="mr-2">📋</span>
+                      Voir nos services
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
