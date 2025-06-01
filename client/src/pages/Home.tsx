@@ -15,7 +15,15 @@ import TechCarousel from "@/components/tools";
 const Home = () => {
   // Set page title and description when component mounts
   useEffect(() => {
-    document.title = "Central Test Agency - Software Testing";
+    document.title = "Central Test Agency - Tests Logiciels et Automatisation QA en Algérie | Playwright, Cypress";
+    
+    // Update meta description dynamically
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 
+        'Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux.'
+      );
+    }
   }, []);
 
   return (

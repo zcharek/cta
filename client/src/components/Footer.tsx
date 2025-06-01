@@ -41,8 +41,8 @@ const Footer = () => {
               Central<span className="text-secondary">TestAgency</span>
             </div>
             <p className="text-gray-400 mb-6">
-              Améliorer les expériences numériques grâce à des solutions de
-              tests et d'assurance qualité expertes.
+              Expert en tests logiciels et automatisation QA en Algérie. 
+              Solutions Playwright, Cypress et qualité logicielle garantie.
             </p>
           </m.div>
 

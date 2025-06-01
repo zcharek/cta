@@ -36,8 +36,9 @@ const HeroSection = () => {
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800"
-                alt="Software testing professionals analyzing data"
+                alt="Équipe d'experts en tests logiciels et automatisation QA travaillant sur l'analyse de données et la qualité logicielle en Algérie"
                 className="rounded-xl shadow-2xl w-full h-auto object-cover"
+                loading="eager"
               />
 
               <div className="absolute top-0 right-0 w-full h-full">
