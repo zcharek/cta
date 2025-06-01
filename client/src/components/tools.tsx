@@ -502,11 +502,11 @@ const TechCarousel = () => {
               </button>
               
               <div className="flex items-center gap-8 relative z-10">
-                <div className="bg-white/20 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/30">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <img
                     src={selectedTool.logo}
                     alt={selectedTool.name}
-                    className="h-20 w-20 object-contain filter brightness-0 invert"
+                    className="h-20 w-20 object-contain"
                   />
                 </div>
                 <div>
@@ -519,10 +519,6 @@ const TechCarousel = () => {
                   <p className="text-purple-100 text-xl font-medium">
                     Framework professionnel de test automatisé
                   </p>
-                  <div className="mt-4 inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                    Outil Certifié
-                  </div>
                 </div>
               </div>
             </div>

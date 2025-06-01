@@ -638,10 +638,6 @@ const ServicesSection = () => {
                     <p className="text-blue-100 text-xl font-medium">
                       Solutions professionnelles de test logiciel
                     </p>
-                    <div className="mt-4 inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
-                      <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                      Service Premium
-                    </div>
                   </div>
                 </div>
               </div>
