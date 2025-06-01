@@ -40,13 +40,13 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <a
-              href="#services"
+              href="/#services"
               className="font-medium text-foreground hover:text-primary transition-colors duration-200"
             >
               Nos services
             </a>
             <a
-              href="#about"
+              href="/#about"
               className="font-medium text-foreground hover:text-primary transition-colors duration-200"
             >
               Notre ADN
@@ -59,7 +59,7 @@ const Header = () => {
             </a>
 
             <a
-              href="#contact"
+              href="/#contact"
               className="px-5 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-colors duration-200"
             >
               Contactez-nous
@@ -89,21 +89,21 @@ const Header = () => {
         >
           <div className="flex flex-col space-y-4">
             <a
-              href="#home"
+              href="/"
               className="font-medium text-foreground hover:text-primary transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               Home
             </a>
             <a
-              href="#services"
+              href="/#services"
               className="font-medium text-foreground hover:text-primary transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               Services
             </a>
             <a
-              href="#about"
+              href="/#about"
               className="font-medium text-foreground hover:text-primary transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
@@ -117,7 +117,7 @@ const Header = () => {
               FAQ
             </a>
             <a
-              href="#contact"
+              href="/#contact"
               className="px-5 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-colors duration-200 inline-block text-center"
               onClick={() => setIsOpen(false)}
             >
