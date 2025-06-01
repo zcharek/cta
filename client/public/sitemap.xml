@@ -1,27 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://centraltestagency.com/</loc>
-    <lastmod>2025-01-30</lastmod>
+    <loc>https://central-test-agency.replit.app/</loc>
+    <lastmod>2024-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="fr-dz" href="https://central-test-agency.replit.app/" />
   </url>
   <url>
-    <loc>https://centraltestagency.com/#services</loc>
-    <lastmod>2025-01-30</lastmod>
+    <loc>https://central-test-agency.replit.app/#services</loc>
+    <lastmod>2024-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr-dz" href="https://central-test-agency.replit.app/#services" />
   </url>
   <url>
-    <loc>https://centraltestagency.com/#portfolio</loc>
-    <lastmod>2025-01-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://central-test-agency.replit.app/#outils</loc>
+    <lastmod>2024-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr-dz" href="https://central-test-agency.replit.app/#outils" />
   </url>
   <url>
-    <loc>https://centraltestagency.com/#contact</loc>
-    <lastmod>2025-01-30</lastmod>
+    <loc>https://central-test-agency.replit.app/#about</loc>
+    <lastmod>2024-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr-dz" href="https://central-test-agency.replit.app/#about" />
+  </url>
+  <url>
+    <loc>https://central-test-agency.replit.app/#contact</loc>
+    <lastmod>2024-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fr-dz" href="https://central-test-agency.replit.app/#contact" />
   </url>
 </urlset>

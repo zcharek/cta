@@ -439,7 +439,7 @@ const TechCarousel = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto max-w-6xl text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Frameworks de test
+          Frameworks et Outils d'Automatisation QA
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Découvrez les outils que nous utilisons pour automatiser les tests

@@ -2,7 +2,7 @@ import AnimatedCounter from "./AnimatedCounter";
 import { m } from "framer-motion";
 
 const stats = [
-  { value: 8, label: "Projects completé", suffix: "+" },
+  { value: 8, label: "Projets completé", suffix: "+" },
   { value: 95, label: "Client satisfait", suffix: "%" },
   { value: 5, label: "Années d'experience", suffix: "+" },
 ];
