@@ -58,11 +58,11 @@ const PortfolioSection = () => {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Our Case Studies
+            Nos publications
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore how our testing solutions have helped businesses across
-            industries achieve exceptional digital experiences.
+            Accédez à des études de cas, articles et définitions utiles autour
+            des tests logiciels.
           </p>
         </m.div>
 
