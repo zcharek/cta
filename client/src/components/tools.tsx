@@ -41,7 +41,7 @@ const tools = [
             </h4>
             <p>
               Outil facile à configurer, idéal pour une intégration rapide dans
-              vos pipelines d’intégration continue.
+              vos pipelines d'intégration continue.
             </p>
           </div>
           <div>
@@ -54,7 +54,7 @@ const tools = [
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-1">Grande rapidité d’exécution</h4>
+            <h4 className="font-semibold mb-1">Grande rapidité d'exécution</h4>
             <p>
               Tests parallèles et multi-navigateurs pour gagner du temps et
               améliorer la productivité QA.
@@ -71,12 +71,12 @@ const tools = [
             pour démarrer ou optimiser vos tests Playwright.
           </li>
           <li>
-            <strong>Stratégie d’automatisation :</strong> Conception sur-mesure
+            <strong>Stratégie d'automatisation :</strong> Conception sur-mesure
             de votre plan de tests pour garantir efficacité et fiabilité.
           </li>
           <li>
             <strong>Création de solution clé en main :</strong> Développement
-            complet d’une solution Playwright adaptée à vos besoins.
+            complet d'une solution Playwright adaptée à vos besoins.
           </li>
           <li>
             <strong>Optimisation de solutions existantes :</strong> Amélioration
@@ -269,11 +269,82 @@ const tools = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png",
     description: (
       <>
-        <h3 className="text-xl font-semibold mb-2">Pourquoi Postman ?</h3>
-        <ul className="list-disc ml-5 space-y-1">
-          <li>Test d’API REST/GraphQL simple et puissant.</li>
-          <li>Support des environnements et variables globales.</li>
-          <li>Génération de collections réutilisables et partageables.</li>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir les services de test Postman ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">Tests API complets</h4>
+            <p>
+              Validation approfondie des endpoints REST, GraphQL et SOAP 
+              avec assertions automatisées et tests de contrats.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Gestion d'environnements</h4>
+            <p>
+              Configuration multi-environnements (dev, staging, prod) 
+              avec variables dynamiques et secrets sécurisés.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Collections collaboratives</h4>
+            <p>
+              Partage et versioning de collections de tests avec 
+              documentation intégrée pour l'équipe de développement.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Automatisation workflows</h4>
+            <p>
+              Chaînage d'appels API complexes avec données dynamiques 
+              et validation de scénarios métier end-to-end.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Monitoring continu</h4>
+            <p>
+              Surveillance proactive des APIs en production avec 
+              alertes automatiques et métriques de performance.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Tests de charge API</h4>
+            <p>
+              Validation des performances et de la montée en charge 
+              de vos APIs avec rapports détaillés.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Nos services Postman
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
+          <li>
+            <strong>Architecture de tests API :</strong> Conception de 
+            stratégies complètes pour validation d'APIs et microservices.
+          </li>
+          <li>
+            <strong>Collections entreprise :</strong> Développement de 
+            bibliothèques de tests réutilisables et maintenables.
+          </li>
+          <li>
+            <strong>Intégration Newman CI/CD :</strong> Automatisation 
+            des tests Postman dans vos pipelines de déploiement.
+          </li>
+          <li>
+            <strong>Tests de contrats API :</strong> Validation de la 
+            conformité aux spécifications OpenAPI et schemas.
+          </li>
+          <li>
+            <strong>Formation et gouvernance :</strong> Accompagnement 
+            des équipes sur les standards et bonnes pratiques.
+          </li>
+          <li>
+            <strong>Monitoring et alerting :</strong> Mise en place de 
+            surveillance continue avec notifications personnalisées.
+          </li>
         </ul>
       </>
     ),
@@ -290,7 +361,7 @@ const tools = [
             Intégration facile avec CI/CD et outils de test (ex: Cypress,
             Playwright).
           </li>
-          <li>Suivi des changements d’interface utilisateur pixel-perfect.</li>
+          <li>Suivi des changements d'interface utilisateur pixel-perfect.</li>
         </ul>
       </>
     ),
@@ -316,7 +387,7 @@ const tools = [
 
 const cooperationModels = [
   {
-    title: "Renforcement d’équipe",
+    title: "Renforcement d'équipe",
     subtitle: "(Staff augmentation)",
     color: "text-blue-700",
     points: [
@@ -343,7 +414,7 @@ const cooperationModels = [
     color: "text-purple-700",
     points: [
       "Idéal pour externaliser totalement les tests.",
-      "Élimine les coûts d’infrastructure et recrutement.",
+      "Élimine les coûts d'infrastructure et recrutement.",
       "Accès à une expertise QA spécialisée.",
       "Concentrez-vous sur votre cœur de métier.",
     ],
