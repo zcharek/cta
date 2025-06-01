@@ -2,19 +2,20 @@ import ThreeDElement from "./ThreeDElement";
 
 const HeroSection = () => {
   return (
-    <section id="home" className="webflow-section pt-28 pb-20 lg:pt-40 lg:pb-28">
+    <section
+      id="home"
+      className="webflow-section pt-28 pb-20 lg:pt-40 lg:pb-28"
+    >
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6 leading-tight">
-              Expert en{" "}
-              <span className="text-blue-600">tests logiciels</span> et{" "}
-              <span className="text-blue-600">automatisation QA</span> en Algérie
+              Offrez à Vos Utilisateurs la Qualité Qu'ils{" "}
+              <span className="text-blue-600">Méritent.</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Services professionnels Playwright, Cypress, tests E2E et API. 
-              Garantissons la qualité logicielle de vos projets digitaux avec 
-              des solutions d'automatisation sur mesure.
+              Nous testons et optimisons vos produits pour garantir une
+              expérience utilisateur fluide et fiable.
             </p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               <a

@@ -7,7 +7,8 @@ import AboutSection from "@/components/AboutSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import PortfolioSection from "@/components/PortfolioSection";
 import CTASection from "@/components/CTASection";
-
+import FAQSection from "@/components/FAQSection";
+import TermsAndPrivacy from "@/components/TermsAndPrivacy";
 import Footer from "@/components/Footer";
 import { useEffect } from "react";
 import TechCarousel from "@/components/tools";
@@ -38,6 +39,8 @@ const Home = () => {
         <AboutSection />
         <TestimonialsSection />
         <PortfolioSection />
+        <FAQSection />
+        <TermsAndPrivacy />
         <CTASection />
       </main>
       <Footer />
