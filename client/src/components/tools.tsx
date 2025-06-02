@@ -383,6 +383,261 @@ const tools = [
       </>
     ),
   },
+  {
+    name: "TestNG",
+    logo: "https://testng.org/images/testng.png",
+    description: (
+      <>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir les services de test TestNG ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">Framework Java avancé</h4>
+            <p>
+              Architecture moderne avec annotations puissantes et gestion 
+              sophistiquée des groupes de tests pour projets Java complexes.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Exécution parallèle native</h4>
+            <p>
+              Support intégré de l'exécution parallèle au niveau des tests, 
+              méthodes et classes pour optimiser les temps d'exécution.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Data-driven testing</h4>
+            <p>
+              Paramétrage flexible avec DataProvider pour tester multiple 
+              jeux de données et scénarios de validation métier.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Gestion des dépendances</h4>
+            <p>
+              Contrôle précis de l'ordre d'exécution avec dependencies entre 
+              tests et gestion des priorités pour workflows complexes.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Reporting HTML riche</h4>
+            <p>
+              Génération automatique de rapports détaillés avec métriques, 
+              graphiques et traces d'exécution pour analyse approfondie.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Intégration Maven/Gradle</h4>
+            <p>
+              Configuration native avec outils de build Java et intégration 
+              seamless dans pipelines CI/CD existants.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Nos services TestNG
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
+          <li>
+            <strong>Architecture de framework :</strong> Conception de 
+            frameworks TestNG modulaires avec patterns Page Object et Factory.
+          </li>
+          <li>
+            <strong>Migration JUnit vers TestNG :</strong> Transition complète 
+            avec préservation des tests existants et optimisation des performances.
+          </li>
+          <li>
+            <strong>Configuration TestNG Suite :</strong> Setup de suites 
+            complexes avec groupes, paramètres et exécution conditionnelle.
+          </li>
+          <li>
+            <strong>Data-driven automation :</strong> Implémentation de tests 
+            paramétrés avec sources de données Excel, JSON et bases de données.
+          </li>
+          <li>
+            <strong>Reporting et analytics :</strong> Personnalisation des 
+            rapports TestNG avec métriques business et dashboards temps réel.
+          </li>
+          <li>
+            <strong>Formation et best practices :</strong> Accompagnement 
+            équipes Java sur patterns avancés et optimisation TestNG.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    name: "Cucumber",
+    logo: "https://static-00.iconduck.com/assets.00/cucumber-icon-2048x2048-fk30dxez.png",
+    description: (
+      <>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir les services de test Cucumber ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">BDD natif</h4>
+            <p>
+              Développement piloté par le comportement avec syntaxe Gherkin 
+              naturelle pour collaboration Product Owner - Développeur - QA.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Tests métier lisibles</h4>
+            <p>
+              Scénarios en langage naturel (Given/When/Then) compréhensibles 
+              par toutes les parties prenantes non-techniques.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Réutilisabilité élevée</h4>
+            <p>
+              Bibliothèque de steps definitions partagées entre scénarios 
+              pour maintenance simplifiée et consistency des tests.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Living documentation</h4>
+            <p>
+              Spécifications exécutables servant de documentation à jour 
+              automatiquement synchronisée avec le code applicatif.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Support multi-plateforme</h4>
+            <p>
+              Implémentations Java, JavaScript, Ruby, Python pour intégration 
+              dans tout écosystème technologique existant.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Reporting visuel</h4>
+            <p>
+              Rapports HTML enrichis avec statuts scénarios, captures d'écran 
+              et métriques d'exécution pour stakeholders business.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Nos services Cucumber
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
+          <li>
+            <strong>Stratégie BDD complète :</strong> Accompagnement dans 
+            l'adoption du Behavior-Driven Development avec formation équipes.
+          </li>
+          <li>
+            <strong>Features et scénarios métier :</strong> Rédaction de 
+            spécifications Gherkin alignées sur besoins fonctionnels réels.
+          </li>
+          <li>
+            <strong>Step definitions framework :</strong> Architecture de 
+            couches d'abstraction robustes pour maintenance et évolutivité.
+          </li>
+          <li>
+            <strong>Intégration Selenium/Playwright :</strong> Coupling 
+            Cucumber avec frameworks d'automatisation pour tests E2E complets.
+          </li>
+          <li>
+            <strong>CI/CD et reporting :</strong> Pipeline automatisé avec 
+            publication rapports et métriques business pour décideurs.
+          </li>
+          <li>
+            <strong>Gouvernance et standards :</strong> Établissement de 
+            conventions d'écriture et review process pour qualité specs.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    name: "RestAssured",
+    logo: "https://avatars.githubusercontent.com/u/19369327?s=280&v=4",
+    description: (
+      <>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir les services de test RestAssured ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">DSL Java intuitif</h4>
+            <p>
+              Syntaxe fluide et expressive pour tests d'API REST with 
+              given/when/then pattern familier aux développeurs Java.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Validation JSON/XML native</h4>
+            <p>
+              Support intégré de JSONPath et XPath avec assertions puissantes 
+              pour validation de structures de données complexes.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Gestion d'authentification</h4>
+            <p>
+              Support OAuth2, Basic Auth, JWT et certificats SSL pour 
+              tests sécurisés d'APIs enterprise et microservices.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Mocking et stubbing</h4>
+            <p>
+              Intégration WireMock pour simulation d'APIs externes et 
+              tests isolés de dépendances pour stabilité accrue.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Performance et logs</h4>
+            <p>
+              Mesure automatique des temps de réponse avec logging détaillé 
+              des requêtes/réponses pour debugging efficace.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Écosystème TestNG/JUnit</h4>
+            <p>
+              Intégration seamless avec frameworks de test Java existants 
+              et outils de build Maven/Gradle pour CI/CD.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Nos services RestAssured
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
+          <li>
+            <strong>Framework d'automatisation API :</strong> Architecture 
+            complète de tests d'APIs avec patterns réutilisables et maintenables.
+          </li>
+          <li>
+            <strong>Tests de contrats API :</strong> Validation automatisée 
+            de conformité OpenAPI/Swagger avec génération de documentation.
+          </li>
+          <li>
+            <strong>Suite de tests microservices :</strong> Stratégie globale 
+            pour validation d'architectures distribuées et communication inter-services.
+          </li>
+          <li>
+            <strong>Data-driven API testing :</strong> Implémentation de tests 
+            paramétrés avec jeux de données métier et scénarios edge-case.
+          </li>
+          <li>
+            <strong>Monitoring et alerting :</strong> Tests de santé continus 
+            avec métriques SLA et notifications proactives d'anomalies.
+          </li>
+          <li>
+            <strong>Formation et coaching :</strong> Montée en compétence 
+            équipes sur patterns avancés RestAssured et API testing strategy.
+          </li>
+        </ul>
+      </>
+    ),
+  },
 ];
 
 const cooperationModels = [
