@@ -66,7 +66,6 @@ const CTASection = () => {
   });
 
   const onSubmit = (data: ContactFormValues) => {
-    console.log("Formulaire soumis avec les données:", data);
     contactMutation.mutate(data);
   };
 

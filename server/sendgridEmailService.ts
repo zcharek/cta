@@ -1,13 +1,4 @@
-import nodemailer from 'nodemailer';
-
-// Create Gmail transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'centraltestagency@gmail.com',
-    pass: process.env.GMAIL_APP_PASSWORD // We'll need this from the user
-  }
-});
+import sgMail from '@sendgrid/mail';
 
 interface ContactFormData {
   firstName: string;
@@ -18,26 +9,20 @@ interface ContactFormData {
   message: string;
 }
 
-export async function sendContactEmail(formData: ContactFormData): Promise<boolean> {
-  // Check if Gmail credentials are available
-  if (!process.env.GMAIL_APP_PASSWORD) {
-    console.log('Contact form submission received (Gmail credentials not configured):');
-    console.log(`From: ${formData.firstName} ${formData.lastName} (${formData.email})`);
-    console.log(`Company: ${formData.company}`);
-    console.log(`Service: ${formData.service}`);
-    console.log(`Message: ${formData.message}`);
+export async function sendContactEmailSendGrid(formData: ContactFormData): Promise<boolean> {
+  // Check if SendGrid API key is available
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('SendGrid API key not configured');
     return false;
   }
 
-  // Debug: Check if credentials are properly set
-  console.log('Gmail user:', 'centraltestagency@gmail.com');
-  console.log('App password length:', process.env.GMAIL_APP_PASSWORD?.length || 0);
-
   try {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
     // Email de notification interne
-    const notificationOptions = {
-      from: 'centraltestagency@gmail.com',
+    const notificationEmail = {
       to: 'centraltestagency@gmail.com',
+      from: 'centraltestagency@gmail.com', // Must be verified in SendGrid
       subject: `Nouveau message de contact - ${formData.firstName} ${formData.lastName}`,
       html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9fafb; padding: 20px;">
@@ -49,7 +34,7 @@ export async function sendContactEmail(formData: ContactFormData): Promise<boole
     <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
       <h3 style="color: #1e293b; margin-top: 0;">Informations du contact</h3>
       <p style="margin: 8px 0;"><strong>Nom complet:</strong> ${formData.firstName} ${formData.lastName}</p>
-      <p style="margin: 8px 0;"><strong>Email:</strong> <a href="mailto:${formData.email}" style="color: #2563eb;">${formData.email}</a></p>
+      <p style="margin: 8px 0;"><strong>Email:</strong> ${formData.email}</p>
       <p style="margin: 8px 0;"><strong>Entreprise:</strong> ${formData.company}</p>
       <p style="margin: 8px 0;"><strong>Service d'intérêt:</strong> ${formData.service}</p>
     </div>
@@ -69,26 +54,12 @@ ${formData.message}
   </div>
 </div>
       `,
-      text: `
-Nouveau message de contact reçu:
-
-Nom: ${formData.firstName} ${formData.lastName}
-Email: ${formData.email}
-Entreprise: ${formData.company}
-Service d'intérêt: ${formData.service}
-
-Message:
-${formData.message}
-
----
-Reçu le ${new Date().toLocaleDateString('fr-FR')} depuis le site Central Test Agency
-      `
     };
 
     // Email de confirmation pour le client
-    const confirmationOptions = {
-      from: 'centraltestagency@gmail.com',
+    const confirmationEmail = {
       to: formData.email,
+      from: 'centraltestagency@gmail.com',
       subject: 'Confirmation de réception - Central Test Agency',
       html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9fafb; padding: 20px;">
@@ -144,41 +115,18 @@ ${formData.message}
   </div>
 </div>
       `,
-      text: `
-Bonjour ${formData.firstName} ${formData.lastName},
-
-Nous avons bien reçu votre message concernant ${formData.service} pour ${formData.company}.
-Notre équipe va l'examiner attentivement et vous répondre dans les plus brefs délais.
-
-Récapitulatif de votre demande:
-Service demandé: ${formData.service}
-Message: ${formData.message}
-
-Prochaines étapes:
-- Notre équipe analyse votre demande
-- Nous vous recontactons sous 24-48h ouvrées
-- Nous planifions un appel de découverte gratuit
-- Nous vous proposons une solution personnalisée
-
-Des questions en attendant ? Répondez directement à cet email.
-
----
-Central Test Agency
-Experts en Tests Logiciels & UX
-📧 centraltestagency@gmail.com
-      `
     };
 
     // Envoyer les deux emails
     await Promise.all([
-      transporter.sendMail(notificationOptions),
-      transporter.sendMail(confirmationOptions)
+      sgMail.send(notificationEmail),
+      sgMail.send(confirmationEmail)
     ]);
 
-    console.log('Emails envoyés avec succès - notification interne et confirmation client');
+    console.log('Emails envoyés avec succès via SendGrid');
     return true;
   } catch (error) {
-    console.error('Erreur lors de l\'envoi des emails:', error);
+    console.error('Erreur lors de l\'envoi des emails via SendGrid:', error);
     return false;
   }
 }
