@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { contactFormSchema } from "@shared/schema";
 import { sendContactEmail } from "./emailService";
-import { sendContactEmailSendGrid } from "./sendgridEmailService";
+
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -15,13 +15,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store contact form submission in database
       const contactSubmission = await storage.createContactSubmission(data);
 
-      // Send email notification - try Gmail first, fallback to SendGrid
-      let emailSent = await sendContactEmail(data);
-      
-      // If Gmail fails, try SendGrid as backup
-      if (!emailSent) {
-        emailSent = await sendContactEmailSendGrid(data);
-      }
+      // Send email notification via Gmail
+      const emailSent = await sendContactEmail(data);
 
       if (!emailSent) {
         console.warn("Contact form stored but email notification failed");
