@@ -597,7 +597,7 @@ const ServicesSection = () => {
             <div
               key={index}
               onClick={() => setSelectedService(service)}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-300 group"
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-300 group flex flex-col h-full"
             >
               <div className="flex items-center mb-6">
                 <div className="text-4xl mr-4 group-hover:scale-110 transition-transform">
@@ -607,10 +607,10 @@ const ServicesSection = () => {
                   {service.title}
                 </h3>
               </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-gray-600 mb-6 leading-relaxed flex-grow">
                 {service.description}
               </p>
-              <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors">
+              <div className="flex items-center justify-end text-blue-600 font-semibold group-hover:text-blue-800 transition-colors mt-auto">
                 <span>En savoir plus</span>
                 <span className="ml-2 transform group-hover:translate-x-1 transition-transform">
                   →

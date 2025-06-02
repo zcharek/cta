@@ -405,9 +405,7 @@ const tools = [
           </div>
         </div>
 
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Nos services Percy
-        </h3>
+        <h3 className="text-xl font-semibold mt-8 mb-4">Nos services Percy</h3>
         <ul className="list-disc ml-5 space-y-2 text-gray-700">
           <li>
             <strong>Architecture de tests visuels :</strong> Conception de
@@ -423,8 +421,8 @@ const tools = [
             visuels de vos composants avec Percy et Storybook.
           </li>
           <li>
-            <strong>Workflow de validation :</strong> Mise en place de
-            processus de review et d'approbation des changements visuels.
+            <strong>Workflow de validation :</strong> Mise en place de processus
+            de review et d'approbation des changements visuels.
           </li>
           <li>
             <strong>Formation équipe :</strong> Accompagnement sur les bonnes
@@ -451,7 +449,7 @@ const tools = [
             <h4 className="font-semibold mb-1">Scripting JavaScript moderne</h4>
             <p>
               Développement de tests de performance avec syntaxe ES6+ familière
-              aux développeurs pour une adoption rapide et maintenabilité.
+              aux développeurs pour une adoption rapide et maintenable.
             </p>
           </div>
           <div>
@@ -478,8 +476,8 @@ const tools = [
           <div>
             <h4 className="font-semibold mb-1">Intégration DevOps native</h4>
             <p>
-              Insertion fluide dans les pipelines CI/CD avec seuils
-              automatiques et bloquage des déploiements en cas de régression.
+              Insertion fluide dans les pipelines CI/CD avec seuils automatiques
+              et bloquage des déploiements en cas de régression.
             </p>
           </div>
           <div>
@@ -491,9 +489,7 @@ const tools = [
           </div>
         </div>
 
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Nos services k6
-        </h3>
+        <h3 className="text-xl font-semibold mt-8 mb-4">Nos services k6</h3>
         <ul className="list-disc ml-5 space-y-2 text-gray-700">
           <li>
             <strong>Stratégie de tests de performance :</strong> Conception de
