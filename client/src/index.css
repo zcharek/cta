@@ -1,0 +1,394 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent flash of unstyled content */
+
+/* Critical CSS optimized for above-the-fold */
+.hero-gradient {
+  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%);
+}
+
+/* Performance optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Improved text rendering */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Webflow-inspired modern effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  box-shadow: 0 20px 40px -12px rgba(30, 58, 138, 0.15);
+  border-radius: 1.5rem;
+}
+
+/* Advanced Webflow card system - optimized for performance */
+.modern-card {
+  background: white;
+  border-radius: 2rem;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  box-shadow: 
+    0 8px 30px -12px rgba(30, 58, 138, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout style;
+}
+
+.modern-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%);
+  transform: scaleX(0);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left;
+  border-radius: 2rem 2rem 0 0;
+}
+
+.modern-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 2rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(96, 165, 250, 0.1));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.modern-card:hover::before {
+  transform: scaleX(1);
+}
+
+.modern-card:hover::after {
+  opacity: 1;
+}
+
+.modern-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 
+    0 35px 60px -12px rgba(30, 58, 138, 0.25),
+    0 0 0 1px rgba(59, 130, 246, 0.1) inset;
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+/* Webflow container system */
+.webflow-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(10px);
+}
+
+
+
+/* Enhanced shadows */
+.modern-shadow {
+  box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.1), 0 10px 10px -5px rgba(30, 58, 138, 0.04);
+}
+
+.modern-shadow-lg {
+  box-shadow: 0 25px 50px -12px rgba(30, 58, 138, 0.15);
+}
+
+/* Modern gradient backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+}
+
+/* Advanced Webflow button system */
+.btn-modern {
+  border-radius: 1rem;
+  font-weight: 600;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 25px -8px rgba(30, 58, 138, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.btn-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.3), 
+    transparent
+  );
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-modern::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.btn-modern:hover::before {
+  left: 100%;
+}
+
+.btn-modern:hover::after {
+  opacity: 1;
+}
+
+.btn-modern:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 
+    0 20px 40px -5px rgba(30, 58, 138, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Advanced Webflow section system */
+.webflow-section {
+  padding: 6rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Performance optimized animations with hardware acceleration */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+  will-change: opacity;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+  will-change: transform;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:root {
+  /* Couleurs de fond et texte */
+  --background: 210 33% 99%;
+  /* #F8FAFC */
+  --foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs pour éléments désactivés */
+  --muted: 210 40% 96.1%;
+  /* #F8F9FA */
+  --muted-foreground: 215 16% 47%;
+  /* #6B7280 */
+
+  /* Couleurs pour popover */
+  --popover: 0 0% 100%;
+  /* #FFFFFF */
+  --popover-foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs pour carte */
+  --card: 0 0% 100%;
+  /* #FFFFFF */
+  --card-foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs des bordures et input */
+  --border: 214 32% 91%;
+  /* #E2E8F0 */
+  --input: 214 32% 91%;
+  /* #E2E8F0 */
+
+  /* Couleurs primaires */
+  --primary: 222 71% 33%;
+  /* #1E3A8A */
+  --primary-foreground: 210 40% 98%;
+  /* #FAFAFA */
+  --primary-light: 217 91% 53%;
+  /* #2563EB */
+
+  /* Couleurs secondaires */
+  --secondary: 214 100% 48%;
+  /* #3B82F6 */
+  --secondary-light: 213 94% 68%;
+  /* #60A5FA */
+  --secondary-foreground: 0 0% 100%;
+  /* #FFFFFF */
+
+  /* Couleurs accent */
+  --accent: 210 40% 96.1%;
+  /* #F8F9FA */
+  --accent-foreground: 222 47% 18%;
+  /* #1E293B */
+
+  /* Couleurs destructives (erreurs) */
+  --destructive: 0 84% 60%;
+  /* #EF4444 */
+  --destructive-foreground: 0 0% 100%;
+  /* #FFFFFF */
+
+  /* Couleur succès */
+  --success: 160 84% 39%;
+  /* #10B981 */
+
+  /* Couleurs anneaux */
+  --ring: 214 32% 91%;
+  /* #E2E8F0 */
+
+  /* Rayon de bordure */
+  --radius: 0.5rem;
+
+  /* Couleurs chart */
+  --chart-1: 222 71% 33%;
+  --chart-2: 214 100% 48%;
+  --chart-3: 213 94% 68%;
+  --chart-4: 213 94% 68%;
+  --chart-5: 222 71% 33%;
+
+  /* Couleurs sidebar */
+  --sidebar-background: 222 47% 18%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 222 71% 33%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 214 100% 48%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 222 47% 25%;
+  --sidebar-ring: 222 71% 33%;
+}
+
+.dark {
+  --background: 222 47% 12%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 14%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 14%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217 91% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 213 94% 68%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 222 47% 18%;
+  --muted-foreground: 215 20.2% 75.1%;
+  --accent: 222 47% 18%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 222 47% 25%;
+  --input: 222 47% 25%;
+  --ring: 222 71% 33%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom Styles */
+.gradient-bg {
+  @apply bg-gradient-to-r from-primary to-primary-light;
+}
+
+.container {
+  @apply px-4 sm:px-6 lg:px-8 mx-auto;
+}
+
+.service-card img {
+  transition: transform 0.3s ease-in-out;
+}
+
+.service-card:hover img {
+  transform: scale(1.05);
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE & Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+}

@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://central-test-agency.replit.app/sitemap.xml
+
+# Disallow crawling of admin or private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /src/
+
+# Allow crawling of main content
+Allow: /#services
+Allow: /#outils
+Allow: /#about
+Allow: /#contact
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
