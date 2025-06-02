@@ -17,7 +17,7 @@ const Footer = () => {
     {
       icon: "fas fa-envelope",
       title: "Email",
-      content: "z.charek@gmail.com",
+      content: "centraltestagency@gmail.com",
     },
   ];
 
