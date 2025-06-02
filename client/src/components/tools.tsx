@@ -249,7 +249,7 @@ const tools = [
           </li>
           <li>
             <strong>Framework de test component :</strong> Mise en place de
-            tests unitaires et d'intégration pour vos composants.
+            tests d'intégration pour vos composants.
           </li>
           <li>
             <strong>Pipeline CI/CD Cypress :</strong> Intégration dans vos
@@ -357,14 +357,83 @@ const tools = [
     logo: "https://images.opencollective.com/percy_io/80d9595/logo/256.png",
     description: (
       <>
-        <h3 className="text-xl font-semibold mb-2">Pourquoi Percy ?</h3>
-        <ul className="list-disc ml-5 space-y-1">
-          <li>Tests de régression visuelle automatisés.</li>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir les services de test Percy ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">Tests visuels automatisés</h4>
+            <p>
+              Détection automatique des régressions visuelles avec comparaison
+              pixel-perfect et analyse intelligente des différences d'interface.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Intégration multi-framework</h4>
+            <p>
+              Support natif de Cypress, Playwright, Selenium, Storybook et
+              autres frameworks pour workflow de test unifié.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Review collaboratif</h4>
+            <p>
+              Interface de validation visuelle collaborative avec commentaires,
+              approbations et workflows de review intégrés.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Baseline intelligente</h4>
+            <p>
+              Gestion automatique des baselines avec versioning et
+              synchronisation entre branches pour maintenir la cohérence.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Tests responsive</h4>
+            <p>
+              Validation multi-résolution et multi-navigateur pour garantir la
+              cohérence visuelle sur tous les appareils et plateformes.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">CI/CD natif</h4>
+            <p>
+              Intégration transparente dans les pipelines avec blocage
+              automatique des déploiements en cas de régression détectée.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Nos services Percy
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
           <li>
-            Intégration facile avec CI/CD et outils de test (ex: Cypress,
-            Playwright).
+            <strong>Architecture de tests visuels :</strong> Conception de
+            stratégies complètes pour couvrir tous les composants critiques de
+            votre interface.
           </li>
-          <li>Suivi des changements d'interface utilisateur pixel-perfect.</li>
+          <li>
+            <strong>Setup et configuration :</strong> Installation optimisée
+            avec configuration des meilleures pratiques et baseline initiale.
+          </li>
+          <li>
+            <strong>Intégration Storybook :</strong> Automatisation des tests
+            visuels de vos composants avec Percy et Storybook.
+          </li>
+          <li>
+            <strong>Workflow de validation :</strong> Mise en place de
+            processus de review et d'approbation des changements visuels.
+          </li>
+          <li>
+            <strong>Formation équipe :</strong> Accompagnement sur les bonnes
+            pratiques de tests visuels et gestion des régressions.
+          </li>
+          <li>
+            <strong>Monitoring continu :</strong> Surveillance proactive de la
+            cohérence visuelle avec alertes et rapports automatisés.
+          </li>
         </ul>
       </>
     ),
@@ -374,13 +443,83 @@ const tools = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/K6-logo.svg/1058px-K6-logo.svg.png",
     description: (
       <>
-        <h3 className="text-xl font-semibold mb-2">Pourquoi k6 ?</h3>
-        <ul className="list-disc ml-5 space-y-1">
-          <li>Tests de performance avec un scripting JavaScript moderne.</li>
-          <li>Facile à intégrer dans les pipelines DevOps.</li>
+        <h3 className="text-xl font-semibold mb-2">
+          Pourquoi choisir les services de test k6 ?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">Scripting JavaScript moderne</h4>
+            <p>
+              Développement de tests de performance avec syntaxe ES6+ familière
+              aux développeurs pour une adoption rapide et maintenabilité.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Tests de charge avancés</h4>
+            <p>
+              Simulation de montées en charge réalistes avec modèles de trafic
+              sophistiqués et scénarios utilisateurs complexes.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Métriques détaillées</h4>
+            <p>
+              Collecte complète de métriques de performance avec temps de
+              réponse, throughput, taux d'erreur et métriques custom.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Cloud et on-premise</h4>
+            <p>
+              Exécution flexible en local pour développement ou dans le cloud
+              pour tests de charge distribués à grande échelle.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Intégration DevOps native</h4>
+            <p>
+              Insertion fluide dans les pipelines CI/CD avec seuils
+              automatiques et bloquage des déploiements en cas de régression.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Protocoles multiples</h4>
+            <p>
+              Support de HTTP/HTTPS, WebSockets, gRPC et autres protocoles pour
+              tester tous types d'applications et microservices.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-semibold mt-8 mb-4">
+          Nos services k6
+        </h3>
+        <ul className="list-disc ml-5 space-y-2 text-gray-700">
           <li>
-            Rapports clairs pour mesurer la charge, les temps de réponse et les
-            erreurs.
+            <strong>Stratégie de tests de performance :</strong> Conception de
+            plans de charge adaptés à vos objectifs de performance et SLA.
+          </li>
+          <li>
+            <strong>Scripts sur-mesure :</strong> Développement de scénarios de
+            test réalistes reproduisant vos patterns d'usage réels.
+          </li>
+          <li>
+            <strong>Architecture de test distribuée :</strong> Mise en place
+            d'infrastructure cloud pour tests de charge à grande échelle.
+          </li>
+          <li>
+            <strong>Analyse de performance :</strong> Interprétation des
+            résultats avec recommandations d'optimisation et identification des
+            goulots d'étranglement.
+          </li>
+          <li>
+            <strong>Intégration monitoring :</strong> Connexion avec vos outils
+            de surveillance (Grafana, Datadog, New Relic) pour corrélation des
+            métriques.
+          </li>
+          <li>
+            <strong>Formation et accompagnement :</strong> Montée en compétence
+            de vos équipes sur les bonnes pratiques de tests de performance.
           </li>
         </ul>
       </>
@@ -651,7 +790,7 @@ const cooperationModels = [
     color: "text-blue-700",
     points: [
       "Idéal pour les projets à court ou moyen terme.",
-      "Expertise Selenide sans engagement à long terme.",
+      "Expertise sans engagement à long terme.",
       "Ajout rapide de ressources qualifiées à votre équipe.",
       "Flexibilité selon les besoins du projet.",
     ],

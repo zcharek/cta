@@ -69,8 +69,8 @@ const services = [
             couvrant tous les parcours utilisateurs critiques.
           </li>
           <li>
-            <strong>Exécution méthodique :</strong> Tests manuels et automatisés
-            selon une approche structurée et répétable.
+            <strong>Exécution méthodique :</strong> Tests manuels selon une
+            approche structurée et répétable.
           </li>
           <li>
             <strong>Traçabilité complète :</strong> Lien direct entre exigences,
@@ -154,10 +154,6 @@ const services = [
           <li>
             <strong>Développement progressif :</strong> Création itérative de
             suites de tests avec feedback continu.
-          </li>
-          <li>
-            <strong>Intégration CI/CD :</strong> Insertion dans vos pipelines
-            pour validation automatique à chaque déploiement.
           </li>
         </ul>
       </>
@@ -390,12 +386,9 @@ const services = [
           </li>
           <li>
             <strong>Stratégie de test pyramide :</strong> Équilibrage optimal
-            entre tests unitaires, d'intégration et end-to-end.
+            entre tests d'intégration, régressions et end-to-end.
           </li>
-          <li>
-            <strong>Environnements dédiés :</strong> Mise en place
-            d'environnements de test isolés et reproductibles.
-          </li>
+
           <li>
             <strong>Automatisation CI/CD :</strong> Intégration dans les
             pipelines pour validation continue des intégrations.
@@ -604,7 +597,7 @@ const ServicesSection = () => {
             <div
               key={index}
               onClick={() => setSelectedService(service)}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-300 group flex flex-col h-full"
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-300 group"
             >
               <div className="flex items-center mb-6">
                 <div className="text-4xl mr-4 group-hover:scale-110 transition-transform">
@@ -614,10 +607,10 @@ const ServicesSection = () => {
                   {service.title}
                 </h3>
               </div>
-              <p className="text-gray-600 mb-6 leading-relaxed flex-grow">
+              <p className="text-gray-600 mb-6 leading-relaxed">
                 {service.description}
               </p>
-              <div className="flex items-center justify-end text-blue-600 font-semibold group-hover:text-blue-800 transition-colors mt-auto">
+              <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors">
                 <span>En savoir plus</span>
                 <span className="ml-2 transform group-hover:translate-x-1 transition-transform">
                   →
