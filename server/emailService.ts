@@ -1,11 +1,16 @@
 import nodemailer from 'nodemailer';
 
-// Create Gmail transporter
+// Create Gmail transporter with explicit SMTP settings
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
     user: 'centraltestagency@gmail.com',
-    pass: process.env.GMAIL_APP_PASSWORD // We'll need this from the user
+    pass: process.env.GMAIL_APP_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
@@ -19,23 +24,20 @@ interface ContactFormData {
 }
 
 export async function sendContactEmail(formData: ContactFormData): Promise<boolean> {
-  // Check if Gmail credentials are available
-  if (!process.env.GMAIL_APP_PASSWORD) {
-    console.log('Contact form submission received (Gmail credentials not configured):');
-    console.log(`From: ${formData.firstName} ${formData.lastName} (${formData.email})`);
-    console.log(`Company: ${formData.company}`);
-    console.log(`Service: ${formData.service}`);
-    console.log(`Message: ${formData.message}`);
-    return false;
-  }
-
-  // Log contact form submission for debugging
-  console.log('\n=== CONTACT FORM SUBMISSION ===');
+  // Always log contact form submission
+  console.log('\n=== NEW CONTACT FORM SUBMISSION ===');
   console.log(`From: ${formData.firstName} ${formData.lastName} (${formData.email})`);
   console.log(`Company: ${formData.company}`);
   console.log(`Service: ${formData.service}`);
   console.log(`Message: ${formData.message}`);
-  console.log('===============================\n');
+  console.log(`Time: ${new Date().toLocaleString()}`);
+  console.log('==================================\n');
+
+  // Check if Gmail credentials are available
+  if (!process.env.GMAIL_APP_PASSWORD) {
+    console.log('⚠️  Gmail credentials not configured - email not sent');
+    return false;
+  }
 
   try {
     // Email de notification interne
