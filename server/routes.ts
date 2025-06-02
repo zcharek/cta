@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { contactFormSchema } from "@shared/schema";
 import { sendContactEmail } from "./emailService";
+import { logContactSubmission, sendGmailNotification } from "./emailFallback";
 
 import { z } from "zod";
 
@@ -15,8 +16,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store contact form submission in database
       const contactSubmission = await storage.createContactSubmission(data);
 
-      // Send email notification via Gmail
-      const emailSent = await sendContactEmail(data);
+      // Always log the contact submission
+      await logContactSubmission(data);
+
+      // Try to send email notification via Gmail
+      let emailSent = await sendGmailNotification(data);
+      
+      // Fallback to original Gmail method if new one fails
+      if (!emailSent) {
+        emailSent = await sendContactEmail(data);
+      }
 
       if (!emailSent) {
         console.warn("Contact form stored but email notification failed");
