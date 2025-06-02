@@ -29,9 +29,13 @@ export async function sendContactEmail(formData: ContactFormData): Promise<boole
     return false;
   }
 
-  // Debug: Check if credentials are properly set
-  console.log('Gmail user:', 'centraltestagency@gmail.com');
-  console.log('App password length:', process.env.GMAIL_APP_PASSWORD?.length || 0);
+  // Log contact form submission for debugging
+  console.log('\n=== CONTACT FORM SUBMISSION ===');
+  console.log(`From: ${formData.firstName} ${formData.lastName} (${formData.email})`);
+  console.log(`Company: ${formData.company}`);
+  console.log(`Service: ${formData.service}`);
+  console.log(`Message: ${formData.message}`);
+  console.log('===============================\n');
 
   try {
     // Email de notification interne
