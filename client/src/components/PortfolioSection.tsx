@@ -9,40 +9,40 @@ const caseStudies = [
     title: "Accélérer la QA grâce aux Cloud-testing",
     description:
       "Découvrez comment le Cloud-testing permet de raccourcir les cycles de test.",
-    image: "/images/cloudTest.jpg",
+    image: "/public/images/cloudTest.jpg",
     altText: "Cloud-testing",
     category: "QA / Cloud Testing",
     readTime: "Lecture 4 min",
-    pdf: "/pdf/cloudTesting-compressed.pdf",
+    pdf: "/public/pdf/cloudTesting-compressed.pdf",
   },
   {
     title: "C'est quoi le test logiciel !",
     description: "Introduction aux tests logiciel",
-    image: "/images/IntroTest.jpg",
+    image: "/public/images/IntroTest.jpg",
     altText: "Introduction aux tests",
     category: "Introduction",
     readTime: "Lecture 6 min",
-    pdf: "/pdf/intoTesting-compressed.pdf",
+    pdf: "/public/pdf/intoTesting-compressed.pdf",
   },
   {
     title: "Les erreurs les plus fréquentes dans un projet sans tests",
     description:
       "Analyse des erreurs courantes qui surviennent lorsqu’un projet logiciel est lancé sans stratégie de test.",
-    image: "/images/mostError.jpg",
+    image: "/public/images/mostError.jpg",
     altText: "Analyse des erreurs fréquentes en test logiciel",
     category: "Erreurs fréquentes",
     readTime: "12 min de lecture",
-    pdf: "/pdf/mostError-compressed.pdf",
+    pdf: "/public/pdf/mostError-compressed.pdf",
   },
   {
     title: "Comprendre la pyramide des tests",
     description:
       "Améliorer son expérience utilisateur en appliquant efficacement la pyramide des tests.",
-    image: "/images/ParameterTest.jpg",
+    image: "/public/images/ParameterTest.jpg",
     altText: "Guide d’optimisation des paramètres de test",
     category: "Méthodologie",
     readTime: "7 min de lecture",
-    pdf: "/pdf/testParameter.pdf",
+    pdf: "/public/pdf/testParameter.pdf",
   },
 ];
 
