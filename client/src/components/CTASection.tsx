@@ -22,6 +22,7 @@ const CTASection = () => {
     message: "",
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [status, setStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");
@@ -34,8 +35,28 @@ const CTASection = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.firstName.trim()) newErrors.firstName = "Prénom requis.";
+    if (!formData.lastName.trim()) newErrors.lastName = "Nom requis.";
+    if (!formData.email.trim()) newErrors.email = "Email requis.";
+    if (!formData.company.trim()) newErrors.company = "Société requise.";
+    if (!formData.service.trim())
+      newErrors.service = "Veuillez choisir un service.";
+    if (!formData.message.trim()) newErrors.message = "Message requis.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
     setStatus("sending");
 
     try {
@@ -58,6 +79,7 @@ const CTASection = () => {
           service: "",
           message: "",
         });
+        setErrors({});
       } else {
         setStatus("error");
       }
@@ -107,12 +129,17 @@ const CTASection = () => {
                         type="text"
                         name="firstName"
                         placeholder="Votre prénom"
-                        required
                         value={formData.firstName}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 bg-white/20 text-white placeholder-white/70"
+                        className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
                       />
+                      {errors.firstName && (
+                        <p className="text-red-300 text-sm mt-1">
+                          {errors.firstName}
+                        </p>
+                      )}
                     </div>
+
                     <div>
                       <label
                         className="block text-sm font-medium text-white mb-2"
@@ -125,11 +152,15 @@ const CTASection = () => {
                         type="text"
                         name="lastName"
                         placeholder="Votre nom"
-                        required
                         value={formData.lastName}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 bg-white/20 text-white placeholder-white/70"
+                        className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
                       />
+                      {errors.lastName && (
+                        <p className="text-red-300 text-sm mt-1">
+                          {errors.lastName}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -145,11 +176,15 @@ const CTASection = () => {
                       type="email"
                       name="email"
                       placeholder="votre@email.com"
-                      required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 bg-white/20 text-white placeholder-white/70"
+                      className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
                     />
+                    {errors.email && (
+                      <p className="text-red-300 text-sm mt-1">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -164,11 +199,15 @@ const CTASection = () => {
                       type="text"
                       name="company"
                       placeholder="Nom de votre société"
-                      required
                       value={formData.company}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 bg-white/20 text-white placeholder-white/70"
+                      className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
                     />
+                    {errors.company && (
+                      <p className="text-red-300 text-sm mt-1">
+                        {errors.company}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -181,10 +220,9 @@ const CTASection = () => {
                     <select
                       id="service"
                       name="service"
-                      required
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 bg-white/20 text-white"
+                      className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/20 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
                     >
                       <option value="" className="text-gray-800">
                         Sélectionner un service
@@ -199,6 +237,11 @@ const CTASection = () => {
                         </option>
                       ))}
                     </select>
+                    {errors.service && (
+                      <p className="text-red-300 text-sm mt-1">
+                        {errors.service}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -213,11 +256,15 @@ const CTASection = () => {
                       name="message"
                       placeholder="Décrivez votre projet et vos besoins en détail..."
                       rows={5}
-                      required
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 resize-none bg-white/20 text-white placeholder-white/70"
+                      className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/20 text-white placeholder-white/70 resize-none focus:outline-none focus:ring-2 focus:ring-white/50"
                     />
+                    {errors.message && (
+                      <p className="text-red-300 text-sm mt-1">
+                        {errors.message}
+                      </p>
+                    )}
                   </div>
 
                   <button
