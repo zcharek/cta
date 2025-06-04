@@ -1,10 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 
 type TabType = "terms" | "privacy";
 
 const TermsAndPrivacy = () => {
   const [activeTab, setActiveTab] = useState<TabType>("terms");
+
+  // Détecte le hash dans l'URL au chargement et définit l'onglet actif
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      if (hash === "#privacy") {
+        setActiveTab("privacy");
+      } else if (hash === "#terms") {
+        setActiveTab("terms");
+      }
+    }
+  }, []);
+
+  // Change d'onglet et met à jour le hash dans l'URL sans recharger la page
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", `#${tab}`);
+    }
+  };
 
   return (
     <section id="legal" className="py-20 bg-white">
@@ -33,7 +53,7 @@ const TermsAndPrivacy = () => {
                   ? "text-blue-600 border-blue-600"
                   : "text-gray-500 border-transparent hover:text-gray-700"
               }`}
-              onClick={() => setActiveTab("terms")}
+              onClick={() => handleTabChange("terms")}
             >
               Conditions Générales
             </button>
@@ -43,7 +63,7 @@ const TermsAndPrivacy = () => {
                   ? "text-blue-600 border-blue-600"
                   : "text-gray-500 border-transparent hover:text-gray-700"
               }`}
-              onClick={() => setActiveTab("privacy")}
+              onClick={() => handleTabChange("privacy")}
             >
               Politique de Confidentialité
             </button>

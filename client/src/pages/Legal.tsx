@@ -9,15 +9,10 @@ const Legal = () => {
   const [activeTab, setActiveTab] = useState<TabType>("terms");
 
   useEffect(() => {
-    document.title =
-      "Conditions Générales et Confidentialité | Central Test Agency";
-
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        "content",
-        "Conditions générales d'utilisation et politique de confidentialité de Central Test Agency. Conformes à la réglementation algérienne sur la protection des données.",
-      );
+    if (window.location.hash === "#privacy") {
+      setActiveTab("privacy");
+    } else if (window.location.hash === "#terms") {
+      setActiveTab("terms");
     }
   }, []);
 

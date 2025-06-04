@@ -102,25 +102,15 @@ const Footer = () => {
               </a>
             </div>
 
-            {/* Texte de copyright et liens légaux à droite */}
-            <div className="text-right">
-              <div className="flex flex-wrap justify-end gap-4 mb-2">
-                <a
-                  href="/legal"
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
-                >
-                  Conditions Générales
-                </a>
-                <a
-                  href="/legal"
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
-                >
-                  Politique de Confidentialité
-                </a>
-              </div>
-              <p className="text-gray-400 text-sm">
-                &copy; {currentYear} Central Test Agency. Tous droits réservés.
-              </p>
+            {/* Texte copyright et bouton inversés */}
+            <div className="flex items-center space-x-4 text-gray-400 text-sm">
+              <p>&copy; Central Test Agency. Tous droits réservés.</p>
+              <button
+                onClick={() => (window.location.href = "/legal")}
+                className="px-4 py-2 rounded transition-colors duration-200 hover:bg-gray-700 hover:text-white cursor-pointer"
+              >
+                Conditions Générales &amp; Politique de Confidentialité
+              </button>
             </div>
           </div>
         </div>
