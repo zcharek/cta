@@ -13,7 +13,7 @@ const caseStudies = [
     altText: "Cloud-testing",
     category: "QA / Cloud Testing",
     readTime: "Lecture 4 min",
-    pdf: "/pdf/cloudTesting-compressed.pdf",
+    pdf: "/public/pdf/cloudTesting-compressed.pdf",
   },
   {
     title: "C'est quoi le test logiciel !",
@@ -22,7 +22,7 @@ const caseStudies = [
     altText: "Introduction aux tests",
     category: "Introduction",
     readTime: "Lecture 6 min",
-    pdf: "/pdf/intoTesting-compressed.pdf",
+    pdf: "/public/pdf/intoTesting-compressed.pdf",
   },
   {
     title: "Les erreurs les plus fréquentes dans un projet sans tests",
@@ -32,7 +32,7 @@ const caseStudies = [
     altText: "Analyse des erreurs fréquentes en test logiciel",
     category: "Erreurs fréquentes",
     readTime: "12 min de lecture",
-    pdf: "/pdf/mostError-compressed.pdf",
+    pdf: "/public/pdf/mostError-compressed.pdf",
   },
   {
     title: "Comprendre la pyramide des tests",
@@ -42,7 +42,7 @@ const caseStudies = [
     altText: "Guide d’optimisation des paramètres de test",
     category: "Méthodologie",
     readTime: "7 min de lecture",
-    pdf: "/pdf/testParameter.pdf",
+    pdf: "/public/pdf/testParameter.pdf",
   },
 ];
 
