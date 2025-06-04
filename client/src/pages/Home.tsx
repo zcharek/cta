@@ -23,7 +23,7 @@ const Home = () => {
     if (metaDescription) {
       metaDescription.setAttribute(
         "content",
-        "Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux.",
+        "Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux."
       );
     }
   }, []);
@@ -38,9 +38,9 @@ const Home = () => {
         <TechCarousel />
         <WorkflowSection />
         <AboutSection />
-        <CTASection />
         <PortfolioSection />
         <TestimonialsSection />
+        <CTASection />
       </main>
       <Footer />
     </>
