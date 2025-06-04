@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://central-test-agency.replit.app/sitemap.xml
+Sitemap: https://centraltestagency.com/sitemap.xml
 
 # Disallow crawling of admin or private areas
 Disallow: /admin/
