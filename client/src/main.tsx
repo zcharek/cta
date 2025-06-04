@@ -12,6 +12,13 @@ declare global {
 }
 window.motion = motion;
 
+// 🔁 Gérer les redirections depuis 404.html sur GitHub Pages
+const redirect = sessionStorage.redirect;
+if (redirect) {
+  sessionStorage.removeItem("redirect");
+  window.history.replaceState(null, "", redirect);
+}
+
 createRoot(document.getElementById("root")!).render(
   <LazyMotion features={domAnimation}>
     <App />
