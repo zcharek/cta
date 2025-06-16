@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://centraltestagency.com/sitemap.xml
+Sitemap: https://www.centraltestagency.com/sitemap.xml
 
 # Disallow crawling of admin or private areas
 Disallow: /admin/
