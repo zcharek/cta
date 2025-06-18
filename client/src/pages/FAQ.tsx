@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ContactModal from "@/components/ContactModal";
 
 const faqs = [
   {
@@ -40,6 +41,7 @@ const faqs = [
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "FAQ - Questions Fréquentes | Central Test Agency";
@@ -138,18 +140,21 @@ const FAQ = () => {
               <p className="text-gray-600 mb-6">
                 Vous ne trouvez pas la réponse à votre question ?
               </p>
-              <a
-                href="/#contact"
+              <button
+                onClick={() => setIsModalOpen(true)}
                 className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 <span className="mr-2">💬</span>
                 Contactez-nous
-              </a>
+              </button>
             </m.div>
           </div>
         </section>
       </main>
       <Footer />
+
+      {/* Modale de contact */}
+      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

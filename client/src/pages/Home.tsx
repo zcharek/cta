@@ -16,7 +16,7 @@ const Home = () => {
   // Set page title and description when component mounts
   useEffect(() => {
     document.title =
-      "Central Test Agency - Tests Logiciels et Automatisation QA en Algérie | Playwright, Cypress";
+      "Central Test Agency - Tests Logiciels et Automatisation";
 
     // Update meta description dynamically
     const metaDescription = document.querySelector('meta[name="description"]');

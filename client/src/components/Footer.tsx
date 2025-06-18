@@ -17,7 +17,7 @@ const Footer = () => {
     {
       icon: "fas fa-envelope",
       title: "Email",
-      content: "z.charek@gmail.com",
+      content: "centraltestagency@gmail.com",
     },
   ];
 
@@ -102,25 +102,18 @@ const Footer = () => {
               </a>
             </div>
 
-            {/* Texte de copyright et liens légaux à droite */}
+            {/* Texte de copyright et lien légal à droite */}
             <div className="text-right">
-              <div className="flex flex-wrap justify-end gap-4 mb-2">
+              <div className="flex items-center justify-end gap-4 text-sm text-gray-400">
                 <a
                   href="/legal"
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                  className="hover:text-white transition-colors"
                 >
-                  Conditions Générales
+                  Mentions Légales
                 </a>
-                <a
-                  href="/legal"
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
-                >
-                  Politique de Confidentialité
-                </a>
+                <span>•</span>
+                <span>&copy; {currentYear} Central Test Agency. Tous droits réservés.</span>
               </div>
-              <p className="text-gray-400 text-sm">
-                &copy; {currentYear} Central Test Agency. Tous droits réservés.
-              </p>
             </div>
           </div>
         </div>

@@ -88,7 +88,7 @@ const Legal = () => {
                     <li>Raison sociale : Central Test Agency</li>
                     <li>Secteur d'activité : Services de tests logiciels et automatisation QA</li>
                     <li>Pays d'établissement : République Algérienne Démocratique et Populaire</li>
-                    <li>Contact : z.charek@gmail.com</li>
+                    <li>Contact : centraltestagency@gmail.com</li>
                   </ul>
 
                   <h3>2. Objet des services</h3>
@@ -217,7 +217,7 @@ const Legal = () => {
                     <li>Droit d'opposition au traitement pour motifs légitimes</li>
                   </ul>
                   <p>
-                    Pour exercer ces droits, contactez-nous à : z.charek@gmail.com
+                    Pour exercer ces droits, contactez-nous à : centraltestagency@gmail.com
                   </p>
 
                   <h3>6. Cookies</h3>
@@ -230,7 +230,7 @@ const Legal = () => {
                   <p>
                     Pour toute question concernant cette politique de confidentialité ou le traitement 
                     de vos données personnelles, contactez notre responsable de la protection des données à : 
-                    z.charek@gmail.com
+                    centraltestagency@gmail.com
                   </p>
 
                   <h3>8. Modifications</h3>

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import ContactModal from "./ContactModal";
 
 const services = [
   {
@@ -558,6 +559,31 @@ const services = [
 
 const ServicesSection = () => {
   const [selectedService, setSelectedService] = useState<null | (typeof services)[0]>(null);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [preselectedService, setPreselectedService] = useState<string>("");
+
+  const handleClose = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedService(null);
+  }, []);
+
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setSelectedService(null);
+    }
+  }, []);
+
+  const handleContactClick = useCallback((serviceTitle: string) => {
+    setSelectedService(null);
+    setPreselectedService(serviceTitle);
+    setIsContactModalOpen(true);
+  }, []);
+
+  const handleContactModalClose = useCallback(() => {
+    setIsContactModalOpen(false);
+    setPreselectedService("");
+  }, []);
 
   useEffect(() => {
     if (selectedService) {
@@ -572,7 +598,7 @@ const ServicesSection = () => {
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-            Services de Tests Logiciels et Automatisation QA
+            Nos services
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Nos experts certifiés ISTQB conçoivent et réalisent des tests de
@@ -610,32 +636,33 @@ const ServicesSection = () => {
         {/* Modal détaillée */}
         {selectedService && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center p-4 z-50"
-            onClick={() => setSelectedService(null)}
+            className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 z-50"
+            onClick={handleBackdropClick}
           >
             <div
-              className="bg-white max-w-6xl w-full max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl relative transform transition-all duration-300 scale-100"
+              className="bg-white max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl relative transform transition-all duration-300 scale-100"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header avec gradient amélioré */}
-              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white p-10 rounded-t-3xl relative overflow-hidden">
+              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white p-6 sm:p-10 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
                 <button
-                  onClick={() => setSelectedService(null)}
-                  className="absolute top-6 right-6 text-white hover:text-gray-200 text-4xl font-light transition-all duration-200 hover:scale-110 z-10"
+                  onClick={handleClose}
+                  aria-label="Fermer la modale"
+                  className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white hover:text-gray-200 text-3xl sm:text-4xl font-light transition-all duration-200 hover:scale-110 z-50 cursor-pointer bg-black bg-opacity-20 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-opacity-30"
                 >
                   ×
                 </button>
                 
-                <div className="flex items-center gap-8 relative z-10">
-                  <div className="bg-white/20 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/30">
-                    <span className="text-5xl">{selectedService.icon}</span>
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 relative z-10">
+                  <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-white/30">
+                    <span className="text-4xl sm:text-5xl">{selectedService.icon}</span>
                   </div>
-                  <div>
-                    <h2 className="text-4xl font-bold mb-3 text-white drop-shadow-lg">
+                  <div className="text-center sm:text-left">
+                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 text-white drop-shadow-lg">
                       {selectedService.title}
                     </h2>
-                    <p className="text-blue-100 text-xl font-medium">
+                    <p className="text-blue-100 text-base sm:text-xl font-medium">
                       Solutions professionnelles de test logiciel
                     </p>
                   </div>
@@ -643,29 +670,26 @@ const ServicesSection = () => {
               </div>
 
               {/* Contenu avec design amélioré */}
-              <div className="p-10 text-gray-800 leading-relaxed">
+              <div className="p-6 sm:p-10 text-gray-800 leading-relaxed">
                 <div className="prose prose-lg max-w-none">
                   {selectedService.detailedDescription}
                 </div>
                 
                 {/* Section CTA en bas */}
-                <div className="mt-12 p-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-blue-100">
+                <div className="mt-8 sm:mt-12 p-6 sm:p-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-blue-100">
                   <div className="text-center">
-                    <h4 className="text-2xl font-bold text-gray-900 mb-4">
+                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                       Intéressé par ce service ?
                     </h4>
-                    <p className="text-gray-600 mb-6 text-lg">
+                    <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg">
                       Contactez nos experts pour une consultation personnalisée et un devis sur mesure.
                     </p>
                     <button 
-                      onClick={() => {
-                        setSelectedService(null);
-                        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                      onClick={() => handleContactClick(selectedService.title)}
+                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
                     >
                       <span className="mr-2">💬</span>
-                      Demander un devis
+                      Nous contacter
                     </button>
                   </div>
                 </div>
@@ -673,6 +697,13 @@ const ServicesSection = () => {
             </div>
           </div>
         )}
+
+        {/* Modale de contact */}
+        <ContactModal 
+          isOpen={isContactModalOpen} 
+          onClose={handleContactModalClose}
+          preselectedService={preselectedService}
+        />
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { m } from "framer-motion";
+import ContactModal from "./ContactModal";
 
 const faqs = [
   {
@@ -38,103 +39,109 @@ const faqs = [
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <section id="faq" className="py-20 bg-gray-50">
-      <div className="container">
-        <m.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-            Questions Fréquentes
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Retrouvez les réponses aux questions les plus courantes sur nos 
-            services de tests logiciels et d'automatisation QA en Algérie.
-          </p>
-        </m.div>
+    <>
+      <section id="faq" className="py-20 bg-gray-50">
+        <div className="container">
+          <m.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
+              Questions Fréquentes
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Retrouvez les réponses aux questions les plus courantes sur nos 
+              services de tests logiciels et d'automatisation QA en Algérie.
+            </p>
+          </m.div>
 
-        <div className="max-w-4xl mx-auto">
-          {faqs.map((faq, index) => (
-            <m.div
-              key={index}
-              className="mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
-                <button
-                  className="w-full px-8 py-6 text-left focus:outline-none hover:bg-gray-50 transition-colors"
-                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                >
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold text-gray-900 pr-8">
-                      {faq.question}
-                    </h3>
-                    <div
-                      className={`transform transition-transform duration-200 ${
-                        openIndex === index ? "rotate-180" : ""
-                      }`}
-                    >
-                      <svg
-                        className="w-6 h-6 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+          <div className="max-w-4xl mx-auto">
+            {faqs.map((faq, index) => (
+              <m.div
+                key={index}
+                className="mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+                  <button
+                    className="w-full px-8 py-6 text-left focus:outline-none hover:bg-gray-50 transition-colors"
+                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold text-gray-900 pr-8">
+                        {faq.question}
+                      </h3>
+                      <div
+                        className={`transform transition-transform duration-200 ${
+                          openIndex === index ? "rotate-180" : ""
+                        }`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                        <svg
+                          className="w-6 h-6 text-blue-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                  
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      openIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="px-8 pb-6">
+                      <p className="text-gray-600 leading-relaxed">
+                        {faq.answer}
+                      </p>
                     </div>
                   </div>
-                </button>
-                
-                <div
-                  className={`overflow-hidden transition-all duration-300 ${
-                    openIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                  }`}
-                >
-                  <div className="px-8 pb-6">
-                    <p className="text-gray-600 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
                 </div>
-              </div>
-            </m.div>
-          ))}
-        </div>
+              </m.div>
+            ))}
+          </div>
 
-        <m.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-        >
-          <p className="text-gray-600 mb-6">
-            Vous ne trouvez pas la réponse à votre question ?
-          </p>
-          <a
-            href="#contact"
-            className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          <m.div
+            className="text-center mt-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <span className="mr-2">💬</span>
-            Contactez-nous
-          </a>
-        </m.div>
-      </div>
-    </section>
+            <p className="text-gray-600 mb-6">
+              Vous ne trouvez pas la réponse à votre question ?
+            </p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              <span className="mr-2">💬</span>
+              Contactez-nous
+            </button>
+          </m.div>
+        </div>
+      </section>
+
+      {/* Modale de contact */}
+      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 };
 

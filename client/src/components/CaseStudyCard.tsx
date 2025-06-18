@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 interface CaseStudyCardProps {
   title: string;
@@ -31,9 +31,17 @@ const CaseStudyCard = ({
     }
   };
 
-  const closeModal = () => {
+  const handleClose = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsModalOpen(false);
-  };
+  }, []);
+
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setIsModalOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -102,28 +110,29 @@ const CaseStudyCard = ({
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-          onClick={closeModal}
+          className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4"
+          onClick={handleBackdropClick}
           style={{ pointerEvents: "auto" }}
         >
           <div
-            className="bg-white rounded-xl max-w-7xl w-full h-[90vh] flex flex-col shadow-2xl"
+            className="bg-white rounded-xl sm:rounded-2xl max-w-7xl w-full h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             style={{ pointerEvents: "auto", userSelect: "auto" }}
           >
             {/* Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-                <p className="text-sm text-gray-600 mt-1">
+            <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{title}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
                   {category} • {readTime}
                 </p>
               </div>
               <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-lg"
+                onClick={handleClose}
+                aria-label="Fermer la modale"
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-lg ml-4 flex-shrink-0 z-50 cursor-pointer bg-black bg-opacity-20 rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-30"
               >
-                <i className="fas fa-times text-xl"></i>
+                <i className="fas fa-times text-lg sm:text-xl"></i>
               </button>
             </div>
 
@@ -143,8 +152,8 @@ const CaseStudyCard = ({
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <i className="fas fa-file-pdf text-gray-400 text-6xl mb-4"></i>
-                    <p className="text-gray-600">
+                    <i className="fas fa-file-pdf text-gray-400 text-4xl sm:text-6xl mb-4"></i>
+                    <p className="text-gray-600 text-sm sm:text-base">
                       No PDF available for this case study.
                     </p>
                   </div>

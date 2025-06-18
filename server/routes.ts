@@ -14,7 +14,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store contact form submission in database
       const contactSubmission = await storage.createContactSubmission(data);
 
-      // Send email notification to z.charek@gmail.com
+      // Send email notification to centraltestagency@gmail.com
       const emailSent = await sendContactEmail(data);
 
       if (!emailSent) {

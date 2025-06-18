@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'z.charek@gmail.com',
+    user: 'centraltestagency@gmail.com',
     pass: process.env.GMAIL_APP_PASSWORD // We'll need this from the user
   }
 });
@@ -32,8 +32,8 @@ export async function sendContactEmail(formData: ContactFormData): Promise<boole
   try {
     // Email de notification interne
     const notificationOptions = {
-      from: 'z.charek@gmail.com',
-      to: 'z.charek@gmail.com',
+      from: 'centraltestagency@gmail.com',
+      to: 'centraltestagency@gmail.com',
       subject: `Nouveau message de contact - ${formData.firstName} ${formData.lastName}`,
       html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9fafb; padding: 20px;">
@@ -83,7 +83,7 @@ Reçu le ${new Date().toLocaleDateString('fr-FR')} depuis le site Central Test A
 
     // Email de confirmation pour le client
     const confirmationOptions = {
-      from: 'z.charek@gmail.com',
+      from: 'centraltestagency@gmail.com',
       to: formData.email,
       subject: 'Confirmation de réception - Central Test Agency',
       html: `
@@ -134,7 +134,7 @@ ${formData.message}
         Experts en Tests Logiciels & UX
       </p>
       <p style="color: #64748b; font-size: 12px;">
-        📧 z.charek@gmail.com | 🌐 Site web
+        📧 centraltestagency@gmail.com | 🌐 Site web
       </p>
     </div>
   </div>
@@ -161,7 +161,7 @@ Des questions en attendant ? Répondez directement à cet email.
 ---
 Central Test Agency
 Experts en Tests Logiciels & UX
-📧 z.charek@gmail.com
+📧 centraltestagency@gmail.com
       `
     };
 

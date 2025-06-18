@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import FAQ from "@/pages/FAQ";
 import Legal from "@/pages/Legal";
+import RendezVous from "@/pages/RendezVous";
 import PremiumBackground from "./components/PremiumBackground";
 
 function Router() {
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/faq" component={FAQ} />
       <Route path="/legal" component={Legal} />
+      <Route path="/rendez-vous" component={RendezVous} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -42,10 +44,8 @@ function Router() {
 
 function App() {
   useEffect(() => {
-    // Prevent flash of unstyled content
     document.documentElement.classList.add('loaded');
     
-    // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(this: HTMLAnchorElement, e: Event) {
         e.preventDefault();
