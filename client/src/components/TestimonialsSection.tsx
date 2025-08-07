@@ -1,6 +1,26 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 
-const partners = [
+// Types
+interface Partner {
+  name: string;
+  logo: string;
+}
+
+// Configuration
+const SCROLL_CONFIG = {
+  speed: 1,
+  pauseOnHover: true,
+} as const;
+
+const LOGO_SIZES = {
+  default: "max-h-20",
+  large: "max-h-28 w-auto",
+} as const;
+
+const PARTNERS_NEEDING_LARGE_SIZE = ["Confirmoo", "b2bglob"] as const;
+
+// Data
+const PARTNERS: Partner[] = [
   {
     name: "raja",
     logo: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Logo_RAJAGROUP_without_baseline.png",
@@ -29,25 +49,41 @@ const partners = [
     name: "my unisoft",
     logo: "https://myunisoftcompta.fr/wp-content/uploads/2023/03/MYUNISOFT-LOGOS-RVB_05-2.png",
   },
+  {
+    name: "Confirmoo",
+    logo: "https://oran.ecselexpo.com/savedIMG//oran/busness/logos/m6yujaxnXGCWQYMZQR9.png",
+  },
+  {
+    name: "b2bglob",
+    logo: "https://b2bglob.com/static/media/FullLogo_Transparent.d67a5f0d.png",
+  },
 ];
 
-const duplicatedPartners = [...partners, ...partners];
+// Utility functions
+const duplicatePartners = (partners: Partner[]): Partner[] => [...partners, ...partners];
 
-const TestimonialsSection = () => {
+const getLogoSize = (partnerName: string): string => {
+  return PARTNERS_NEEDING_LARGE_SIZE.includes(partnerName as any)
+    ? LOGO_SIZES.large
+    : LOGO_SIZES.default;
+};
+
+// Custom hook for auto-scroll
+const useAutoScroll = (isPaused: boolean) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState(false);
+  const scrollAmountRef = useRef(0);
 
   useEffect(() => {
-    let scrollAmount = 0;
     let animationId: number;
 
     const scroll = () => {
-      if (scrollRef.current && !hovered) {
-        scrollAmount += 1; // vitesse scroll
-        scrollRef.current.scrollLeft = scrollAmount;
+      if (scrollRef.current && !isPaused) {
+        scrollAmountRef.current += SCROLL_CONFIG.speed;
+        scrollRef.current.scrollLeft = scrollAmountRef.current;
 
+        // Reset when reaching halfway point (seamless loop)
         if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth / 2) {
-          scrollAmount = 0;
+          scrollAmountRef.current = 0;
           scrollRef.current.scrollLeft = 0;
         }
       }
@@ -55,46 +91,94 @@ const TestimonialsSection = () => {
     };
 
     animationId = requestAnimationFrame(scroll);
-
     return () => cancelAnimationFrame(animationId);
-  }, [hovered]);
+  }, [isPaused]);
+
+  return scrollRef;
+};
+
+// Components
+interface PartnerLogoProps {
+  partner: Partner;
+  index: number;
+}
+
+const PartnerLogo: React.FC<PartnerLogoProps> = ({ partner, index }) => (
+  <div
+    key={index}
+    className="bg-white/20 p-6 rounded-xl shadow-md flex items-center justify-center flex-shrink-0 w-56 h-32"
+  >
+    <img
+      src={partner.logo}
+      alt={`Logo de ${partner.name}`}
+      className={`object-contain mx-auto ${getLogoSize(partner.name)}`}
+      loading="lazy"
+    />
+  </div>
+);
+
+interface SectionHeaderProps {
+  title: string;
+  subtitle: string;
+}
+
+const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle }) => (
+  <div className="text-center mb-16">
+    <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
+    <p className="text-lg text-secondary-light max-w-2xl mx-auto">{subtitle}</p>
+  </div>
+);
+
+interface PartnersCarouselProps {
+  partners: Partner[];
+  onHoverChange: (isHovered: boolean) => void;
+  scrollRef: React.RefObject<HTMLDivElement>;
+}
+
+const PartnersCarousel: React.FC<PartnersCarouselProps> = ({
+  partners,
+  onHoverChange,
+  scrollRef,
+}) => (
+  <div
+    ref={scrollRef}
+    onMouseEnter={() => onHoverChange(true)}
+    onMouseLeave={() => onHoverChange(false)}
+    className="flex overflow-x-scroll no-scrollbar whitespace-nowrap gap-6"
+    style={{ scrollBehavior: "auto" }}
+  >
+    {partners.map((partner, index) => (
+      <PartnerLogo key={`${partner.name}-${index}`} partner={partner} index={index} />
+    ))}
+  </div>
+);
+
+// Main component
+const TestimonialsSection: React.FC = () => {
+  const [isHovered, setIsHovered] = useState(false);
+  const scrollRef = useAutoScroll(isHovered);
+  const duplicatedPartners = duplicatePartners(PARTNERS);
+
+  const handleHoverChange = useCallback((hovered: boolean) => {
+    setIsHovered(hovered);
+  }, []);
 
   return (
     <section
       id="testimonials"
       className="py-20 gradient-bg text-white overflow-hidden"
+      aria-label="Section partenaires"
     >
       <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Nos partenaires
-          </h2>
-          <p className="text-lg text-secondary-light max-w-2xl mx-auto">
-            Voici quelques entreprises avec lesquelles nous avons collaboré.
-          </p>
-        </div>
-
-        <div
-          ref={scrollRef}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          className="flex overflow-x-scroll no-scrollbar whitespace-nowrap gap-6"
-          style={{ scrollBehavior: "auto" }}
-        >
-          {duplicatedPartners.map((partner, index) => (
-            <div
-              key={index}
-              className="bg-white/20 p-4 rounded-xl shadow-md flex items-center justify-center flex-shrink-0 w-48 h-24"
-              // bg-white/20 : blanc à 20% d'opacité pour le fond
-            >
-              <img
-                src={partner.logo}
-                alt={partner.name}
-                className="max-h-16 object-contain mx-auto"
-              />
-            </div>
-          ))}
-        </div>
+        <SectionHeader
+          title="Nos partenaires"
+          subtitle="Voici quelques entreprises avec lesquelles nous avons collaboré."
+        />
+        <PartnersCarousel
+          partners={duplicatedPartners}
+          onHoverChange={handleHoverChange}
+          scrollRef={scrollRef}
+        />
       </div>
     </section>
   );

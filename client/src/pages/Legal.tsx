@@ -1,250 +1,212 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { m } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ContactModal from "@/components/ContactModal";
+import { useState } from "react";
 
-type TabType = "terms" | "privacy";
+const legalTimeline = [
+  {
+    id: "identite",
+    icon: "🏢",
+    title: "Identification",
+    summary: "Qui sommes-nous ?",
+    detail: (
+      <>
+        <p className="mb-2">Central Test Consulting, société algérienne spécialisée en tests logiciels et automatisation QA.</p>
+        <ul className="list-disc pl-5 text-sm text-gray-500">
+                      <li>Raison sociale : Central Test Consulting</li>
+          <li>Secteur : Tests logiciels & automatisation QA</li>
+          <li>Pays : Algérie</li>
+          <li>Contact : centraltestagency@gmail.com</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "services",
+    icon: "🛠️",
+    title: "Nos Services",
+    summary: "Ce que nous proposons",
+    detail: (
+      <ul className="list-disc pl-5 text-sm text-gray-500">
+        <li>Tests fonctionnels, régression, E2E, API, performance</li>
+        <li>Automatisation (Playwright, Cypress, Selenium)</li>
+        <li>Audit qualité, accessibilité, formation</li>
+      </ul>
+    ),
+  },
+  {
+    id: "propriete",
+    icon: "💡",
+    title: "Propriété intellectuelle",
+    summary: "Vos livrables, notre expertise",
+    detail: (
+      <p className="text-sm text-gray-500">Les scripts, docs et livrables créés pour vous vous appartiennent. Nos méthodes et outils restent notre propriété.</p>
+    ),
+  },
+  {
+    id: "confidentialite",
+    icon: "🔒",
+    title: "Confidentialité",
+    summary: "Vos données sont sacrées",
+    detail: (
+      <p className="text-sm text-gray-500">Nous garantissons la confidentialité de toutes les informations échangées dans le cadre de nos prestations.</p>
+    ),
+  },
+  {
+    id: "protection",
+    icon: "🛡️",
+    title: "Protection des données",
+    summary: "Sécurité & conformité",
+    detail: (
+      <ul className="list-disc pl-5 text-sm text-gray-500">
+        <li>Mesures techniques & organisationnelles strictes</li>
+        <li>Données stockées et traitées en Algérie</li>
+        <li>Conservation limitée à la durée légale</li>
+      </ul>
+    ),
+  },
+  {
+    id: "droits",
+    icon: "📝",
+    title: "Vos droits",
+    summary: "Contrôlez vos données",
+    detail: (
+      <ul className="list-disc pl-5 text-sm text-gray-500">
+        <li>Accès, rectification, effacement, opposition</li>
+        <li>Contact : centraltestagency@gmail.com</li>
+      </ul>
+    ),
+  },
+  {
+    id: "cookies",
+    icon: "🍪",
+    title: "Cookies",
+    summary: "Juste l'essentiel",
+    detail: (
+      <p className="text-sm text-gray-500">Nous utilisons uniquement des cookies techniques nécessaires au fonctionnement du site. Aucun tracking publicitaire.</p>
+    ),
+  },
+  {
+    id: "contact",
+    icon: "📧",
+    title: "Contact",
+    summary: "Une question ?",
+    detail: (
+      <p className="text-sm text-gray-500">Pour toute question légale ou sur la confidentialité, contactez notre DPO à centraltestagency@gmail.com</p>
+    ),
+  },
+  {
+    id: "modifications",
+    icon: "🔄",
+    title: "Modifications",
+    summary: "Toujours à jour",
+    detail: (
+      <p className="text-sm text-gray-500">Cette page peut évoluer. Les changements majeurs seront communiqués sur le site ou par email.</p>
+    ),
+  },
+];
+
+const TimelineSection = ({ icon, title, summary, detail, isLast, delay }: any) => (
+  <m.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.8, delay }}
+    className="relative flex md:items-center gap-6 md:gap-10 group"
+  >
+    {/* Timeline line */}
+    <div className="flex flex-col items-center">
+      <span className="z-10 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white text-2xl shadow-xl border-4 border-white ring-4 ring-blue-100 group-hover:shadow-blue-200 group-hover:shadow-lg transition">
+        {icon}
+      </span>
+      {!isLast && (
+        <span className="w-1 h-24 bg-gradient-to-b from-blue-100 to-blue-300 block mt-1 mb-1 mx-auto rounded-full opacity-70"></span>
+      )}
+    </div>
+    {/* Content */}
+    <div className="flex-1 md:flex md:items-center md:gap-8">
+      <div className="md:w-56 mb-2 md:mb-0">
+        <h3 className="text-lg font-bold text-blue-900 mb-1">{title}</h3>
+        <p className="text-blue-700 text-sm italic">{summary}</p>
+      </div>
+      <div className="flex-1">
+        <div className="bg-white/90 rounded-3xl shadow-2xl group-hover:shadow-3xl group-hover:-translate-y-1 border border-blue-100 px-8 py-8 transition-all duration-300">
+          <div className="text-gray-800 text-base md:text-lg leading-relaxed">{detail}</div>
+        </div>
+      </div>
+    </div>
+  </m.div>
+);
 
 const Legal = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("terms");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    document.title = "Conditions Générales et Confidentialité | Central Test Agency";
-    
+          document.title = "Mentions Légales & Confidentialité | Central Test Consulting";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 
-        'Conditions générales d\'utilisation et politique de confidentialité de Central Test Agency. Conformes à la réglementation algérienne sur la protection des données.'
-      );
+              metaDescription.setAttribute('content', "Mentions légales, conditions d'utilisation et politique de confidentialité de Central Test Consulting. Conformes à la réglementation algérienne sur la protection des données.");
     }
   }, []);
 
   return (
     <>
       <Header />
-      <main className="pt-20">
-        <section className="py-20 bg-white min-h-screen">
-          <div className="container">
+      <main className="pt-20 min-h-screen bg-gradient-to-b from-blue-50 via-blue-100 to-blue-200 relative overflow-x-hidden">
+        <section className="py-16">
+          <div className="container max-w-4xl mx-auto">
             <m.div
-              className="text-center mb-16"
+              className="text-center mb-14"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.7 }}
             >
-              <h1 className="text-3xl md:text-4xl font-bold text-black mb-4">
-                Conditions Générales et Confidentialité
+              <h1 className="text-4xl md:text-5xl font-extrabold text-blue-900 mb-3">
+                Mentions Légales & Confidentialité
               </h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Informations légales conformes à la réglementation algérienne
+              <p className="text-lg text-blue-700 max-w-2xl mx-auto">
+                Découvrez notre engagement pour la transparence, la sécurité et la confiance.
               </p>
             </m.div>
-
-            <div className="max-w-4xl mx-auto">
-              {/* Navigation tabs */}
-              <div className="flex border-b border-gray-200 mb-8">
-                <button
-                  className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
-                    activeTab === "terms"
-                      ? "text-blue-600 border-blue-600"
-                      : "text-gray-500 border-transparent hover:text-gray-700"
-                  }`}
-                  onClick={() => setActiveTab("terms")}
-                >
-                  Conditions Générales
-                </button>
-                <button
-                  className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
-                    activeTab === "privacy"
-                      ? "text-blue-600 border-blue-600"
-                      : "text-gray-500 border-transparent hover:text-gray-700"
-                  }`}
-                  onClick={() => setActiveTab("privacy")}
-                >
-                  Politique de Confidentialité
-                </button>
+            <div className="relative mt-14 mb-10">
+              <div className="absolute left-6 md:left-7 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-100 to-blue-300 opacity-60 z-0" />
+              <div className="space-y-20 relative z-10">
+                {legalTimeline.map((section, idx) => (
+                  <div key={section.id}>
+                    <div
+                      className="cursor-pointer select-none flex items-center gap-3 group"
+                      onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                    >
+                      <span className="z-10 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white text-2xl shadow-xl border-4 border-white ring-4 ring-blue-100 group-hover:shadow-blue-200 group-hover:shadow-lg transition">
+                        {section.icon}
+                      </span>
+                      <div>
+                        <h3 className="text-lg font-bold text-blue-900 mb-1 group-hover:underline">{section.title}</h3>
+                        <p className="text-blue-700 text-sm italic">{section.summary}</p>
+                      </div>
+                      <span className={`transition-transform duration-300 ml-2 ${openIndex === idx ? 'rotate-90' : ''}`}>
+                        <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M6 8L10 12L14 8" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
+                    </div>
+                    {openIndex === idx && (
+                      <div className="ml-16 bg-white/90 rounded-3xl shadow-2xl border border-blue-100 px-8 py-8 mt-2 transition-all duration-300">
+                        <div className="text-gray-800 text-base md:text-lg leading-relaxed">{section.detail}</div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-
-              {/* Terms Content */}
-              {activeTab === "terms" && (
-                <m.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="prose prose-lg max-w-none"
-                >
-                  <div className="bg-gray-50 p-6 rounded-xl mb-8">
-                    <h2 className="text-xl font-bold mb-2">Conditions Générales d'Utilisation</h2>
-                    <p className="text-sm text-gray-600">
-                      Dernière mise à jour : 1er juin 2024 | Conformément au droit algérien
-                    </p>
-                  </div>
-
-                  <h3>1. Identification de l'entreprise</h3>
-                  <p>
-                    Central Test Agency est une entreprise de services informatiques spécialisée dans les tests logiciels 
-                    et l'automatisation QA, établie en Algérie conformément à la législation commerciale algérienne.
-                  </p>
-                  <ul>
-                    <li>Raison sociale : Central Test Agency</li>
-                    <li>Secteur d'activité : Services de tests logiciels et automatisation QA</li>
-                    <li>Pays d'établissement : République Algérienne Démocratique et Populaire</li>
-                    <li>Contact : centraltestagency@gmail.com</li>
-                  </ul>
-
-                  <h3>2. Objet des services</h3>
-                  <p>
-                    Nous proposons des services professionnels de tests logiciels incluant :
-                  </p>
-                  <ul>
-                    <li>Tests fonctionnels et tests de régression</li>
-                    <li>Automatisation de tests avec Playwright, Cypress, Selenium</li>
-                    <li>Tests end-to-end et tests d'intégration</li>
-                    <li>Tests d'API et tests de performance</li>
-                    <li>Tests d'accessibilité et audit qualité</li>
-                    <li>Formation et transfert de compétences</li>
-                  </ul>
-
-                  <h3>3. Conditions de prestation</h3>
-                  <p>
-                    <strong>3.1 Devis et acceptation :</strong> Chaque prestation fait l'objet d'un devis détaillé. 
-                    L'acceptation du devis par le client constitue un engagement contractuel.
-                  </p>
-                  <p>
-                    <strong>3.2 Délais :</strong> Les délais sont indicatifs et peuvent être ajustés selon la complexité 
-                    du projet et la disponibilité des ressources client.
-                  </p>
-                  <p>
-                    <strong>3.3 Facturation :</strong> Paiement possible en dinars algériens (DZD) ou en euros (EUR) 
-                    selon les accords contractuels.
-                  </p>
-
-                  <h3>4. Propriété intellectuelle</h3>
-                  <p>
-                    Les scripts de tests, documentations et livrables développés spécifiquement pour le client 
-                    lui appartiennent. Central Test Agency conserve ses méthodologies et outils propriétaires.
-                  </p>
-
-                  <h3>5. Confidentialité</h3>
-                  <p>
-                    Central Test Agency s'engage à maintenir la confidentialité de toutes les informations 
-                    communiquées par le client dans le cadre de la prestation.
-                  </p>
-
-                  <h3>6. Responsabilité</h3>
-                  <p>
-                    Notre responsabilité est limitée aux services directement fournis. Le client reste responsable 
-                    de ses données et de la mise en production de ses applications.
-                  </p>
-
-                  <h3>7. Droit applicable</h3>
-                  <p>
-                    Ces conditions sont régies par le droit algérien. Tout litige sera soumis aux tribunaux 
-                    compétents d'Alger, Algérie.
-                  </p>
-                </m.div>
-              )}
-
-              {/* Privacy Content */}
-              {activeTab === "privacy" && (
-                <m.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="prose prose-lg max-w-none"
-                >
-                  <div className="bg-gray-50 p-6 rounded-xl mb-8">
-                    <h2 className="text-xl font-bold mb-2">Politique de Confidentialité</h2>
-                    <p className="text-sm text-gray-600">
-                      Dernière mise à jour : 1er juin 2024 | Conforme à la réglementation algérienne sur la protection des données
-                    </p>
-                  </div>
-
-                  <h3>1. Collecte des données</h3>
-                  <p>
-                    Nous collectons uniquement les informations nécessaires à la fourniture de nos services :
-                  </p>
-                  <ul>
-                    <li>Informations de contact (nom, prénom, email, téléphone)</li>
-                    <li>Informations sur votre entreprise (nom, secteur d'activité)</li>
-                    <li>Détails de votre projet et besoins techniques</li>
-                    <li>Données de navigation sur notre site web (cookies techniques)</li>
-                  </ul>
-
-                  <h3>2. Utilisation des données</h3>
-                  <p>
-                    Vos données personnelles sont utilisées exclusivement pour :
-                  </p>
-                  <ul>
-                    <li>Répondre à vos demandes de contact et devis</li>
-                    <li>Fournir nos services de tests logiciels</li>
-                    <li>Améliorer la qualité de nos prestations</li>
-                    <li>Respecter nos obligations légales et contractuelles</li>
-                  </ul>
-
-                  <h3>3. Protection des données</h3>
-                  <p>
-                    <strong>3.1 Sécurité :</strong> Nous mettons en place des mesures techniques et organisationnelles 
-                    appropriées pour protéger vos données contre tout accès non autorisé.
-                  </p>
-                  <p>
-                    <strong>3.2 Conservation :</strong> Vos données sont conservées pendant la durée nécessaire 
-                    à la réalisation des prestations et conformément aux obligations légales algériennes.
-                  </p>
-                  <p>
-                    <strong>3.3 Localisation :</strong> Vos données sont stockées et traitées en Algérie, 
-                    garantissant leur protection selon la législation nationale.
-                  </p>
-
-                  <h3>4. Partage des données</h3>
-                  <p>
-                    Nous ne vendons, ne louons, ni ne partageons vos données personnelles avec des tiers, 
-                    sauf dans les cas suivants :
-                  </p>
-                  <ul>
-                    <li>Obligation légale imposée par les autorités algériennes</li>
-                    <li>Sous-traitants techniques nécessaires à la prestation (sous contrat de confidentialité)</li>
-                    <li>Consentement explicite de votre part</li>
-                  </ul>
-
-                  <h3>5. Vos droits</h3>
-                  <p>
-                    Conformément à la réglementation algérienne, vous disposez des droits suivants :
-                  </p>
-                  <ul>
-                    <li>Droit d'accès à vos données personnelles</li>
-                    <li>Droit de rectification des informations inexactes</li>
-                    <li>Droit d'effacement dans les conditions légales</li>
-                    <li>Droit d'opposition au traitement pour motifs légitimes</li>
-                  </ul>
-                  <p>
-                    Pour exercer ces droits, contactez-nous à : centraltestagency@gmail.com
-                  </p>
-
-                  <h3>6. Cookies</h3>
-                  <p>
-                    Notre site utilise uniquement des cookies techniques nécessaires au fonctionnement. 
-                    Aucun cookie de traçage publicitaire n'est utilisé.
-                  </p>
-
-                  <h3>7. Contact</h3>
-                  <p>
-                    Pour toute question concernant cette politique de confidentialité ou le traitement 
-                    de vos données personnelles, contactez notre responsable de la protection des données à : 
-                    centraltestagency@gmail.com
-                  </p>
-
-                  <h3>8. Modifications</h3>
-                  <p>
-                    Cette politique peut être mise à jour. Les modifications importantes vous seront 
-                    communiquées par email ou via notre site web.
-                  </p>
-                </m.div>
-              )}
             </div>
           </div>
         </section>
       </main>
       <Footer />
+      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 
 interface CaseStudyCardProps {
   title: string;
@@ -10,7 +11,7 @@ interface CaseStudyCardProps {
   pdf?: string;
 }
 
-const CaseStudyCard = ({
+const CaseStudyCard = React.memo(({
   title,
   description,
   image,
@@ -84,6 +85,8 @@ const CaseStudyCard = ({
           <img
             src={image}
             alt={altText}
+            width="800"
+            height="452"
             loading="lazy"
             decoding="async"
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
@@ -165,6 +168,6 @@ const CaseStudyCard = ({
       )}
     </>
   );
-};
+});
 
 export default CaseStudyCard;

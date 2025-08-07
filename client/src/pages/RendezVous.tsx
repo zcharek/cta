@@ -6,7 +6,7 @@ import CalendlyWidget from "@/components/CalendlyWidget";
 
 const RendezVous = () => {
   useEffect(() => {
-    document.title = "Prendre un rendez-vous | Central Test Agency";
+    document.title = "Prendre un rendez-vous | Central Test Consulting";
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {

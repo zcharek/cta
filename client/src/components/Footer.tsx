@@ -21,33 +21,29 @@ const Footer = () => {
     },
   ];
 
-  const businessHours = [
-    { day: "Dimanche - Jeudi", hours: "9:00 - 18:00" },
-    { day: "Vendredi - Samedi", hours: "Fermé" },
-  ];
-
   return (
-    <footer className="bg-[#1E293B] text-white py-12">
+    <footer className="bg-[#1E293B] text-white py-6">
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-6 items-start">
           {/* Présentation agence */}
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="lg:border-r lg:border-gray-700 pr-0 lg:pr-8 mb-8 lg:mb-0"
           >
-            <div className="text-2xl font-poppins font-semibold mb-6">
-              Central<span className="text-secondary">TestAgency</span>
+            <div className="text-2xl font-poppins font-semibold mb-3">
+              Central<span className="text-blue-400">TestConsulting</span>
             </div>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 mb-3">
               Améliorer les expériences numériques grâce à des solutions de
               tests et d'assurance qualité expertes.
             </p>
           </m.div>
 
           {/* Informations de contact */}
-          <div>
+          <div className="lg:border-r lg:border-gray-700 px-0 lg:px-8 mb-8 lg:mb-0 flex flex-col h-full">
             <h4 className="text-lg font-semibold mb-4">
               Informations de contact
             </h4>
@@ -69,20 +65,11 @@ const Footer = () => {
           </div>
 
           {/* Horaires */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">
-              Nos horaires de travail
-            </h4>
-            <div className="space-y-2">
-              {businessHours.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between text-sm text-gray-400"
-                >
-                  <span>{item.day} :</span>
-                  <span>{item.hours}</span>
-                </div>
-              ))}
+          <div className="flex flex-col items-center pt-2 lg:pt-0">
+            <h4 className="text-lg font-semibold mb-2">Nos horaires de travail</h4>
+            <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-700 via-blue-500 to-blue-400 text-white text-sm font-semibold rounded-2xl px-4 py-1.5 shadow-md border border-blue-300/30">
+              <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4 text-white/80' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth='2'><path strokeLinecap='round' strokeLinejoin='round' d='M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+              Service disponible 24H/7J
             </div>
           </div>
         </div>
@@ -112,7 +99,7 @@ const Footer = () => {
                   Mentions Légales
                 </a>
                 <span>•</span>
-                <span>&copy; {currentYear} Central Test Agency. Tous droits réservés.</span>
+                <span>&copy; {currentYear} Central Test Consulting. Tous droits réservés.</span>
               </div>
             </div>
           </div>

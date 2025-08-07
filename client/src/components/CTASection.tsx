@@ -8,7 +8,7 @@ const CTASection = () => {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
 
   return (
-    <section id="contact" className="py-16 sm:py-20 bg-white">
+    <section id="contact" className="py-16 sm:py-20 bg-gradient-to-b from-white via-gray-50 to-gray-200">
       <div className="container">
         <m.div
           className="gradient-bg rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl relative overflow-hidden"
@@ -45,7 +45,7 @@ const CTASection = () => {
                   className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary font-semibold rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
                 >
                   <span className="mr-2">💬</span>
-                  Envoyer un message
+                  Contactez-nous
                 </button>
               </div>
               <p className="text-secondary-light text-xs sm:text-sm">
