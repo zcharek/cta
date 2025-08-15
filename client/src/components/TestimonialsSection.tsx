@@ -29,35 +29,70 @@ const partners = [
     name: "my unisoft",
     logo: "https://myunisoftcompta.fr/wp-content/uploads/2023/03/MYUNISOFT-LOGOS-RVB_05-2.png",
   },
+  {
+    name: "Confirmoo",
+    logo: "https://play-lh.googleusercontent.com/BYH2YGVf_L8xkI7XL8cKTwbsUbTHTZn287K_dH0PQeXHgWXmKX1qxo61nAMx1JdUdkQy=w600-h300-pc0xffffff-pd",
+  },
+  {
+    name: "Data intuition",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx3iRTVw82Xam23d11Akuo77Jfez6a-QXSvA&s",
+  },
 ];
-
-const duplicatedPartners = [...partners, ...partners];
 
 const TestimonialsSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const handleScroll = () => {
+    setIsScrolling(true);
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    scrollTimeoutRef.current = setTimeout(() => {
+      setIsScrolling(false);
+    }, 150);
+  };
 
   useEffect(() => {
-    let scrollAmount = 0;
     let animationId: number;
+    let scrollPosition = 0;
+    const speed = 0.8; // Vitesse de défilement
 
-    const scroll = () => {
-      if (scrollRef.current && !hovered) {
-        scrollAmount += 1; // vitesse scroll
-        scrollRef.current.scrollLeft = scrollAmount;
-
-        if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth / 2) {
-          scrollAmount = 0;
-          scrollRef.current.scrollLeft = 0;
+    const autoScroll = () => {
+      if (scrollRef.current && !hovered && !isScrolling) {
+        scrollPosition += speed;
+        
+        // Calculer la largeur totale du contenu
+        const container = scrollRef.current;
+        const totalWidth = container.scrollWidth;
+        const visibleWidth = container.clientWidth;
+        
+        // Si on a dépassé la moitié du contenu (car on a dupliqué les éléments)
+        // on repart du début pour un effet infini
+        if (scrollPosition >= totalWidth / 2) {
+          scrollPosition = 0;
         }
+        
+        container.scrollLeft = scrollPosition;
       }
-      animationId = requestAnimationFrame(scroll);
+      
+      animationId = requestAnimationFrame(autoScroll);
     };
 
-    animationId = requestAnimationFrame(scroll);
+    // Démarrer l'animation
+    animationId = requestAnimationFrame(autoScroll);
 
-    return () => cancelAnimationFrame(animationId);
-  }, [hovered]);
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [hovered, isScrolling]);
 
   return (
     <section
@@ -73,27 +108,54 @@ const TestimonialsSection = () => {
             Voici quelques entreprises avec lesquelles nous avons collaboré.
           </p>
         </div>
+      </div>
 
+      {/* Carousel amélioré avec dégradés et animations */}
+      <div className="relative">
+        {/* Dégradé gauche */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-blue-600 to-transparent z-10 pointer-events-none"></div>
+        
+        {/* Dégradé droit */}
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-blue-600 to-transparent z-10 pointer-events-none"></div>
+        
         <div
           ref={scrollRef}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
-          className="flex overflow-x-scroll no-scrollbar whitespace-nowrap gap-6"
-          style={{ scrollBehavior: "auto" }}
+          onScroll={handleScroll}
+          className="flex overflow-x-hidden no-scrollbar whitespace-nowrap gap-8 px-8 py-4"
+          style={{ 
+            scrollBehavior: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            WebkitOverflowScrolling: "touch"
+          }}
         >
-          {duplicatedPartners.map((partner, index) => (
+          {/* Duplication pour effet infini plus fluide */}
+          {[...partners, ...partners, ...partners].map((partner, index) => (
             <div
-              key={index}
-              className="bg-white/20 p-4 rounded-xl shadow-md flex items-center justify-center flex-shrink-0 w-48 h-24"
-              // bg-white/20 : blanc à 20% d'opacité pour le fond
+              key={`${partner.name}-${index}`}
+              className="group bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center justify-center flex-shrink-0 w-56 h-32 transition-all duration-500 ease-out hover:scale-105 hover:bg-white/20 cursor-pointer border border-white/20 hover:border-white/40"
             >
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="max-h-16 object-contain mx-auto"
+                className="max-h-16 max-w-40 object-contain mx-auto opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+                loading="lazy"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
               />
             </div>
           ))}
+        </div>
+        
+        {/* Indicateurs de scroll */}
+        <div className="flex justify-center mt-6 space-x-2">
+          <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 bg-white/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+          <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
       </div>
     </section>

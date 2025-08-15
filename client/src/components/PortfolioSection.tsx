@@ -9,7 +9,7 @@ const caseStudies = [
     title: "Accélérer la QA grâce aux Cloud-testing",
     description:
       "Découvrez comment le Cloud-testing permet de raccourcir les cycles de test.",
-    image: "/images/cloudTest.jpg",
+    image: "/images/cloudTest.webp",
     altText: "Cloud-testing",
     category: "QA / Cloud Testing",
     readTime: "Lecture 4 min",
@@ -18,7 +18,7 @@ const caseStudies = [
   {
     title: "C'est quoi le test logiciel !",
     description: "Introduction aux tests logiciel",
-    image: "/images/IntroTest.jpg",
+    image: "/images/IntroTest.webp",
     altText: "Introduction aux tests",
     category: "Introduction",
     readTime: "Lecture 6 min",
@@ -27,8 +27,8 @@ const caseStudies = [
   {
     title: "Les erreurs les plus fréquentes dans un projet sans tests",
     description:
-      "Analyse des erreurs courantes qui surviennent lorsqu’un projet logiciel est lancé sans stratégie de test.",
-    image: "/images/mostError.jpg",
+      "Analyse des erreurs courantes qui surviennent lorsqu'un projet logiciel est lancé sans stratégie de test.",
+    image: "/images/mostError.webp",
     altText: "Analyse des erreurs fréquentes en test logiciel",
     category: "Erreurs fréquentes",
     readTime: "12 min de lecture",
@@ -38,8 +38,8 @@ const caseStudies = [
     title: "Comprendre la pyramide des tests",
     description:
       "Améliorer son expérience utilisateur en appliquant efficacement la pyramide des tests.",
-    image: "/images/ParameterTest.jpg",
-    altText: "Guide d’optimisation des paramètres de test",
+    image: "/images/ParameterTest.webp",
+    altText: "Guide d'optimisation des paramètres de test",
     category: "Méthodologie",
     readTime: "7 min de lecture",
     pdf: "/pdf/testParameter.pdf",

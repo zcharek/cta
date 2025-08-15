@@ -130,7 +130,7 @@ const FAQSection = () => {
             </p>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1"
             >
               <span className="mr-2">💬</span>
               Contactez-nous
