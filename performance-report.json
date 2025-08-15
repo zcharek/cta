@@ -1,0 +1,183 @@
+{
+  "scores": {
+    "loading": 100,
+    "interactivity": 35,
+    "visualStability": 20,
+    "seo": 0,
+    "accessibility": 0
+  },
+  "issues": [
+    {
+      "type": "issues",
+      "category": "Bundle Size",
+      "message": "69 dépendances - risque de bundle lourd",
+      "impact": "medium",
+      "fix": "Analyser et supprimer les dépendances inutilisées",
+      "timestamp": "2025-07-26T21:39:24.748Z"
+    },
+    {
+      "type": "issues",
+      "category": "Bundle Size",
+      "message": "30 dépendances lourdes détectées",
+      "impact": "high",
+      "fix": "Implémenter le lazy loading et code splitting",
+      "timestamp": "2025-07-26T21:39:24.749Z"
+    }
+  ],
+  "recommendations": [
+    {
+      "type": "recommendations",
+      "category": "HTML",
+      "message": "Implémenter Lazy Loading",
+      "impact": "medium",
+      "fix": "Améliore les temps de chargement",
+      "timestamp": "2025-07-26T21:39:24.752Z"
+    }
+  ],
+  "optimizations": [
+    {
+      "type": "optimizations",
+      "category": "Code Splitting",
+      "message": "Code splitting implémenté avec React.lazy",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.749Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Loading",
+      "message": "Suspense implémenté pour le loading",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.750Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Images",
+      "message": "istqb.webp - Format WebP optimisé",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.750Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Images",
+      "message": "Toutes les images sont optimisées",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.750Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "CSS",
+      "message": "Tailwind CSS configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.751Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "CSS",
+      "message": "Purge CSS configurée",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.751Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Fonts",
+      "message": "Font-display swap configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.751Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "HTML",
+      "message": "Preconnect implémenté",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.752Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "HTML",
+      "message": "Preload implémenté",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.752Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "HTML",
+      "message": "DNS Prefetch implémenté",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.752Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "HTML",
+      "message": "Script Async/Defer implémenté",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.752Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Vite",
+      "message": "Rollup optimizations configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Vite",
+      "message": "Minification configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Vite",
+      "message": "Source maps configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Vite",
+      "message": "Chunk size limit configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "Vite",
+      "message": "Plugin React configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "LCP",
+      "message": "Optimisations LCP en place",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    },
+    {
+      "type": "optimizations",
+      "category": "FID",
+      "message": "Code splitting améliore FID",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:39:24.753Z"
+    }
+  ]
+}

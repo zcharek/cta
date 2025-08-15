@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
+import React from "react"
 
 const tools = [
   {
@@ -676,7 +677,10 @@ const cooperationModels = [
   },
 ];
 
-const TechCarousel = () => {
+export { cooperationModels };
+
+// Restore modal functionality
+const TechCarousel = React.memo(() => {
   const [selectedTool, setSelectedTool] = useState<null | (typeof tools)[0]>(
     null,
   );
@@ -693,7 +697,7 @@ const TechCarousel = () => {
     }
   }, []);
 
-  // Désactive le scroll du body quand la modale est ouverte
+  // Disable body scroll when modal is open
   useEffect(() => {
     if (selectedTool) {
       document.body.style.overflow = "hidden";
@@ -703,47 +707,82 @@ const TechCarousel = () => {
   }, [selectedTool]);
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-gray-200">
+      <div className="flex flex-col items-center my-10">
+        <span className="inline-block mb-2 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">Test dynamique</span>
+        <p className="text-3xl md:text-4xl font-bold text-center text-gray-700 max-w-2xl">L'automatisation au service des test statique.</p>
+      </div>
       <div className="container mx-auto max-w-6xl text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Frameworks et Outils d'Automatisation QA
-        </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Découvrez les outils que nous utilisons pour automatiser les tests
-          fonctionnels, API, UI et performance.
-        </p>
+        Pour répondre à chaque objectif de test, nous sélectionnons et intégrons les meilleurs outils d’automatisation  </p>
       </div>
 
-      {/* Cartes avec logo + */}
-      <div className="flex flex-wrap justify-center gap-6">
-        {tools.map((tool, idx) => (
-          <div
-            key={idx}
-            onClick={() => setSelectedTool(tool)}
-            className="relative cursor-pointer w-40 h-24 p-4 bg-white rounded-xl shadow-md flex items-center justify-center hover:scale-105 transition-transform"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setSelectedTool(tool);
-              }
-            }}
-            aria-label={`En savoir plus sur ${tool.name}`}
-          >
-            <img
-              src={tool.logo}
-              alt={tool.name}
-              className="max-h-12 object-contain"
-              loading="lazy"
-            />
-            <span className="absolute bottom-1 right-1 text-xl font-bold pointer-events-none select-none">
-              +
-            </span>
-          </div>
-        ))}
+      {/* Cards with logo + */}
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+          {tools.map((tool, idx) => {
+            const toolNamesWithPage = [
+              "Cypress", "Postman", "k6", "Percy", "TestNG", "Cucumber", "RestAssured", "Selenium", "Playwright"
+            ];
+            if (toolNamesWithPage.includes(tool.name)) {
+              return (
+                <a
+                  key={idx}
+                  href={`/services/${tool.name.toLowerCase()}`}
+                  className="relative cursor-pointer w-40 h-24 md:w-56 md:h-32 p-4 bg-white/90 rounded-3xl shadow-2xl border border-blue-100 flex items-center justify-center transition-all duration-300 hover:shadow-blue-200 hover:-translate-y-1"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`En savoir plus sur ${tool.name}`}
+                >
+                  <img
+                    src={tool.logo}
+                    alt={tool.name}
+                    className="max-h-12 md:max-h-16 object-contain"
+                    loading="lazy"
+                  />
+                  <span
+                    className="absolute bottom-2 right-2 text-blue-600 text-xl font-bold pointer-events-none select-none"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+                </a>
+              );
+            } else {
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setSelectedTool(tool)}
+                  className="relative cursor-pointer w-40 h-24 md:w-56 md:h-32 p-4 bg-white/90 rounded-3xl shadow-2xl border border-blue-100 flex items-center justify-center transition-all duration-300 hover:shadow-blue-200 hover:-translate-y-1"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setSelectedTool(tool);
+                    }
+                  }}
+                  aria-label={`En savoir plus sur ${tool.name}`}
+                >
+                  <img
+                    src={tool.logo}
+                    alt={tool.name}
+                    className="max-h-12 md:max-h-16 object-contain"
+                    loading="lazy"
+                  />
+                  <span
+                    className="absolute bottom-2 right-2 text-blue-600 text-xl font-bold pointer-events-none select-none"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+                </div>
+              );
+            }
+          })}
+        </div>
       </div>
 
-      {/* Modale améliorée */}
+      {/* Enhanced Modal */}
       {selectedTool && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 z-50"
@@ -757,8 +796,8 @@ const TechCarousel = () => {
             className="bg-white max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl relative transform transition-all duration-300 scale-100"
             onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
           >
-            {/* En-tête avec gradient amélioré */}
-            <div className="bg-gradient-to-br from-indigo-600 via-purple-700 to-pink-800 text-white p-6 sm:p-10 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
+            {/* Header with enhanced gradient */}
+            <div className="bg-gradient-to-br from-blue-700 via-blue-500 to-blue-300 text-white p-6 sm:p-10 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
               <button
                 onClick={handleClose}
@@ -790,7 +829,7 @@ const TechCarousel = () => {
               </div>
             </div>
 
-            {/* Contenu principal avec design amélioré */}
+            {/* Main content with enhanced design */}
             <div
               id="modal-desc"
               className="p-6 sm:p-10 text-gray-800 leading-relaxed"
@@ -799,8 +838,8 @@ const TechCarousel = () => {
                 {selectedTool.description}
               </div>
 
-              {/* Nos modèles de coopération avec design premium */}
-              <section className="mt-8 sm:mt-12 bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-purple-100">
+              {/* Our cooperation models with premium design */}
+              <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-blue-100">
                 <div className="text-center mb-6 sm:mb-8">
                   <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                     Nos modèles de coopération
@@ -813,14 +852,14 @@ const TechCarousel = () => {
                   {cooperationModels.map((model, idx) => (
                     <div
                       key={idx}
-                      className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-purple-300 h-full transform hover:-translate-y-2"
+                      className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:border-blue-300 h-full transform hover:-translate-y-2"
                     >
                       <div className="flex items-center mb-4 sm:mb-6">
                         <div className={`w-4 h-4 rounded-full mr-3 sm:mr-4 ${
                           idx === 0 ? 'bg-blue-500' : 
-                          idx === 1 ? 'bg-green-500' : 'bg-purple-500'
+                          idx === 1 ? 'bg-green-500' : 'bg-blue-300'
                         }`}></div>
-                        <h4 className={`text-xl sm:text-2xl font-bold ${model.color}`}>
+                        <h4 className={`text-xl sm:text-2xl font-bold text-blue-700`}>
                           {model.title}
                         </h4>
                       </div>
@@ -840,8 +879,8 @@ const TechCarousel = () => {
                 </div>
               </section>
 
-              {/* Section CTA en bas */}
-              <div className="mt-8 sm:mt-12 p-6 sm:p-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-100">
+              {/* Bottom CTA section */}
+              <div className="mt-8 sm:mt-12 p-6 sm:p-8 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl border border-blue-100">
                 <div className="text-center">
                   <h4 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                     Besoin d'expertise avec {selectedTool.name} ?
@@ -855,7 +894,7 @@ const TechCarousel = () => {
                         setSelectedTool(null);
                         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
+                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
                     >
                       <span className="mr-2">🚀</span>
                       Demander une consultation
@@ -865,7 +904,7 @@ const TechCarousel = () => {
                         setSelectedTool(null);
                         document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-purple-700 font-semibold rounded-xl border-2 border-purple-200 hover:bg-purple-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
+                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-700 font-semibold rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
                     >
                       <span className="mr-2">📋</span>
                       Voir nos services
@@ -879,6 +918,6 @@ const TechCarousel = () => {
       )}
     </section>
   );
-};
+});
 
 export default TechCarousel;

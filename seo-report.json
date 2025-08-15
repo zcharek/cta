@@ -1,0 +1,273 @@
+{
+  "passed": 36,
+  "failed": 0,
+  "warnings": 2,
+  "details": [
+    {
+      "type": "passed",
+      "test": "robots.txt",
+      "message": "User-agent général défini",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.564Z"
+    },
+    {
+      "type": "passed",
+      "test": "robots.txt",
+      "message": "Permission générale accordée",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.565Z"
+    },
+    {
+      "type": "passed",
+      "test": "robots.txt",
+      "message": "Sitemap référencé",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.565Z"
+    },
+    {
+      "type": "passed",
+      "test": "robots.txt",
+      "message": "Ressources de développement bloquées",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.565Z"
+    },
+    {
+      "type": "passed",
+      "test": "sitemap.xml",
+      "message": "Format XML valide",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.565Z"
+    },
+    {
+      "type": "passed",
+      "test": "sitemap.xml",
+      "message": "Namespace correct",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "sitemap.xml",
+      "message": "23 URLs indexées",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "sitemap.xml",
+      "message": "Priorités définies",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Titre optimisé présent",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Meta description optimale (120-160 chars)",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Meta keywords présents",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Directives robots correctes",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.566Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "URL canonique définie",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Open Graph title",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Open Graph description",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Open Graph image",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Twitter Cards configurées",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Données structurées Schema.org",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Langue définie correctement",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "index.html",
+      "message": "Fallback pour crawlers sans JS",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "Performance",
+      "message": "Preconnect pour ressources externes",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "Performance",
+      "message": "Preload pour ressources critiques",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "Performance",
+      "message": "DNS prefetch configuré",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "Composants SEO",
+      "message": "SEOHead présent",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "SEOHead",
+      "message": "Intégration StructuredData OK",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "Composants SEO",
+      "message": "StructuredData présent",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.567Z"
+    },
+    {
+      "type": "passed",
+      "test": "StructuredData",
+      "message": "Format Schema.org correct",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Composants SEO",
+      "message": "CrawlerOptimizer présent",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "CrawlerOptimizer",
+      "message": "Détection de crawlers implémentée",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Composants SEO",
+      "message": "seoConfig présent",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Configuration SEO",
+      "message": "Config pour playwright présente",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Configuration SEO",
+      "message": "Config pour cypress présente",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Configuration SEO",
+      "message": "Config pour selenium présente",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Configuration SEO",
+      "message": "Config pour validation présente",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Configuration SEO",
+      "message": "Config pour integration présente",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "passed",
+      "test": "Configuration SEO",
+      "message": "Fonction generateSEOConfig présente",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.568Z"
+    },
+    {
+      "type": "warnings",
+      "test": "Assets",
+      "message": "Logo principal manquant ou déplacé",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.569Z"
+    },
+    {
+      "type": "warnings",
+      "test": "Assets",
+      "message": "Favicon manquant ou déplacé",
+      "url": "",
+      "timestamp": "2025-07-26T21:32:13.569Z"
+    }
+  ]
+}

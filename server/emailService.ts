@@ -60,7 +60,7 @@ ${formData.message}
     <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;">
     <p style="color: #64748b; font-size: 14px; text-align: center;">
       📅 Reçu le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}<br>
-      🌐 Envoyé depuis le site web Central Test Agency
+              🌐 Envoyé depuis le site web Central Test Consulting
     </p>
   </div>
 </div>
@@ -77,7 +77,7 @@ Message:
 ${formData.message}
 
 ---
-Reçu le ${new Date().toLocaleDateString('fr-FR')} depuis le site Central Test Agency
+    Reçu le ${new Date().toLocaleDateString('fr-FR')} depuis le site Central Test Consulting
       `
     };
 
@@ -85,7 +85,7 @@ Reçu le ${new Date().toLocaleDateString('fr-FR')} depuis le site Central Test A
     const confirmationOptions = {
       from: 'centraltestagency@gmail.com',
       to: formData.email,
-      subject: 'Confirmation de réception - Central Test Agency',
+      subject: 'Confirmation de réception - Central Test Consulting',
       html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9fafb; padding: 20px;">
   <div style="background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -130,7 +130,7 @@ ${formData.message}
     <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;">
     <div style="text-align: center;">
       <p style="color: #64748b; font-size: 14px; margin: 5px 0;">
-        <strong>Central Test Agency</strong><br>
+        <strong>Central Test Consulting</strong><br>
         Experts en Tests Logiciels & UX
       </p>
       <p style="color: #64748b; font-size: 12px;">
@@ -159,7 +159,7 @@ Prochaines étapes:
 Des questions en attendant ? Répondez directement à cet email.
 
 ---
-Central Test Agency
+      Central Test Consulting
 Experts en Tests Logiciels & UX
 📧 centraltestagency@gmail.com
       `

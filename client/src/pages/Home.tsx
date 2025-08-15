@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import StatsSection from "@/components/StatsSection";
@@ -5,35 +6,41 @@ import ServicesSection from "@/components/ServicesSection";
 import WorkflowSection from "@/components/WorkflowSection";
 import AboutSection from "@/components/AboutSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import PortfolioSection from "@/components/PortfolioSection";
 import CTASection from "@/components/CTASection";
-
-import Footer from "@/components/Footer";
-import { useEffect } from "react";
+import QuizTestSelector from "@/components/QuizTestSelector";
 import TechCarousel from "@/components/tools";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 
 const Home = () => {
-  // Set page title and description when component mounts
+  // Scroll automatique vers l'ancre si hash présent
   useEffect(() => {
-    document.title =
-      "Central Test Agency - Tests Logiciels et Automatisation";
-
-    // Update meta description dynamically
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        "content",
-        "Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux."
-      );
+    if (window.location.hash === "#services") {
+      const el = document.getElementById("services");
+      if (el) {
+        // Délai plus long sur mobile pour laisser le menu se fermer
+        const isMobile = window.innerWidth < 768;
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, isMobile ? 450 : 200);
+      }
     }
   }, []);
 
   return (
     <>
+      <SEOHead 
+        title="Central Test Consulting - Tests Logiciels et Automatisation QA en Algérie"
+        description="Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux."
+        keywords="test logiciel, automatisation QA, Playwright, Cypress, tests E2E, API testing, régression, qualité logicielle, CI/CD, Algérie, tests fonctionnels, tests automatisés"
+        ogUrl="https://centraltestagency.com"
+        canonical="https://centraltestagency.com"
+      />
       <Header />
       <main>
         <HeroSection />
         <StatsSection />
+        <QuizTestSelector />
         <ServicesSection />
         <TechCarousel />
         <WorkflowSection />

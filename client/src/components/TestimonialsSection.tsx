@@ -73,28 +73,29 @@ const TestimonialsSection = () => {
             Voici quelques entreprises avec lesquelles nous avons collaboré.
           </p>
         </div>
+      </div>
 
-        <div
-          ref={scrollRef}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          className="flex overflow-x-scroll no-scrollbar whitespace-nowrap gap-6"
-          style={{ scrollBehavior: "auto" }}
-        >
-          {duplicatedPartners.map((partner, index) => (
-            <div
-              key={index}
-              className="bg-white/20 p-4 rounded-xl shadow-md flex items-center justify-center flex-shrink-0 w-48 h-24"
-              // bg-white/20 : blanc à 20% d'opacité pour le fond
-            >
-              <img
-                src={partner.logo}
-                alt={partner.name}
-                className="max-h-16 object-contain mx-auto"
-              />
-            </div>
-          ))}
-        </div>
+      {/* Carousel qui s'étend sur toute la largeur de la page */}
+      <div
+        ref={scrollRef}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="flex overflow-x-scroll no-scrollbar whitespace-nowrap gap-6 px-6"
+        style={{ scrollBehavior: "auto" }}
+      >
+        {duplicatedPartners.map((partner, index) => (
+          <div
+            key={index}
+            className="bg-white/20 p-4 rounded-xl shadow-md flex items-center justify-center flex-shrink-0 w-48 h-24 transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer"
+            // bg-white/20 : blanc à 20% d'opacité pour le fond
+          >
+            <img
+              src={partner.logo}
+              alt={partner.name}
+              className="max-h-16 object-contain mx-auto"
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

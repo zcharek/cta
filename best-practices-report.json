@@ -1,0 +1,280 @@
+{
+  "scores": {
+    "codeQuality": 75,
+    "accessibility": 55,
+    "security": 30,
+    "maintainability": 70,
+    "testing": 0,
+    "documentation": 50
+  },
+  "issues": [
+    {
+      "type": "issues",
+      "category": "Accessibility",
+      "message": "Manque: Attributs alt pour images",
+      "impact": "medium",
+      "fix": "Améliore l'accessibilité pour tous les utilisateurs",
+      "timestamp": "2025-07-26T21:53:50.896Z"
+    },
+    {
+      "type": "issues",
+      "category": "Accessibility",
+      "message": "Manque: Attributs ARIA role",
+      "impact": "medium",
+      "fix": "Améliore l'accessibilité pour tous les utilisateurs",
+      "timestamp": "2025-07-26T21:53:50.896Z"
+    },
+    {
+      "type": "issues",
+      "category": "Accessibility",
+      "message": "Manque: Labels ARIA",
+      "impact": "medium",
+      "fix": "Améliore l'accessibilité pour tous les utilisateurs",
+      "timestamp": "2025-07-26T21:53:50.896Z"
+    },
+    {
+      "type": "issues",
+      "category": "Testing",
+      "message": "Aucun framework de test détecté",
+      "impact": "high",
+      "fix": "Ajouter Vitest ou Jest pour les tests unitaires",
+      "timestamp": "2025-07-26T21:53:50.914Z"
+    }
+  ],
+  "recommendations": [
+    {
+      "type": "recommendations",
+      "category": "TypeScript",
+      "message": "Activer noImplicitAny",
+      "impact": "medium",
+      "fix": "Améliore la qualité et la sécurité du code",
+      "timestamp": "2025-07-26T21:53:50.893Z"
+    },
+    {
+      "type": "recommendations",
+      "category": "TypeScript",
+      "message": "Activer strictNullChecks",
+      "impact": "medium",
+      "fix": "Améliore la qualité et la sécurité du code",
+      "timestamp": "2025-07-26T21:53:50.893Z"
+    },
+    {
+      "type": "recommendations",
+      "category": "Security",
+      "message": "Implémenter: Liens externes sécurisés",
+      "impact": "medium",
+      "fix": "Améliore la sécurité du site",
+      "timestamp": "2025-07-26T21:53:50.912Z"
+    },
+    {
+      "type": "recommendations",
+      "category": "Security",
+      "message": "Ajouter script d'audit npm",
+      "impact": "medium",
+      "fix": "npm audit pour détecter les vulnérabilités",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "recommendations",
+      "category": "Security",
+      "message": "Créer .env.example",
+      "impact": "high",
+      "fix": "Documenter les variables d'environnement requises",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "recommendations",
+      "category": "Testing",
+      "message": "Créer une structure de tests",
+      "impact": "high",
+      "fix": "Organiser les tests dans un dossier dédié",
+      "timestamp": "2025-07-26T21:53:50.914Z"
+    }
+  ],
+  "bestPractices": [
+    {
+      "type": "bestPractices",
+      "category": "Code Quality",
+      "message": "TypeScript configuré",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.892Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "TypeScript",
+      "message": "strict activé",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.893Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Code Quality",
+      "message": "ESLint configuré",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.894Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Code Quality",
+      "message": "Prettier configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.894Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Architecture",
+      "message": "30 composants organisés",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.894Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Architecture",
+      "message": "Composants réutilisables implémentés",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.894Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Accessibility",
+      "message": "Attribut lang défini",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.895Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Accessibility",
+      "message": "Titre de page présent",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.895Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Accessibility",
+      "message": "Fallback sans JavaScript",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.896Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Accessibility",
+      "message": "18 composants accessibles",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.912Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Security",
+      "message": "Referrer policy configurée",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.912Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Security",
+      "message": "CORS configuré",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.912Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Security",
+      "message": "Types TypeScript pour la sécurité",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Maintainability",
+      "message": "Structure de projet organisée",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Configuration",
+      "message": "tsconfig.json présent",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Configuration",
+      "message": "vite.config.ts présent",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Configuration",
+      "message": "tailwind.config.ts présent",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Configuration",
+      "message": "package.json présent",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Maintainability",
+      "message": "2 hooks personnalisés",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.913Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Maintainability",
+      "message": "Utilitaires centralisés",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.914Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Documentation",
+      "message": "README complet",
+      "impact": "high",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.914Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Documentation",
+      "message": "Section installation présente",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.914Z"
+    },
+    {
+      "type": "bestPractices",
+      "category": "Documentation",
+      "message": "Composants bien documentés",
+      "impact": "medium",
+      "fix": "",
+      "timestamp": "2025-07-26T21:53:50.916Z"
+    }
+  ]
+}
