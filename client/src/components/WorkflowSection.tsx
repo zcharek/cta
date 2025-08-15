@@ -1,4 +1,5 @@
 import { m } from "framer-motion";
+import React from "react";
 
 const workflowSteps = [
   {
@@ -12,7 +13,7 @@ const workflowSteps = [
     number: 2,
     title: "Planification des tests",
     description:
-      "Notre équipe conçoit un plan de test complet définissant le périmètre, l’approche, les ressources, le planning et les livrables.",
+      "Notre équipe conçoit un plan de test complet définissant le périmètre, l'approche, les ressources, le planning et les livrables.",
     icon: "fa-tasks",
   },
   {
@@ -26,7 +27,7 @@ const workflowSteps = [
     number: 4,
     title: "Rapports et recommandations",
     description:
-      "Nous fournissons des rapports détaillés accompagnés d’analyses exploitables et de recommandations pour améliorer la qualité de votre produit.",
+      "Nous fournissons des rapports détaillés accompagnés d'analyses exploitables et de recommandations pour améliorer la qualité de votre produit.",
     icon: "fa-chart-line",
   },
 ];
@@ -51,38 +52,35 @@ const WorkflowSection = () => {
           </p>
         </m.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {workflowSteps.map((step, index) => (
-            <m.div
-              key={index}
-              className="flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <div className="bg-primary rounded-full w-16 h-16 flex items-center justify-center text-white relative mb-4">
-                <span className="absolute -top-2 -right-2 bg-secondary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
-                  {step.number}
+        <div className="relative mt-14 mb-10 max-w-6xl mx-auto">
+          {/* Timeline verticale mobile */}
+          {/* Steps */}
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full gap-y-12 md:gap-y-0 md:gap-x-8">
+            {workflowSteps.map((step, idx) => (
+              <m.div
+                key={step.number}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.1 * idx }}
+                className="relative flex flex-col items-center w-full md:w-72 max-w-xs mx-auto"
+              >
+                {/* Icône */}
+                <span className="z-10 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white text-2xl shadow-xl border-4 border-white ring-4 ring-blue-100 mb-2">
+                  <i className={`fas ${step.icon}`}></i>
                 </span>
-                <m.i
-                  className={`fas ${step.icon} text-2xl`}
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    repeatDelay: 1,
-                    ease: "easeInOut",
-                    delay: index * 0.5, // Décalage progressif
-                  }}
-                />
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">
-                {step.title}
-              </h3>
-              <p className="text-gray-600">{step.description}</p>
-            </m.div>
-          ))}
+                {/* Titre et étape */}
+                <div className="text-center mb-2 flex flex-col items-center">
+                  <h3 className="text-lg font-bold text-blue-900 mb-1">{step.title}</h3>
+                  <p className="text-blue-700 text-sm italic">Étape {step.number}</p>
+                </div>
+                {/* Carte */}
+                <div className="bg-white/90 rounded-3xl shadow-2xl border border-blue-100 px-6 py-6 transition-all duration-300 w-full min-h-[180px] md:min-h-[210px] flex flex-col justify-center">
+                  <div className="text-gray-800 text-xs md:text-sm leading-relaxed text-center">{step.description}</div>
+                </div>
+              </m.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -29,6 +29,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission> {
+    if (!db) {
+      // In development mode without database, return a mock response
+      console.warn("Database not available, creating mock contact submission");
+      return {
+        id: Math.floor(Math.random() * 1000000),
+        ...submission,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      } as ContactSubmission;
+    }
     const [contactSubmission] = await db
       .insert(contactSubmissions)
       .values(submission)

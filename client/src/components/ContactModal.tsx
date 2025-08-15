@@ -56,6 +56,8 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
       formData.append("service", data.service);
       formData.append("message", data.message);
 
+      console.log("Envoi du formulaire à Formspree...", data);
+      
       const response = await fetch("https://formspree.io/f/manjygqn", {
         method: "POST",
         body: formData,
@@ -64,11 +66,17 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
         },
       });
       
+      console.log("Réponse Formspree:", response.status, response.statusText);
+      
       if (!response.ok) {
-        throw new Error("Erreur lors de l'envoi");
+        const errorText = await response.text();
+        console.error("Erreur Formspree:", errorText);
+        throw new Error(`Erreur lors de l'envoi: ${response.status} - ${errorText}`);
       }
       
-      return response.json();
+      const result = await response.json();
+      console.log("Succès Formspree:", result);
+      return result;
     },
     onSuccess: () => {
       toast({
@@ -93,14 +101,11 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
   };
 
   const services = [
-    { value: "Tests Fonctionnels", label: "Tests Fonctionnels" },
-    { value: "Tests End-to-End", label: "Tests End-to-End" },
-    { value: "Tests Full-Cycle", label: "Tests Full-Cycle" },
-    { value: "Tests de Régression", label: "Tests de Régression" },
-    { value: "Tests d'Intégration", label: "Tests d'Intégration" },
-    { value: "Tests d'Accessibilité", label: "Tests d'Accessibilité" },
-    { value: "Tests Automatisés", label: "Tests Automatisés" },
-    { value: "Autres services", label: "Autres services" },
+    { value: "Test fonctionnel", label: "Test fonctionnel" },
+    { value: "Test non-fonctionnel", label: "Test non-fonctionnel" },
+    { value: "Test statique", label: "Test statique" },
+    { value: "Test dynamique", label: "Test dynamique" },
+    { value: "Autre", label: "Autre" },
   ];
 
   const handleClose = useCallback((e: React.MouseEvent) => {
@@ -122,35 +127,26 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
       className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 z-50"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl relative">
+      <div className="bg-white w-full max-w-xl max-h-[90vh] rounded-3xl shadow-2xl relative flex flex-col">
         {/* En-tête de la modale */}
-        <div className="bg-gradient-to-br from-blue-600 via-purple-700 to-pink-800 text-white p-6 sm:p-8 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+        <div className="rounded-t-3xl px-8 pt-8 pb-4 border-b border-gray-100 bg-white text-center relative">
           <button
             onClick={handleClose}
             aria-label="Fermer la modale"
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white hover:text-gray-200 text-3xl sm:text-4xl font-light transition-all duration-200 hover:scale-110 z-50 cursor-pointer bg-black bg-opacity-20 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-opacity-30"
+            className="absolute top-4 right-4 text-gray-400 hover:text-blue-500 text-3xl font-light transition-all duration-200 hover:scale-110 z-50 cursor-pointer bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200"
           >
             ×
           </button>
-          
-          <div className="relative z-10 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-white drop-shadow-lg">
-              Nous contacter
-            </h2>
-            <p className="text-purple-100 text-base sm:text-lg">
-              Prêt à améliorer la qualité de vos logiciels ? Contactez-nous pour une consultation gratuite.
-            </p>
-          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900">Nous contacter</h2>
+          <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto">Besoin d'un conseil, d'un devis ou d'un accompagnement ? Notre équipe vous répond sous 24h.</p>
         </div>
-
         {/* Contenu du formulaire */}
-        <div className="p-6 sm:p-8">
+        <div className="p-6 sm:p-8 overflow-y-auto">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prénom
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Prénom <span className="text-blue-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -159,14 +155,14 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
                   {...form.register("firstName")}
                 />
                 {form.formState.errors.firstName && (
-                  <p className="text-red-500 text-xs sm:text-sm mt-1">
+                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
                     {form.formState.errors.firstName.message}
                   </p>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Nom <span className="text-blue-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -175,102 +171,87 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
                   {...form.register("lastName")}
                 />
                 {form.formState.errors.lastName && (
-                  <p className="text-red-500 text-xs sm:text-sm mt-1">
+                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
                     {form.formState.errors.lastName.message}
                   </p>
                 )}
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse Email
-              </label>
-              <input
-                type="email"
-                placeholder="votre@email.com"
-                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                {...form.register("email")}
-              />
-              {form.formState.errors.email && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">
-                  {form.formState.errors.email.message}
-                </p>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Adresse Email <span className="text-blue-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="votre@email.com"
+                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  {...form.register("email")}
+                />
+                {form.formState.errors.email && (
+                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                    {form.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Entreprise / Organisation <span className="text-blue-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nom de l'entreprise"
+                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  {...form.register("company")}
+                />
+                {form.formState.errors.company && (
+                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                    {form.formState.errors.company.message}
+                  </p>
+                )}
+              </div>
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Société
-              </label>
-              <input
-                type="text"
-                placeholder="Nom de votre société"
-                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                {...form.register("company")}
-              />
-              {form.formState.errors.company && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">
-                  {form.formState.errors.company.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Service souhaité
+              <label className="block text-sm font-medium text-gray-800 mb-2">
+                Service souhaité <span className="text-blue-500">*</span>
               </label>
               <select
-                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base bg-white"
                 {...form.register("service")}
               >
-                <option value="">Sélectionner un service</option>
-                {services.map((service) => (
-                  <option key={service.value} value={service.value}>
-                    {service.label}
-                  </option>
+                <option value="">Sélectionnez un service</option>
+                {services.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
               {form.formState.errors.service && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">
+                <p className="text-blue-500 text-xs sm:text-sm mt-1">
                   {form.formState.errors.service.message}
                 </p>
               )}
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message
+              <label className="block text-sm font-medium text-gray-800 mb-2">
+                Message <span className="text-blue-500">*</span>
               </label>
               <textarea
-                placeholder="Décrivez votre projet et vos besoins en détail..."
                 rows={4}
-                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-sm sm:text-base"
+                placeholder="Décrivez votre besoin, votre projet ou posez-nous votre question..."
+                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none"
                 {...form.register("message")}
               />
               {form.formState.errors.message && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">
+                <p className="text-blue-500 text-xs sm:text-sm mt-1">
                   {form.formState.errors.message.message}
                 </p>
               )}
             </div>
-
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+              className="w-full py-3 mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-base sm:text-lg shadow-lg transition-all duration-200"
               disabled={contactMutation.isPending}
             >
-              {contactMutation.isPending ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Envoi en cours...
-                </span>
-              ) : (
-                "Envoyer le message"
-              )}
+              {contactMutation.isPending ? "Envoi en cours..." : "Envoyer ma demande"}
             </button>
           </form>
         </div>
