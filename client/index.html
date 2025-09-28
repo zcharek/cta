@@ -14,16 +14,23 @@
     
     <!-- GitHub Pages SPA redirect script -->
     <script type="text/javascript">
-        // Handle redirect parameter
+        // Handle path parameter from 404.html
         (function() {
             var urlParams = new URLSearchParams(window.location.search);
+            var path = urlParams.get('path');
             var redirect = urlParams.get('redirect');
-            if (redirect) {
+            
+            console.log('Index.html - Path param:', path);
+            console.log('Index.html - Redirect param:', redirect);
+            
+            if (path) {
+                window.history.replaceState(null, null, path);
+            } else if (redirect) {
                 window.history.replaceState(null, null, redirect);
             }
         })();
         
-        // GitHub Pages SPA redirect
+        // GitHub Pages SPA redirect (legacy)
         (function(l) {
             if (l.search[1] === '/' ) {
                 var decoded = l.search.slice(1).split('&').map(function(s) { 
