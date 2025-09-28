@@ -1,4 +1,3 @@
-import React from "react";
 import { FaPuzzlePiece, FaRocket, FaCheckCircle, FaExchangeAlt, FaRedo, FaUser, FaChartLine, FaBolt, FaArrowsAltH, FaKeyboard, FaTabletAlt, FaUserFriends, FaUsers, FaTasks } from "react-icons/fa";
 
 // Service de gestion de projet agile
