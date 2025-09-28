@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Central Test Consulting</title>
     <script type="text/javascript">
-        // Simple redirect to main app
+        // Redirect to main app with current path
         var currentPath = window.location.pathname;
         console.log('404.html - Current path:', currentPath);
         
-        // Redirect to main app with the current path
+        // Force redirect to main app
         window.location.replace('/?path=' + encodeURIComponent(currentPath));
     </script>
 </head>
