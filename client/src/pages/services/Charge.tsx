@@ -10,8 +10,8 @@ const Charge = () => {
         title="Tests de Charge - Outils spécialisés - Central Test Consulting"
         description="Découvrez nos outils spécialisés pour les tests de charge : k6, JMeter, Gatling et plus encore."
         keywords="tests de charge, performance testing, k6, JMeter, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/charge"
-        canonical="https://centraltestagency.com/services/charge"
+        ogUrl="https://centraltestagency.com/#/services/charge"
+        canonical="https://centraltestagency.com/#/services/charge"
       />
       <Header />
       <main className="py-20 md:py-24">
@@ -140,7 +140,7 @@ const Charge = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <a href="/services/k6" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/k6" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/K6-logo.svg/1058px-K6-logo.svg.png" alt="k6" className="w-10 h-10 object-contain" />
                 </div>
@@ -151,7 +151,7 @@ const Charge = () => {
                 </div>
               </a>
               
-              <a href="/services/postman" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/postman" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png" alt="Postman" className="w-10 h-10 object-contain" />
                 </div>
@@ -162,7 +162,7 @@ const Charge = () => {
                 </div>
               </a>
               
-              <a href="/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg" alt="Playwright" className="w-10 h-10 object-contain" />
                 </div>

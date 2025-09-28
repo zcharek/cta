@@ -75,12 +75,6 @@ const Header = () => {
                 Nos services
               </a>
               <a
-                href="/#about"
-                className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-blue-600"
-              >
-                Notre ADN
-              </a>
-              <a
                 href="/#/faq"
                 className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-blue-600"
               >

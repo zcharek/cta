@@ -10,8 +10,8 @@ const Stress = () => {
         title="Tests de Stress - Central Test Consulting"
         description="Tests de stress pour pousser votre système au-delà de ses limites normales et identifier son point de rupture."
         keywords="tests de stress, point de rupture, limites système, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/stress"
-        canonical="https://centraltestagency.com/services/stress"
+        ogUrl="https://centraltestagency.com/#/services/stress"
+        canonical="https://centraltestagency.com/#/services/stress"
       />
       <Header />
       <main className="py-20 md:py-24">
@@ -138,7 +138,7 @@ const Stress = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <a href="/services/k6" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/k6" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/K6-logo.svg/1058px-K6-logo.svg.png" alt="k6" className="w-10 h-10 object-contain" />
                 </div>
@@ -149,7 +149,7 @@ const Stress = () => {
                 </div>
               </a>
               
-              <a href="/services/postman" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/postman" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png" alt="Postman" className="w-10 h-10 object-contain" />
                 </div>

@@ -728,7 +728,7 @@ const TechCarousel = React.memo(() => {
               return (
                 <a
                   key={idx}
-                  href={`/services/${tool.name.toLowerCase()}`}
+                  href={`/#/services/${tool.name.toLowerCase()}`}
                   className="relative cursor-pointer w-40 h-24 md:w-56 md:h-32 p-4 bg-white rounded-3xl shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:shadow-xl hover:-trangray-y-1 hover:border-blue-300"
                   role="button"
                   tabIndex={0}

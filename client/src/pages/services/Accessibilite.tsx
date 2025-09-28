@@ -10,8 +10,8 @@ const Accessibilite = () => {
         title="Tests d'Accessibilité - Central Test Consulting"
         description="Tests d'accessibilité pour garantir que votre application est utilisable par tous, y compris les personnes en situation de handicap."
         keywords="tests accessibilité, handicap, WCAG, inclusion, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/accessibilite"
-        canonical="https://centraltestagency.com/services/accessibilite"
+        ogUrl="https://centraltestagency.com/#/services/accessibilite"
+        canonical="https://centraltestagency.com/#/services/accessibilite"
       />
       <Header />
       <main className="py-20 md:py-24">
@@ -138,7 +138,7 @@ const Accessibilite = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <a href="/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg" alt="Playwright" className="w-10 h-10 object-contain" />
                 </div>
@@ -149,7 +149,7 @@ const Accessibilite = () => {
                 </div>
               </a>
               
-              <a href="/services/cypress" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/cypress" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://www.cypress.io/cypress_logo_social.png" alt="Cypress" className="w-10 h-10 object-contain" />
                 </div>

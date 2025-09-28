@@ -104,10 +104,10 @@ const Validation = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { name: "Playwright", icon: "https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg", color: "from-blue-500 to-blue-600", desc: "Tests E2E complets avec validation multi-navigateurs.", link: "/services/playwright", badge: "Idéal pour E2E →", badgeColor: "text-blue-600" },
-            { name: "Cypress", icon: "https://www.cypress.io/cypress_logo_social.png", color: "from-blue-500 to-blue-600", desc: "Interface visuelle pour validation interactive.", link: "/services/cypress", badge: "Parfait pour debugging →", badgeColor: "text-blue-600" },
-            { name: "Selenium", icon: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Selenium_Logo.png", color: "from-blue-500 to-blue-600", desc: "Standard industriel pour validation cross-browser.", link: "/services/selenium", badge: "Multi-navigateurs →", badgeColor: "text-blue-600" },
-            { name: "Postman", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png", color: "from-blue-500 to-blue-600", desc: "Validation complète des APIs et services.", link: "/services/postman", badge: "API testing →", badgeColor: "text-blue-600" }
+            { name: "Playwright", icon: "https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg", color: "from-blue-500 to-blue-600", desc: "Tests E2E complets avec validation multi-navigateurs.", link: "/#/services/playwright", badge: "Idéal pour E2E →", badgeColor: "text-blue-600" },
+            { name: "Cypress", icon: "https://www.cypress.io/cypress_logo_social.png", color: "from-blue-500 to-blue-600", desc: "Interface visuelle pour validation interactive.", link: "/#/services/cypress", badge: "Parfait pour debugging →", badgeColor: "text-blue-600" },
+            { name: "Selenium", icon: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Selenium_Logo.png", color: "from-blue-500 to-blue-600", desc: "Standard industriel pour validation cross-browser.", link: "/#/services/selenium", badge: "Multi-navigateurs →", badgeColor: "text-blue-600" },
+            { name: "Postman", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png", color: "from-blue-500 to-blue-600", desc: "Validation complète des APIs et services.", link: "/#/services/postman", badge: "API testing →", badgeColor: "text-blue-600" }
           ].map((tool, index) => (
             <a key={index} href={tool.link} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
               <div className={`bg-gradient-to-br ${tool.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>

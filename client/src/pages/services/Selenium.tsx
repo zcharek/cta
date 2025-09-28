@@ -18,8 +18,8 @@ const Selenium = () => {
         title="Selenium - Automatisation Web multi-navigateurs - Central Test Consulting"
         description="Découvrez Selenium, le standard de l'automatisation web avec support multi-navigateurs et écosystème riche."
         keywords="Selenium, WebDriver, automatisation web, tests multi-navigateurs, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/selenium"
-        canonical="https://centraltestagency.com/services/selenium"
+        ogUrl="https://centraltestagency.com/#/services/selenium"
+        canonical="https://centraltestagency.com/#/services/selenium"
       />
       <Header />
       <main className="py-20 md:py-24">

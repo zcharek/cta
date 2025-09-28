@@ -10,8 +10,8 @@ const Compatibilite = () => {
         title="Tests de Compatibilité - Central Test Consulting"
         description="Tests de compatibilité multi-navigateurs et multi-plateformes pour garantir un fonctionnement optimal sur tous les environnements."
         keywords="tests compatibilité, multi-navigateurs, multi-plateformes, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/compatibilite"
-        canonical="https://centraltestagency.com/services/compatibilite"
+        ogUrl="https://centraltestagency.com/#/services/compatibilite"
+        canonical="https://centraltestagency.com/#/services/compatibilite"
       />
       <Header />
       <main className="py-20 md:py-24">
@@ -138,7 +138,7 @@ const Compatibilite = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <a href="/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg" alt="Playwright" className="w-10 h-10 object-contain" />
                 </div>
@@ -149,7 +149,7 @@ const Compatibilite = () => {
                 </div>
               </a>
               
-              <a href="/services/selenium" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/selenium" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Selenium_Logo.png" alt="Selenium" className="w-10 h-10 object-contain" />
                 </div>
@@ -160,7 +160,7 @@ const Compatibilite = () => {
                 </div>
               </a>
               
-              <a href="/services/cypress" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/cypress" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://www.cypress.io/cypress_logo_social.png" alt="Cypress" className="w-10 h-10 object-contain" />
                 </div>

@@ -10,8 +10,8 @@ const Integration = () => {
         title="Tests d'Intégration - Outils spécialisés - Central Test Consulting"
         description="Découvrez nos outils spécialisés pour les tests d'intégration : Postman, RestAssured, Playwright et plus encore."
         keywords="tests d'intégration, API testing, Postman, RestAssured, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/integration"
-        canonical="https://centraltestagency.com/services/integration"
+        ogUrl="https://centraltestagency.com/#/services/integration"
+        canonical="https://centraltestagency.com/#/services/integration"
       />
       <Header />
       <main className="py-20 md:py-24">
@@ -140,7 +140,7 @@ const Integration = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <a href="/services/postman" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/postman" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png" alt="Postman" className="w-10 h-10 object-contain" />
                 </div>
@@ -151,7 +151,7 @@ const Integration = () => {
                 </div>
               </a>
               
-              <a href="/services/restassured" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/restassured" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://avatars.githubusercontent.com/u/19369327?s=280&v=4" alt="RestAssured" className="w-10 h-10 object-contain" />
                 </div>
@@ -162,7 +162,7 @@ const Integration = () => {
                 </div>
               </a>
               
-              <a href="/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/playwright" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg" alt="Playwright" className="w-10 h-10 object-contain" />
                 </div>
@@ -173,7 +173,7 @@ const Integration = () => {
                 </div>
               </a>
               
-              <a href="/services/cypress" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
+              <a href="/#/services/cypress" className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <img src="https://www.cypress.io/cypress_logo_social.png" alt="Cypress" className="w-10 h-10 object-contain" />
                 </div>

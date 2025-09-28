@@ -13,8 +13,8 @@ const GestionProjetAgile = () => {
         title="Gestion de Projet Agile - Accompagnement Scrum - Central Test Consulting"
         description="Accompagnement dans la structuration d'équipes Scrum avec création de feature teams. Formation aux méthodologies agiles, ceremonies Scrum et organisation de sprints."
         keywords="gestion projet agile, Scrum, feature team, sprint, ceremonies Scrum, accompagnement agile, Central Test Consulting"
-        ogUrl="https://centraltestagency.com/services/gestion-projet-agile"
-        canonical="https://centraltestagency.com/services/gestion-projet-agile"
+        ogUrl="https://centraltestagency.com/#/services/gestion-projet-agile"
+        canonical="https://centraltestagency.com/#/services/gestion-projet-agile"
       />
       <Header />
       <main className="py-20 md:py-24">
