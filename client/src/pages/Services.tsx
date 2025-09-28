@@ -30,19 +30,19 @@ const Services = () => {
                 Vérifiez que votre application fait exactement ce qu'elle doit faire selon les spécifications.
               </p>
               <div className="space-y-4">
-                <a href="/services/validation" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/validation" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Validation</h3>
                   <p className="text-sm text-gray-600">Vérification du cahier des charges et des user stories</p>
                 </a>
-                <a href="/services/integration" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/integration" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Intégration</h3>
                   <p className="text-sm text-gray-600">Tests des interactions entre modules UI/API</p>
                 </a>
-                <a href="/services/regression" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/regression" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Régression</h3>
                   <p className="text-sm text-gray-600">Vérification que l'existant fonctionne après modifications</p>
                 </a>
-                <a href="/services/acceptation" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/acceptation" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Acceptation Utilisateur</h3>
                   <p className="text-sm text-gray-600">Tests avec les clients et utilisateurs finaux</p>
                 </a>
@@ -55,27 +55,27 @@ const Services = () => {
                 Assurez-vous que votre application fonctionne de manière optimale dans tous les contextes.
               </p>
               <div className="space-y-4">
-                <a href="/services/charge" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/charge" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Tests de Charge</h3>
                   <p className="text-sm text-gray-600">Évaluation de la capacité utilisateurs simultanés</p>
                 </a>
-                <a href="/services/stress" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/stress" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Tests de Stress</h3>
                   <p className="text-sm text-gray-600">Comportement en cas de dépassement des limites</p>
                 </a>
-                <a href="/services/montee-charge" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/montee-charge" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Montée en Charge</h3>
                   <p className="text-sm text-gray-600">Stabilité des performances avec plus d'utilisateurs</p>
                 </a>
-                <a href="/services/accessibilite" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/accessibilite" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Accessibilité</h3>
                   <p className="text-sm text-gray-600">Utilisabilité pour tous les utilisateurs</p>
                 </a>
-                <a href="/services/compatibilite" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/compatibilite" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Compatibilité</h3>
                   <p className="text-sm text-gray-600">Fonctionnement sur tous les navigateurs et appareils</p>
                 </a>
-                <a href="/services/ux" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <a href="/#/services/ux" className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <h3 className="font-semibold text-blue-800">Utilisabilité (UX)</h3>
                   <p className="text-sm text-gray-600">Simplicité et cohérence du parcours utilisateur</p>
                 </a>

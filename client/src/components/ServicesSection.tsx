@@ -6,7 +6,7 @@ const agileProjectManagement = {
   title: "Gestion de projet agile", 
   color: "text-blue-700",
   tooltip: "Structuration d'équipes Scrum avec création de feature teams et accompagnement méthodologique.",
-  link: "/services/gestion-projet-agile"
+  link: "/#/services/gestion-projet-agile"
 };
 
 const functionalTests = [
@@ -15,28 +15,28 @@ const functionalTests = [
     title: "Validation", 
     color: "text-blue-700",
     tooltip: "Vérifie que l'application répond au cahier des charges et aux user stories.",
-    link: "/services/validation"
+    link: "/#/services/validation"
   },
   {
     icon: <FaExchangeAlt className="text-blue-600 text-lg" />, 
     title: "Intégration", 
     color: "text-blue-700", 
     tooltip: "Vérifie les interactions entre modules (UI/API).",
-    link: "/services/integration"
+    link: "/#/services/integration"
   },
   {
     icon: <FaRedo className="text-blue-500 text-lg" />, 
     title: "Régression", 
     color: "text-blue-700", 
     tooltip: "S'assure que l'existant fonctionne après chaque modification.",
-    link: "/services/regression"
+    link: "/#/services/regression"
   },
   {
     icon: <FaUser className="text-blue-600 text-lg" />, 
     title: "Acceptation utilisateur", 
     color: "text-blue-700", 
     tooltip: "Tests réalisés par ou avec les clients/utilisateurs.",
-    link: "/services/acceptation"
+    link: "/#/services/acceptation"
   },
 ];
 
@@ -46,42 +46,42 @@ const nonFunctionalTests = [
     title: "Charge", 
     color: "text-blue-700",
     tooltip: "Combien d'utilisateurs simultanés peuvent être supportés ?",
-    link: "/services/charge"
+    link: "/#/services/charge"
   },
   {
     icon: <FaBolt className="text-blue-500 text-lg" />, 
     title: "Stress", 
     color: "text-blue-700",
     tooltip: "Que se passe-t-il si on dépasse les limites ?",
-    link: "/services/stress"
+    link: "/#/services/stress"
   },
   {
     icon: <FaArrowsAltH className="text-blue-400 text-lg" />, 
     title: "Montée en charge", 
     color: "text-blue-700",
     tooltip: "La performance reste-t-elle stable avec plus d'utilisateurs ?",
-    link: "/services/montee-charge"
+    link: "/#/services/montee-charge"
   },
   {
     icon: <FaKeyboard className="text-blue-700 text-lg" />, 
     title: "Accessibilité", 
     color: "text-blue-700",
     tooltip: "L'application est-elle utilisable par tous (navigation clavier, etc.) ?",
-    link: "/services/accessibilite"
+    link: "/#/services/accessibilite"
   },
   {
     icon: <FaTabletAlt className="text-blue-700 text-lg" />, 
     title: "Compatibilité", 
     color: "text-blue-700",
     tooltip: "Fonctionne-t-elle sur tous les navigateurs, résolutions, appareils ?",
-    link: "/services/compatibilite"
+    link: "/#/services/compatibilite"
   },
   {
     icon: <FaUserFriends className="text-blue-600 text-lg" />, 
     title: "Utilisabilité (UX)", 
     color: "text-blue-700",
     tooltip: "Le parcours utilisateur est-il simple et cohérent ?",
-    link: "/services/ux"
+    link: "/#/services/ux"
   },
 ];
 

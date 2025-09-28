@@ -93,7 +93,7 @@ const Footer = () => {
             <div className="text-right">
               <div className="flex items-center justify-end gap-4 text-sm text-gray-400">
                 <a
-                  href="/legal"
+                  href="/#/legal"
                   className="hover:text-white transition-colors"
                 >
                   Mentions Légales

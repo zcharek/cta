@@ -81,7 +81,7 @@ const Header = () => {
                 Notre ADN
               </a>
               <a
-                href="/faq"
+                href="/#/faq"
                 className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-blue-600"
               >
                 FAQ
@@ -128,7 +128,7 @@ const Header = () => {
               Services
             </button>
             <a
-              href="/faq"
+              href="/#/faq"
               className="font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 text-center"
               onClick={() => setIsOpen(false)}
             >

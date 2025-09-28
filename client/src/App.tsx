@@ -49,7 +49,7 @@ function App() {
           <Route path="/" component={Home} />
           <Route path="/services" component={Services} />
           <Route path="/faq" component={FAQ} />
-          <Route path="/legal" component={Legal} />
+          <Route path="/#/legal" component={Legal} />
           
           {/* Gestion de projet */}
           <Route path="/services/gestion-projet-agile" component={GestionProjetAgile} />
