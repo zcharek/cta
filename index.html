@@ -13,18 +13,23 @@
     
     <!-- GitHub Pages SPA redirect script -->
     <script type="text/javascript">
-        // Handle path parameter from 404.html
+        // Handle SPA routing for GitHub Pages
         (function() {
             var urlParams = new URLSearchParams(window.location.search);
             var path = urlParams.get('path');
             var redirect = urlParams.get('redirect');
             
+            console.log('Index.html - Current URL:', window.location.href);
             console.log('Index.html - Path param:', path);
             console.log('Index.html - Redirect param:', redirect);
+            console.log('Index.html - Current pathname:', window.location.pathname);
             
+            // If we have a path parameter, use it
             if (path) {
+                console.log('Redirecting to path:', path);
                 window.history.replaceState(null, null, path);
             } else if (redirect) {
+                console.log('Redirecting to redirect:', redirect);
                 window.history.replaceState(null, null, redirect);
             }
         })();
