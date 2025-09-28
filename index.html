@@ -10,6 +10,24 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
+    
+    <!-- GitHub Pages SPA redirect script -->
+    <script type="text/javascript">
+        // GitHub Pages SPA redirect
+        // This script takes the current URL and redirects to the index.html
+        // with the path as a query parameter, then the React app handles the routing
+        
+        (function(l) {
+            if (l.search[1] === '/' ) {
+                var decoded = l.search.slice(1).split('&').map(function(s) { 
+                    return s.replace(/~and~/g, '&')
+                }).join('?');
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
+            }
+        }(window.location))
+    </script>
   <script type="module" crossorigin src="/assets/index-BfiHUEJT.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-dC_VdgoK.css">
 </head>
