@@ -1,20 +1,58 @@
+# Robots.txt optimisé pour Central Test Consulting
+# Dernière mise à jour: 2024-01-15
+
+# Autoriser tous les bots principaux
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://www.centraltestagency.com/sitemap.xml
+# Priorités pour les pages importantes
+Allow: /services/
+Allow: /faq
+Allow: /legal
 
-# Disallow crawling of admin or private areas
-Disallow: /admin/
-Disallow: /api/
-Disallow: /_next/
+# Bloquer les ressources inutiles pour l'indexation
 Disallow: /src/
+Disallow: /node_modules/
+Disallow: *.json
+Disallow: *.js.map
+Disallow: *.css.map
+Disallow: /api/
+Disallow: /admin/
+Disallow: /.git/
+Disallow: /dist/
 
-# Allow crawling of main content
-Allow: /#services
-Allow: /#outils
-Allow: /#about
-Allow: /#contact
+# Autoriser spécifiquement les assets importants
+Allow: /images/
+Allow: /pdf/
+Allow: *.css
+Allow: *.js
+Allow: *.webp
+Allow: *.png
+Allow: *.jpg
+Allow: *.svg
 
-# Crawl delay for respectful crawling
+# Bots spécialisés
+User-agent: Googlebot
+Allow: /
 Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Sitemap
+Sitemap: https://centraltestagency.com/sitemap.xml
+
+# Informations additionnelles
+# Contact: centraltestagency@gmail.com
+# Site: https://centraltestagency.com
+# Localisation: Algérie

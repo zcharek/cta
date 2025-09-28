@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 
 interface CaseStudyCardProps {
   title: string;
@@ -10,7 +11,7 @@ interface CaseStudyCardProps {
   pdf?: string;
 }
 
-const CaseStudyCard = ({
+const CaseStudyCard = React.memo(({
   title,
   description,
   image,
@@ -84,12 +85,14 @@ const CaseStudyCard = ({
           <img
             src={image}
             alt={altText}
+            width="800"
+            height="452"
             loading="lazy"
             decoding="async"
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/70 to-secondary/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out backdrop-blur-sm">
-            <div className="btn-modern px-6 py-3 bg-white text-primary hover:scale-105 hover:-translate-y-0.5 transition-all duration-200">
+            <div className="btn-modern px-6 py-3 bg-white text-primary hover:scale-105 hover:-trangray-y-0.5 transition-all duration-200">
               Lire plus
             </div>
           </div>
@@ -165,6 +168,6 @@ const CaseStudyCard = ({
       )}
     </>
   );
-};
+});
 
 export default CaseStudyCard;

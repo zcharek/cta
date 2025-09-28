@@ -6,7 +6,7 @@ import CalendlyWidget from "@/components/CalendlyWidget";
 
 const RendezVous = () => {
   useEffect(() => {
-    document.title = "Prendre un rendez-vous | Central Test Agency";
+    document.title = "Prendre un rendez-vous | Central Test Consulting";
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
@@ -20,7 +20,7 @@ const RendezVous = () => {
     <>
       <Header />
       <main className="pt-20">
-        <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+        <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-50 min-h-screen">
           <div className="container">
             <m.div
               className="text-center mb-16"
@@ -31,7 +31,7 @@ const RendezVous = () => {
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                 Prenez rendez-vous
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
                 Réservez votre créneau pour une consultation gratuite avec nos experts en tests logiciels. 
                 Nous analyserons vos besoins et vous proposerons des solutions adaptées.
               </p>
@@ -48,7 +48,7 @@ const RendezVous = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">
                     Consultation gratuite de 30 minutes
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-700">
                     Choisissez un créneau qui vous convient. La consultation se fera via Google Meet.
                   </p>
                 </div>
@@ -76,19 +76,19 @@ const RendezVous = () => {
                     <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                       <span className="text-blue-600 text-xl">1</span>
                     </div>
-                    <p className="text-gray-700">Analyse de vos besoins et objectifs</p>
+                    <p className="text-gray-800">Analyse de vos besoins et objectifs</p>
                   </div>
                   <div className="text-center">
-                    <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-purple-600 text-xl">2</span>
+                    <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-blue-600 text-xl">2</span>
                     </div>
-                    <p className="text-gray-700">Présentation de nos solutions adaptées</p>
+                    <p className="text-gray-800">Présentation de nos solutions adaptées</p>
                   </div>
                   <div className="text-center">
-                    <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-green-600 text-xl">3</span>
+                    <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-blue-600 text-xl">3</span>
                     </div>
-                    <p className="text-gray-700">Devis personnalisé et planning</p>
+                    <p className="text-gray-800">Devis personnalisé et planning</p>
                   </div>
                 </div>
               </div>

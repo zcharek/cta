@@ -1,712 +1,194 @@
-import { useState, useEffect, useCallback } from "react";
-import ContactModal from "./ContactModal";
+import React from "react";
+import { FaPuzzlePiece, FaRocket, FaCheckCircle, FaExchangeAlt, FaRedo, FaUser, FaChartLine, FaBolt, FaArrowsAltH, FaKeyboard, FaTabletAlt, FaUserFriends, FaUsers, FaTasks } from "react-icons/fa";
 
-const services = [
+// Service de gestion de projet agile
+const agileProjectManagement = {
+  icon: <FaUsers className="text-blue-600 text-lg" />, 
+  title: "Gestion de projet agile", 
+  color: "text-blue-700",
+  tooltip: "Structuration d'équipes Scrum avec création de feature teams et accompagnement méthodologique.",
+  link: "/services/gestion-projet-agile"
+};
+
+const functionalTests = [
   {
-    title: "Tests Fonctionnels",
-    icon: "🔧",
-    description: "Validation complète de toutes les fonctionnalités de votre application",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests fonctionnels ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Validation exhaustive</h4>
-            <p>
-              Test complet de chaque fonctionnalité selon les spécifications 
-              métier pour garantir la conformité totale.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Détection précoce des bugs</h4>
-            <p>
-              Identification des défauts avant la mise en production 
-              pour réduire les coûts de correction.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests de cas limites</h4>
-            <p>
-              Validation des comportements dans des conditions extrêmes 
-              et des scénarios d'erreur complexes.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Couverture multi-plateforme</h4>
-            <p>
-              Tests sur différents navigateurs, systèmes d'exploitation 
-              et appareils pour une compatibilité maximale.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Documentation détaillée</h4>
-            <p>
-              Rapports complets avec reproduction des bugs et 
-              recommandations d'amélioration.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests de régression</h4>
-            <p>
-              Validation que les nouvelles fonctionnalités n'impactent 
-              pas les fonctionnalités existantes.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre approche des tests fonctionnels
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Analyse des exigences :</strong> Étude approfondie de vos 
-            spécifications pour créer des plans de tests adaptés.
-          </li>
-          <li>
-            <strong>Conception de cas de tests :</strong> Création de scénarios 
-            couvrant tous les parcours utilisateurs critiques.
-          </li>
-          <li>
-            <strong>Exécution méthodique :</strong> Tests manuels et automatisés 
-            selon une approche structurée et répétable.
-          </li>
-          <li>
-            <strong>Traçabilité complète :</strong> Lien direct entre exigences, 
-            cas de tests et résultats pour une couverture optimale.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
+    icon: <FaCheckCircle className="text-blue-600 text-lg" />, 
+    title: "Validation", 
+    color: "text-blue-700",
+    tooltip: "Vérifie que l'application répond au cahier des charges et aux user stories.",
+    link: "/services/validation"
   },
   {
-    title: "Tests End-to-End",
-    icon: "📄",
-    description: "Validation complète des parcours utilisateurs de bout en bout",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests end-to-end ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Parcours utilisateur complets</h4>
-            <p>
-              Simulation des vrais parcours utilisateurs du début à la fin 
-              pour valider l'expérience globale.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Intégration système</h4>
-            <p>
-              Test des interactions entre tous les composants, APIs, 
-              bases de données et services externes.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Automatisation intelligente</h4>
-            <p>
-              Scripts automatisés robustes pour exécution répétable 
-              et intégration continue.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests cross-browser</h4>
-            <p>
-              Validation sur multiples navigateurs et appareils 
-              pour garantir la compatibilité universelle.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Gestion des données</h4>
-            <p>
-              Stratégies de données de test pour scénarios réalistes 
-              sans compromettre les données de production.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Monitoring en temps réel</h4>
-            <p>
-              Surveillance des performances et détection des anomalies 
-              pendant l'exécution des tests.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre méthodologie end-to-end
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Cartographie des parcours :</strong> Identification et 
-            modélisation de tous les flux utilisateurs critiques.
-          </li>
-          <li>
-            <strong>Architecture de tests :</strong> Conception d'une 
-            infrastructure de tests scalable et maintenable.
-          </li>
-          <li>
-            <strong>Développement progressif :</strong> Création itérative 
-            de suites de tests avec feedback continu.
-          </li>
-          <li>
-            <strong>Intégration CI/CD :</strong> Insertion dans vos pipelines 
-            pour validation automatique à chaque déploiement.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
+    icon: <FaExchangeAlt className="text-blue-600 text-lg" />, 
+    title: "Intégration", 
+    color: "text-blue-700", 
+    tooltip: "Vérifie les interactions entre modules (UI/API).",
+    link: "/services/integration"
   },
   {
-    title: "Tests Full-Cycle",
-    icon: "🔄",
-    description: "Accompagnement complet sur tout le cycle de développement",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests full-cycle ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Intégration native DevOps</h4>
-            <p>
-              Tests intégrés dans chaque phase du cycle de développement 
-              pour une qualité continue.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Shift-left testing</h4>
-            <p>
-              Anticipation des tests dès la conception pour détecter 
-              les problèmes le plus tôt possible.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Automatisation progressive</h4>
-            <p>
-              Montée en puissance graduelle de l'automatisation 
-              selon la maturité du projet.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Feedback continu</h4>
-            <p>
-              Retours immédiats aux équipes de développement 
-              pour correction rapide des défauts.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Métriques qualité</h4>
-            <p>
-              Tableaux de bord en temps réel pour suivre 
-              l'évolution de la qualité du produit.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Formation équipes</h4>
-            <p>
-              Accompagnement et montée en compétence de vos équipes 
-              sur les pratiques de test.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre approche full-cycle
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Planification stratégique :</strong> Définition de la 
-            stratégie de test alignée sur vos objectifs business.
-          </li>
-          <li>
-            <strong>Implémentation progressive :</strong> Mise en place 
-            graduelle des processus et outils de test.
-          </li>
-          <li>
-            <strong>Optimisation continue :</strong> Amélioration constante 
-            des pratiques basée sur les retours d'expérience.
-          </li>
-          <li>
-            <strong>Gouvernance qualité :</strong> Mise en place de standards 
-            et processus pour maintenir un niveau de qualité élevé.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1559028012-481c04fa702d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
+    icon: <FaRedo className="text-blue-500 text-lg" />, 
+    title: "Régression", 
+    color: "text-blue-700", 
+    tooltip: "S'assure que l'existant fonctionne après chaque modification.",
+    link: "/services/regression"
   },
   {
-    title: "Tests de Régression",
-    icon: "💎",
-    description: "Validation que les nouvelles modifications n'impactent pas l'existant",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests de régression ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Protection de l'existant</h4>
-            <p>
-              Garantie que les nouvelles fonctionnalités ne dégradent 
-              pas les fonctionnalités déjà validées.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Automatisation intelligente</h4>
-            <p>
-              Suites de tests automatisés optimisées pour exécution 
-              rapide et couverture maximale.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Sélection de tests optimale</h4>
-            <p>
-              Algorithmes intelligents pour identifier les tests 
-              les plus pertinents selon les modifications.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Exécution parallèle</h4>
-            <p>
-              Infrastructure cloud pour exécuter les tests en parallèle 
-              et réduire le temps de feedback.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Analyse d'impact</h4>
-            <p>
-              Évaluation précise des zones impactées par les modifications 
-              pour cibler les tests nécessaires.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Reporting avancé</h4>
-            <p>
-              Rapports détaillés avec tendances et recommandations 
-              d'amélioration de la couverture.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre stratégie de tests de régression
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Baseline de référence :</strong> Établissement d'une 
-            suite de tests de référence couvrant les fonctionnalités critiques.
-          </li>
-          <li>
-            <strong>Maintenance adaptative :</strong> Évolution de la suite 
-            de tests selon les modifications de l'application.
-          </li>
-          <li>
-            <strong>Priorisation intelligente :</strong> Classification des tests 
-            par criticité et fréquence d'exécution optimale.
-          </li>
-          <li>
-            <strong>Intégration continue :</strong> Exécution automatique 
-            déclenchée par les commits et merge requests.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
-  },
-  {
-    title: "Tests d'Intégration",
-    icon: "🔗",
-    description: "Validation des interactions entre composants et systèmes",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests d'intégration ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Tests API complets</h4>
-            <p>
-              Validation approfondie de tous les endpoints, contrats 
-              et formats de données entre services.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Microservices testing</h4>
-            <p>
-              Stratégies spécialisées pour tester les architectures 
-              distribuées et communications inter-services.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests de contrats</h4>
-            <p>
-              Validation des accords entre services producteurs 
-              et consommateurs avec frameworks spécialisés.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Simulation d'environnements</h4>
-            <p>
-              Mocking et stubbing intelligents pour isoler 
-              les composants en cours de test.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests de données</h4>
-            <p>
-              Validation de l'intégrité des données lors des 
-              échanges entre systèmes différents.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Monitoring d'intégration</h4>
-            <p>
-              Surveillance continue des points d'intégration 
-              en production avec alertes proactives.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre approche des tests d'intégration
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Cartographie d'architecture :</strong> Analyse complète 
-            des interactions entre tous les composants du système.
-          </li>
-          <li>
-            <strong>Stratégie de test pyramide :</strong> Équilibrage optimal 
-            entre tests unitaires, d'intégration et end-to-end.
-          </li>
-          <li>
-            <strong>Environnements dédiés :</strong> Mise en place 
-            d'environnements de test isolés et reproductibles.
-          </li>
-          <li>
-            <strong>Automatisation CI/CD :</strong> Intégration dans les 
-            pipelines pour validation continue des intégrations.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
-  },
-  {
-    title: "Tests d'Accessibilité",
-    icon: "♿",
-    description: "Validation de la conformité aux standards d'accessibilité",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests d'accessibilité ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Conformité WCAG</h4>
-            <p>
-              Validation complète selon les critères WCAG 2.1 AA 
-              pour garantir l'accessibilité universelle.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests avec technologies assistives</h4>
-            <p>
-              Validation avec lecteurs d'écran, navigation clavier 
-              et autres outils d'assistance réels.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Audit automatisé</h4>
-            <p>
-              Outils spécialisés pour détection automatique 
-              des problèmes d'accessibilité dans le code.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Tests utilisateurs</h4>
-            <p>
-              Sessions avec utilisateurs en situation de handicap 
-              pour validation de l'expérience réelle.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Recommandations correctives</h4>
-            <p>
-              Guide détaillé des modifications nécessaires 
-              avec exemples de code et bonnes pratiques.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Formation équipes</h4>
-            <p>
-              Sensibilisation et formation des équipes de développement 
-              aux principes d'accessibilité.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre méthode d'audit d'accessibilité
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Analyse technique :</strong> Audit du code source 
-            et des balises HTML pour conformité aux standards.
-          </li>
-          <li>
-            <strong>Tests fonctionnels :</strong> Validation de tous 
-            les parcours avec technologies d'assistance.
-          </li>
-          <li>
-            <strong>Évaluation UX :</strong> Analyse de l'expérience 
-            utilisateur pour personnes en situation de handicap.
-          </li>
-          <li>
-            <strong>Plan d'action :</strong> Roadmap priorisée pour 
-            mise en conformité progressive et durable.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
-  },
-  {
-    title: "Tests Automatisés",
-    icon: "🤖",
-    description: "Création et maintenance de suites de tests automatisés robustes",
-    detailedDescription: (
-      <>
-        <h3 className="text-xl font-semibold mb-2">
-          Pourquoi choisir nos services de tests automatisés ?
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">ROI optimisé</h4>
-            <p>
-              Réduction drastique des coûts de test à long terme grâce 
-              à l'automatisation des tâches répétitives.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Exécution rapide</h4>
-            <p>
-              Tests parallèles et distribués pour feedback instantané 
-              sur la qualité du code.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Couverture exhaustive</h4>
-            <p>
-              Scripts automatisés couvrant tous les scénarios critiques 
-              avec exécution systématique.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Intégration CI/CD native</h4>
-            <p>
-              Déclenchement automatique des tests à chaque commit 
-              pour validation continue.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Maintenance évolutive</h4>
-            <p>
-              Architecture de tests maintenable et évolutive 
-              s'adaptant aux changements de l'application.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Reporting détaillé</h4>
-            <p>
-              Tableaux de bord avec métriques de couverture, 
-              tendances et analyses de défaillance.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Notre approche de l'automatisation
-        </h3>
-        <ul className="list-disc ml-5 space-y-2 text-gray-700">
-          <li>
-            <strong>Audit de faisabilité :</strong> Analyse des cas d'usage 
-            pour identifier les tests les plus adaptés à l'automatisation.
-          </li>
-          <li>
-            <strong>Framework sur-mesure :</strong> Conception d'une architecture 
-            de tests adaptée à votre stack technique et contraintes.
-          </li>
-          <li>
-            <strong>Développement progressif :</strong> Implémentation itérative 
-            avec validation continue de la valeur ajoutée.
-          </li>
-          <li>
-            <strong>Formation et transfert :</strong> Accompagnement de vos équipes 
-            pour maintenir et faire évoluer les tests automatisés.
-          </li>
-        </ul>
-      </>
-    ),
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
+    icon: <FaUser className="text-blue-600 text-lg" />, 
+    title: "Acceptation utilisateur", 
+    color: "text-blue-700", 
+    tooltip: "Tests réalisés par ou avec les clients/utilisateurs.",
+    link: "/services/acceptation"
   },
 ];
 
-const ServicesSection = () => {
-  const [selectedService, setSelectedService] = useState<null | (typeof services)[0]>(null);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [preselectedService, setPreselectedService] = useState<string>("");
+const nonFunctionalTests = [
+  {
+    icon: <FaChartLine className="text-blue-600 text-lg" />, 
+    title: "Charge", 
+    color: "text-blue-700",
+    tooltip: "Combien d'utilisateurs simultanés peuvent être supportés ?",
+    link: "/services/charge"
+  },
+  {
+    icon: <FaBolt className="text-blue-500 text-lg" />, 
+    title: "Stress", 
+    color: "text-blue-700",
+    tooltip: "Que se passe-t-il si on dépasse les limites ?",
+    link: "/services/stress"
+  },
+  {
+    icon: <FaArrowsAltH className="text-blue-400 text-lg" />, 
+    title: "Montée en charge", 
+    color: "text-blue-700",
+    tooltip: "La performance reste-t-elle stable avec plus d'utilisateurs ?",
+    link: "/services/montee-charge"
+  },
+  {
+    icon: <FaKeyboard className="text-blue-700 text-lg" />, 
+    title: "Accessibilité", 
+    color: "text-blue-700",
+    tooltip: "L'application est-elle utilisable par tous (navigation clavier, etc.) ?",
+    link: "/services/accessibilite"
+  },
+  {
+    icon: <FaTabletAlt className="text-blue-700 text-lg" />, 
+    title: "Compatibilité", 
+    color: "text-blue-700",
+    tooltip: "Fonctionne-t-elle sur tous les navigateurs, résolutions, appareils ?",
+    link: "/services/compatibilite"
+  },
+  {
+    icon: <FaUserFriends className="text-blue-600 text-lg" />, 
+    title: "Utilisabilité (UX)", 
+    color: "text-blue-700",
+    tooltip: "Le parcours utilisateur est-il simple et cohérent ?",
+    link: "/services/ux"
+  },
+];
 
-  const handleClose = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedService(null);
-  }, []);
-
-  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setSelectedService(null);
-    }
-  }, []);
-
-  const handleContactClick = useCallback((serviceTitle: string) => {
-    setSelectedService(null);
-    setPreselectedService(serviceTitle);
-    setIsContactModalOpen(true);
-  }, []);
-
-  const handleContactModalClose = useCallback(() => {
-    setIsContactModalOpen(false);
-    setPreselectedService("");
-  }, []);
-
-  useEffect(() => {
-    if (selectedService) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [selectedService]);
-
+export default function ServicesSection() {
   return (
-    <section id="services" className="webflow-section bg-background">
-      <div className="container">
+    <section className="py-20 md:py-24 bg-gradient-to-b from-white via-gray-50 to-gray-200" id="services">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-            Nos services
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Nos experts certifiés ISTQB conçoivent et réalisent des tests de
-            bout en bout, sur mesure, pour garantir la qualité totale de vos
-            logiciels et de l'expérience utilisateur.
+          <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 drop-shadow-lg">Nos services</h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-medium leading-relaxed">
+            Nous accompagnons vos équipes dans la gestion de projet agile et proposons des tests classés par objectifs fonctionnels/non fonctionnels et par méthodes d'exécution <span className="text-blue-600 font-semibold">statique</span>/<span className="text-blue-600 font-semibold">dynamique</span>.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              onClick={() => setSelectedService(service)}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-300 group"
-            >
-              <div className="flex items-center mb-6">
-                <div className="text-4xl mr-4 group-hover:scale-110 transition-transform">
-                  {service.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {service.title}
-                </h3>
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                {service.description}
-              </p>
-              <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors">
-                <span>En savoir plus</span>
-                <span className="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
-              </div>
+        {/* Bloc Gestion de projet agile */}
+        <div className="mb-20">
+          <div className="flex flex-col items-center mb-8">
+            <span className="inline-block mb-4 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Accompagnement méthodologique</span>
+            <div className="bg-gradient-to-br from-blue-500 to-blue-400 text-white rounded-full p-6 shadow text-4xl mb-4">
+              <FaUsers />
             </div>
-          ))}
+            <h3 className="text-3xl font-bold text-blue-700 mb-2">Gestion de projet agile</h3>
+          </div>
+          <div className="flex justify-center">
+            <a 
+              href={agileProjectManagement.link}
+              className="group relative bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100 hover:border-blue-200 w-full max-w-md"
+            >
+              <div className="flex items-center mb-4">
+                <div className="mr-4 bg-blue-50 p-3 rounded-full">
+                  {agileProjectManagement.icon}
+                </div>
+                <h4 className={`text-xl font-bold ${agileProjectManagement.color} group-hover:text-blue-600 transition-colors`}>
+                  {agileProjectManagement.title}
+                </h4>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                {agileProjectManagement.tooltip}
+              </p>
+              <div className="flex items-center text-blue-600 font-medium text-sm group-hover:text-blue-700 transition-colors">
+                <span className="mr-2">En savoir plus</span>
+                <span className="transform group-hover:trangray-x-1 transition-transform">→</span>
+              </div>
+            </a>
+          </div>
         </div>
 
-        {/* Modal détaillée */}
-        {selectedService && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 z-50"
-            onClick={handleBackdropClick}
-          >
-            <div
-              className="bg-white max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl relative transform transition-all duration-300 scale-100"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header avec gradient amélioré */}
-              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white p-6 sm:p-10 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
-                <button
-                  onClick={handleClose}
-                  aria-label="Fermer la modale"
-                  className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white hover:text-gray-200 text-3xl sm:text-4xl font-light transition-all duration-200 hover:scale-110 z-50 cursor-pointer bg-black bg-opacity-20 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-opacity-30"
-                >
-                  ×
-                </button>
-                
-                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 relative z-10">
-                  <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-white/30">
-                    <span className="text-4xl sm:text-5xl">{selectedService.icon}</span>
-                  </div>
-                  <div className="text-center sm:text-left">
-                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 text-white drop-shadow-lg">
-                      {selectedService.title}
-                    </h2>
-                    <p className="text-blue-100 text-base sm:text-xl font-medium">
-                      Solutions professionnelles de test logiciel
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contenu avec design amélioré */}
-              <div className="p-6 sm:p-10 text-gray-800 leading-relaxed">
-                <div className="prose prose-lg max-w-none">
-                  {selectedService.detailedDescription}
-                </div>
-                
-                {/* Section CTA en bas */}
-                <div className="mt-8 sm:mt-12 p-6 sm:p-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-blue-100">
-                  <div className="text-center">
-                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                      Intéressé par ce service ?
-                    </h4>
-                    <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg">
-                      Contactez nos experts pour une consultation personnalisée et un devis sur mesure.
-                    </p>
-                    <button 
-                      onClick={() => handleContactClick(selectedService.title)}
-                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
-                    >
-                      <span className="mr-2">💬</span>
-                      Nous contacter
-                    </button>
-                  </div>
-                </div>
-              </div>
+        {/* Bloc Test fonctionnel */}
+        <div className="mb-20">
+          <div className="flex flex-col items-center mb-8">
+            <span className="inline-block mb-4 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Test statique</span>
+            <div className="bg-gradient-to-br from-blue-500 to-blue-400 text-white rounded-full p-6 shadow text-4xl mb-4">
+              <FaPuzzlePiece />
             </div>
+            <h3 className="text-3xl font-bold text-blue-700 mb-2">Test fonctionnel</h3>
           </div>
-        )}
-
-        {/* Modale de contact */}
-        <ContactModal 
-          isOpen={isContactModalOpen} 
-          onClose={handleContactModalClose}
-          preselectedService={preselectedService}
-        />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {functionalTests.map((test, idx) => (
+              <a 
+                key={idx} 
+                href={test.link}
+                className="flex flex-col items-center justify-center bg-white rounded-xl p-6 shadow-lg border border-blue-100 min-h-[100px] h-full w-full hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer group"
+              >
+                <div className={`flex items-center gap-3 mb-3 text-lg font-bold ${test.color} group-hover:text-blue-600 transition-colors`}>
+                  {test.icon} {test.title}
+                </div>
+                <div className="text-sm text-gray-600 text-center leading-relaxed group-hover:text-gray-800 transition-colors">
+                  {test.tooltip}
+                </div>
+                <div className="mt-4 text-blue-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  En savoir plus →
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+        {/* Bloc Test non-fonctionnel */}
+        <div>
+          <div className="flex flex-col items-center mb-8">
+            <span className="inline-block mb-4 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Test statique</span>
+            <div className="bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-full p-6 shadow text-4xl mb-4">
+              <FaRocket />
+            </div>
+            <h3 className="text-3xl font-bold text-blue-700 mb-2">Test non-fonctionnel</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {nonFunctionalTests.map((test, idx) => (
+              <a 
+                key={idx} 
+                href={test.link}
+                className="flex flex-col items-center justify-center bg-white rounded-xl p-6 shadow-lg border border-blue-100 min-h-[100px] h-full w-full hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer group"
+              >
+                <div className={`flex items-center gap-3 mb-3 text-lg font-bold ${test.color} group-hover:text-blue-600 transition-colors`}>
+                  {test.icon} {test.title}
+                </div>
+                <div className="text-sm text-gray-600 text-center leading-relaxed group-hover:text-gray-800 transition-colors">
+                  {test.tooltip}
+                </div>
+                <div className="mt-4 text-blue-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  En savoir plus →
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
-};
-
-export default ServicesSection;
+}
