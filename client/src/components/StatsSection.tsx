@@ -1,5 +1,6 @@
 import AnimatedCounter from "./AnimatedCounter";
 import { m } from "framer-motion";
+import PatternBackground from "./PatternBackground";
 
 const stats = [
   { value: 11, label: "Projets completé", suffix: "+" },
@@ -9,8 +10,12 @@ const stats = [
 
 const StatsSection = () => {
   return (
-    <section className="py-4 sm:py-6 md:py-8 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-      <div className="container">
+    <PatternBackground 
+      variant="dark" 
+      opacity={0.2}
+      className="py-4 sm:py-6 md:py-8 bg-gradient-to-r from-brand-blue-700 to-brand-blue-900 text-white"
+    >
+    <section className="container">
         <div className="flex flex-row flex-wrap justify-center items-center gap-2 sm:gap-4 md:gap-8 text-center">
           {stats.map((stat, index) => (
             <m.div
@@ -30,8 +35,8 @@ const StatsSection = () => {
             </m.div>
           ))}
         </div>
-      </div>
     </section>
+    </PatternBackground>
   );
 };
 

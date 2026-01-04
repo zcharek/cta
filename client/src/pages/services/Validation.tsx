@@ -44,17 +44,17 @@ const Validation = () => {
         title="Tests de"
         subtitle="Validation"
         description="Les <strong>tests de validation</strong> garantissent que votre application respecte <strong>parfaitement</strong> les exigences métier et spécifications techniques."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500" 
-        gradientTo="to-blue-400"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600" 
+        gradientTo="to-brand-blue-500"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
       />
 
       {/* Section définition et approche */}
       <section className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Qu'est-ce que les tests de validation ?
@@ -69,9 +69,9 @@ const Validation = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Objectifs des tests de validation</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Conformité métier", desc: "Vérifier que l'application répond aux besoins utilisateurs.", color: "bg-blue-500" },
-                  { title: "Respect des spécifications", desc: "S'assurer que toutes les exigences sont implémentées.", color: "bg-blue-500" },
-                  { title: "Acceptation utilisateur", desc: "Valider l'adéquation avec les attentes réelles.", color: "bg-blue-500" }
+                  { title: "Conformité métier", desc: "Vérifier que l'application répond aux besoins utilisateurs.", color: "bg-brand-blue-600" },
+                  { title: "Respect des spécifications", desc: "S'assurer que toutes les exigences sont implémentées.", color: "bg-brand-blue-600" },
+                  { title: "Acceptation utilisateur", desc: "Valider l'adéquation avec les attentes réelles.", color: "bg-brand-blue-600" }
                 ].map((item, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${item.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -104,10 +104,10 @@ const Validation = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { name: "Playwright", icon: "https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg", color: "from-blue-500 to-blue-600", desc: "Tests E2E complets avec validation multi-navigateurs.", link: "/#/services/playwright", badge: "Idéal pour E2E →", badgeColor: "text-blue-600" },
-            { name: "Cypress", icon: "https://www.cypress.io/cypress_logo_social.png", color: "from-blue-500 to-blue-600", desc: "Interface visuelle pour validation interactive.", link: "/#/services/cypress", badge: "Parfait pour debugging →", badgeColor: "text-blue-600" },
-            { name: "Selenium", icon: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Selenium_Logo.png", color: "from-blue-500 to-blue-600", desc: "Standard industriel pour validation cross-browser.", link: "/#/services/selenium", badge: "Multi-navigateurs →", badgeColor: "text-blue-600" },
-            { name: "Postman", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png", color: "from-blue-500 to-blue-600", desc: "Validation complète des APIs et services.", link: "/#/services/postman", badge: "API testing →", badgeColor: "text-blue-600" }
+            { name: "Playwright", icon: "https://upload.wikimedia.org/wikipedia/commons/7/75/Playwright_Logo.svg", color: "from-brand-blue-600 to-brand-blue-900", desc: "Tests E2E complets avec validation multi-navigateurs.", link: "/#/services/playwright", badge: "Idéal pour E2E →", badgeColor: "text-brand-blue-900" },
+            { name: "Cypress", icon: "https://www.cypress.io/cypress_logo_social.png", color: "from-brand-blue-600 to-brand-blue-900", desc: "Interface visuelle pour validation interactive.", link: "/#/services/cypress", badge: "Parfait pour debugging →", badgeColor: "text-brand-blue-900" },
+            { name: "Selenium", icon: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Selenium_Logo.png", color: "from-brand-blue-600 to-brand-blue-900", desc: "Standard industriel pour validation cross-browser.", link: "/#/services/selenium", badge: "Multi-navigateurs →", badgeColor: "text-brand-blue-900" },
+            { name: "Postman", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Postman_%28software%29.png", color: "from-brand-blue-600 to-brand-blue-900", desc: "Validation complète des APIs et services.", link: "/#/services/postman", badge: "API testing →", badgeColor: "text-brand-blue-900" }
           ].map((tool, index) => (
             <a key={index} href={tool.link} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
               <div className={`bg-gradient-to-br ${tool.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
@@ -125,7 +125,7 @@ const Validation = () => {
 
       {/* Section méthodologie */}
       <section className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Notre méthodologie de validation
@@ -140,10 +140,10 @@ const Validation = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Processus de validation</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Analyse des exigences", desc: "Compréhension approfondie des spécifications métier.", color: "bg-blue-500" },
-                  { title: "Planification des tests", desc: "Définition de la stratégie et des scénarios de validation.", color: "bg-blue-500" },
-                  { title: "Exécution des tests", desc: "Tests manuels et automatisés selon la stratégie définie.", color: "bg-blue-500" },
-                  { title: "Validation des résultats", desc: "Analyse des résultats et validation avec les parties prenantes.", color: "bg-blue-600" }
+                  { title: "Analyse des exigences", desc: "Compréhension approfondie des spécifications métier.", color: "bg-brand-blue-600" },
+                  { title: "Planification des tests", desc: "Définition de la stratégie et des scénarios de validation.", color: "bg-brand-blue-600" },
+                  { title: "Exécution des tests", desc: "Tests manuels et automatisés selon la stratégie définie.", color: "bg-brand-blue-600" },
+                  { title: "Validation des résultats", desc: "Analyse des résultats et validation avec les parties prenantes.", color: "bg-brand-blue-900" }
                 ].map((step, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${step.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -175,11 +175,11 @@ const Validation = () => {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Critères de succès</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {['Conformité 100%', 'Zéro défaut critique', 'Validation métier', 'Acceptation utilisateur'].map((criteria, index) => (
-                    <div key={index} className="text-blue-700">• {criteria}</div>
+                    <div key={index} className="text-brand-blue-900">• {criteria}</div>
                   ))}
                 </div>
               </div>
@@ -192,17 +192,17 @@ const Validation = () => {
         title="Besoin de valider votre application ?"
         description="Nos experts en validation vous accompagnent pour garantir la conformité totale de votre produit."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         features={ctaFeatures}
         primaryButton={{
           text: "Voir nos autres services",
           href: "/#services",
           icon: "🛠️",
-          gradientFrom: "from-blue-500",
-          gradientTo: "to-blue-500",
-          hoverFrom: "from-blue-600",
-          hoverTo: "to-blue-600"
+          gradientFrom: "from-brand-blue-600",
+          gradientTo: "to-brand-blue-600",
+          hoverFrom: "from-brand-blue-900",
+          hoverTo: "to-brand-blue-900"
         }}
         secondaryButton={{
           text: "",

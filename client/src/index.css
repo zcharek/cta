@@ -10,9 +10,9 @@
   --card-foreground: 215 28% 17%;
   --popover: 0 0% 100%;
   --popover-foreground: 215 28% 17%;
-  --primary: 217 91% 60%; /* Bleu original du site */
+  --primary: 210 100% 20%; /* Nouveau bleu principal #001233 */
   --primary-foreground: 0 0% 100%;
-  --primary-light: 217 91% 70%;
+  --primary-light: 210 100% 30%;
   --secondary: 215 28% 17%; /* Gris foncé original */
   --secondary-foreground: 0 0% 100%;
   --secondary-light: 215 25% 27%;
@@ -36,7 +36,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   line-height: 1.6;
   color: #333;
   background-color: #fff;
@@ -76,13 +76,13 @@ p {
 
 /* Styles pour les liens */
 a {
-  color: #2563eb;
+  color: #001233;
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: none; /* Supprime le soulignement au hover */
-  color: #1d4ed8; /* Couleur plus foncée au hover */
+  color: #08224c; /* Couleur plus foncée au hover */
 }
 
 /* Styles pour les boutons */
@@ -97,14 +97,14 @@ button {
 }
 
 .btn-primary {
-  background-color: #2563eb;
+  background-color: #001233;
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
+  background-color: #08224c;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 18, 51, 0.3);
 }
 
 /* Container de base */
@@ -121,7 +121,7 @@ section {
 
 /* Styles pour le hero */
 .hero-section {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+  background: linear-gradient(135deg, #001233 0%, #08224c 50%, #143666 100%);
   color: white;
   text-align: center;
   padding: 6rem 1rem;
@@ -148,7 +148,7 @@ section {
 
 /* Gradient background pour la section partenaires  ----------------------------------------------------------------------------- */
 .gradient-bg {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2167d6 50%, #2e80e4 100%);
+  background: linear-gradient(135deg, #001233 0%, #08224c 50%, #143666 100%);
 }
 
 /* Styles spécifiques pour la section partenaires */
@@ -208,17 +208,29 @@ section {
   display: none;
 }
 
-/* Classes de couleurs originales du site */
+/* Classes de couleurs de marque */
 .text-brand-primary {
-  color: #2563eb; /* Bleu principal */
+  color: #001233; /* Nouveau bleu principal */
 }
 
 .bg-brand-primary {
-  background-color: #2563eb;
+  background-color: #001233;
 }
 
 .bg-brand-primary:hover {
-  background-color: #1d4ed8;
+  background-color: #08224c;
+}
+
+.text-brand-accent {
+  color: #b21900; /* Nouveau rouge principal */
+}
+
+.bg-brand-accent {
+  background-color: #b21900;
+}
+
+.bg-brand-accent:hover {
+  background-color: #cc3715;
 }
 
 .text-brand-secondary {
@@ -226,7 +238,7 @@ section {
 }
 
 .border-brand-primary {
-  border-color: #2563eb;
+  border-color: #001233;
 }
 
 .text-brand-light {

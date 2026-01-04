@@ -20,7 +20,7 @@ const Playwright = () => {
       <div className="space-y-3">
         {['Tests multi-navigateurs', 'Exécution parallèle', 'Screenshots & Vidéos', 'API moderne & stable'].map((item, index) => (
           <div key={index} className="flex items-center text-white/90">
-            <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+            <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
             <span className="text-sm">{item}</span>
           </div>
         ))}
@@ -41,12 +41,12 @@ const Playwright = () => {
         title="Playwright"
         subtitle="Testing"
         description="Automatisez vos tests E2E avec <strong>Playwright</strong>, le framework moderne pour des tests <strong>multi-navigateurs</strong> fiables et rapides."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500" 
-        gradientTo="to-blue-700"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600" 
+        gradientTo="to-brand-blue-900"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
         secondaryButton={{
           text: "Architecture",
           href: "#architecture",
@@ -72,37 +72,37 @@ const Playwright = () => {
               icon: "🌐",
               title: "Multi-navigateurs natif",
               description: "Support complet de Chromium, Firefox et Safari avec une seule API.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "⚡",
               title: "Exécution ultra-rapide",
               description: "Tests parallèles par défaut et optimisations automatiques.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🎯",
               title: "Sélecteurs intelligents",
               description: "Auto-waiting et sélecteurs robustes qui s'adaptent aux changements.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "📸",
               title: "Debugging visuel",
               description: "Screenshots automatiques, vidéos et traces détaillées.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🔧",
               title: "Configuration zéro",
               description: "Prêt à l'emploi avec des paramètres intelligents par défaut.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🚀",
               title: "CI/CD intégré",
               description: "Optimisé pour l'intégration continue avec reporting avancé.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((advantage, index) => (
             <div key={index} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
@@ -118,7 +118,7 @@ const Playwright = () => {
 
       {/* Architecture avec schéma */}
       <section id="architecture" className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Architecture Playwright
@@ -133,10 +133,10 @@ const Playwright = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Composants clés</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Test Runner", desc: "Moteur d'exécution optimisé avec parallélisation native.", color: "bg-blue-500" },
-                  { title: "Browser Contexts", desc: "Isolation complète entre les tests pour éviter les interférences.", color: "bg-blue-500" },
-                  { title: "Auto-waiting", desc: "Attente intelligente des éléments sans timeouts manuels.", color: "bg-blue-500" },
-                  { title: "Trace Viewer", desc: "Debugging visuel avec timeline interactive des actions.", color: "bg-blue-500" }
+                  { title: "Test Runner", desc: "Moteur d'exécution optimisé avec parallélisation native.", color: "bg-brand-blue-600" },
+                  { title: "Browser Contexts", desc: "Isolation complète entre les tests pour éviter les interférences.", color: "bg-brand-blue-600" },
+                  { title: "Auto-waiting", desc: "Attente intelligente des éléments sans timeouts manuels.", color: "bg-brand-blue-600" },
+                  { title: "Trace Viewer", desc: "Debugging visuel avec timeline interactive des actions.", color: "bg-brand-blue-600" }
                 ].map((component, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${component.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -168,11 +168,11 @@ const Playwright = () => {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Points forts</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {['API moderne', 'Multi-langages', 'CI/CD ready', 'Debugging avancé'].map((strength, index) => (
-                    <div key={index} className="text-blue-700">• {strength}</div>
+                    <div key={index} className="text-brand-blue-900">• {strength}</div>
                   ))}
                 </div>
               </div>
@@ -198,25 +198,25 @@ const Playwright = () => {
               step: "1",
               title: "Écriture",
               description: "Tests avec API intuitive et sélecteurs robustes",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "2", 
               title: "Configuration",
               description: "Setup automatique multi-navigateurs et environnements",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "3",
               title: "Exécution",
               description: "Tests parallèles avec auto-waiting intelligent",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "4",
               title: "Analyse",
               description: "Rapports détaillés avec traces et captures",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((workflow, index) => (
             <div key={index} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 h-full">
@@ -234,17 +234,17 @@ const Playwright = () => {
         title="Prêt à automatiser avec Playwright ?"
         description="Nos experts Playwright vous accompagnent pour créer une suite de tests moderne et fiable."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         features={ctaFeatures}
         primaryButton={{
           text: "Voir nos autres outils",
           href: "/#services",
           icon: "🛠️",
-          gradientFrom: "from-blue-500",
-          gradientTo: "to-blue-500",
-          hoverFrom: "from-blue-600",
-          hoverTo: "to-blue-600"
+          gradientFrom: "from-brand-blue-600",
+          gradientTo: "to-brand-blue-600",
+          hoverFrom: "from-brand-blue-900",
+          hoverTo: "to-brand-blue-900"
         }}
         secondaryButton={{
           text: "",

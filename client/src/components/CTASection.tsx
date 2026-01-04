@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import ContactModal from "./ContactModal";
 import CalendlyModal from "./CalendlyModal";
+import PatternBackground from "./PatternBackground";
 
 const CTASection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,10 +30,17 @@ const CTASection = () => {
   }, []);
 
   return (
+    <>
     <section id="contact" className="py-16 sm:py-20 bg-gradient-to-b from-white via-gray-50 to-gray-200">
       <div className="container">
-        <m.div
+        <PatternBackground 
+          variant="dark" 
+          opacity={0.25}
+          blendMode="overlay"
           className="gradient-bg rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl relative overflow-hidden"
+        >
+        <m.div
+          className="relative z-10"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -56,7 +64,7 @@ const CTASection = () => {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <button
                   onClick={() => setIsCalendlyOpen(true)}
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-primary transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1 text-sm sm:text-base"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-brand-blue-700 text-white font-semibold rounded-xl hover:bg-brand-blue-800 focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:ring-offset-2 focus:ring-offset-primary transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1 text-sm sm:text-base"
                 >
                   <span className="mr-2">📅</span>
                   Prendre un rendez-vous
@@ -75,14 +83,16 @@ const CTASection = () => {
             </div>
           </div>
         </m.div>
+        </PatternBackground>
       </div>
-
-      {/* Modale de contact */}
-      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      
-      {/* Modale Calendly */}
-      <CalendlyModal isOpen={isCalendlyOpen} onClose={() => setIsCalendlyOpen(false)} />
     </section>
+    
+    {/* Modale de contact */}
+    <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    
+    {/* Modale Calendly */}
+    <CalendlyModal isOpen={isCalendlyOpen} onClose={() => setIsCalendlyOpen(false)} />
+  </>
   );
 };
 

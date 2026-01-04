@@ -19,7 +19,7 @@ const Percy = () => {
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
       <div>
         <div>
-                      <svg className="h-12 w-12 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className="h-12 w-12 text-brand-blue-900" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                       </svg>
                     </div>
@@ -28,7 +28,7 @@ const Percy = () => {
                   <div className="space-y-3">
         {["Détection automatique", "Cross-browser testing", "Responsive testing", "Intégration CI/CD"].map((item, index) => (
           <div key={index} className="flex items-center text-white/90">
-                      <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
             <span className="text-sm">{item}</span>
                     </div>
         ))}
@@ -43,12 +43,12 @@ const Percy = () => {
         title="Percy"
         subtitle="Visual Testing"
         description="Tests <strong>visuels automatisés</strong> avec détection intelligente des <strong>régressions visuelles</strong> pour une UI parfaite."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500"
-        gradientTo="to-blue-400"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600"
+        gradientTo="to-brand-blue-500"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
         secondaryButton={{ text: "Architecture", href: "#architecture", icon: "🏗️" }}
         rightContent={heroRightContent}
       />
@@ -70,37 +70,37 @@ const Percy = () => {
               icon: "👁️",
               title: "Détection intelligente",
               description: "IA avancée pour détecter les vraies régressions et ignorer les faux positifs.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🌐",
               title: "Cross-browser",
               description: "Tests simultanés sur Chrome, Firefox, Safari et Edge automatiquement.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "📱",
               title: "Responsive",
               description: "Validation automatique sur toutes les tailles d'écran et appareils.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "⚡",
               title: "Intégration native",
               description: "Intégration transparente avec vos outils de développement existants.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🔧",
               title: "Configuration zéro",
               description: "Prêt à l'emploi avec des paramètres intelligents par défaut.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🚀",
               title: "CI/CD intégré",
               description: "Optimisé pour l'intégration continue avec reporting avancé.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((advantage, index) => (
             <div key={index} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
@@ -116,7 +116,7 @@ const Percy = () => {
 
       {/* Architecture avec schéma */}
       <section id="architecture" className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Architecture Percy
@@ -131,10 +131,10 @@ const Percy = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Composants clés</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Visual Engine", desc: "Moteur de comparaison d'images avec IA avancée.", color: "bg-blue-500" },
-                  { title: "Browser Automation", desc: "Capture automatique sur tous les navigateurs.", color: "bg-blue-500" },
-                  { title: "Smart Diffing", desc: "Détection intelligente des changements visuels.", color: "bg-blue-500" },
-                  { title: "Review Interface", desc: "Interface de validation des changements détectés.", color: "bg-blue-500" }
+                  { title: "Visual Engine", desc: "Moteur de comparaison d'images avec IA avancée.", color: "bg-brand-blue-600" },
+                  { title: "Browser Automation", desc: "Capture automatique sur tous les navigateurs.", color: "bg-brand-blue-600" },
+                  { title: "Smart Diffing", desc: "Détection intelligente des changements visuels.", color: "bg-brand-blue-600" },
+                  { title: "Review Interface", desc: "Interface de validation des changements détectés.", color: "bg-brand-blue-600" }
                 ].map((component, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${component.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -166,11 +166,11 @@ const Percy = () => {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Points forts</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {['IA avancée', 'Multi-browser', 'Responsive', 'CI/CD ready'].map((strength, index) => (
-                    <div key={index} className="text-blue-700">• {strength}</div>
+                    <div key={index} className="text-brand-blue-900">• {strength}</div>
                   ))}
                 </div>
               </div>
@@ -196,25 +196,25 @@ const Percy = () => {
               step: "1",
               title: "Configuration",
               description: "Setup Percy avec SDK et configuration projet",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "2", 
               title: "Capture",
               description: "Screenshots automatiques sur tous les navigateurs",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "3",
               title: "Comparaison",
               description: "IA avancée pour détecter les changements visuels",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "4",
               title: "Review",
               description: "Interface web pour valider les changements détectés",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((workflow, index) => (
             <div key={index} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 h-full">
@@ -230,7 +230,7 @@ const Percy = () => {
 
           {/* Section nos services Percy */}
           <section className="mb-20">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-3xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-brand-blue-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                   Nos services Percy
@@ -242,7 +242,7 @@ const Percy = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🎯</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Stratégie visuelle</h3>
@@ -268,7 +268,7 @@ const Percy = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🎓</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Formation équipes</h3>
@@ -281,7 +281,7 @@ const Percy = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🔗</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Intégration CI/CD</h3>
@@ -294,7 +294,7 @@ const Percy = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">📱</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Tests responsive</h3>
@@ -307,7 +307,7 @@ const Percy = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🔍</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Debugging avancé</h3>
@@ -323,7 +323,7 @@ const Percy = () => {
           </section>
 
           {/* Section modèles de coopération */}
-          <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-blue-100 mb-20">
+          <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-brand-blue-100 mb-20">
             <div className="text-center mb-6 sm:mb-8">
               <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Nos modèles de coopération
@@ -336,14 +336,14 @@ const Percy = () => {
               {cooperationModels.map((model: CooperationModel, idx: number) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:border-blue-300 h-full transform hover:-trangray-y-2"
+                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-brand-blue-100 hover:border-brand-blue-400 h-full transform hover:-trangray-y-2"
                 >
                   <div className="flex items-center mb-4 sm:mb-6">
                     <div className={`w-4 h-4 rounded-full mr-3 sm:mr-4 ${
-                      idx === 0 ? 'bg-blue-500' : 
-                      idx === 1 ? 'bg-blue-500' : 'bg-blue-300'
+                      idx === 0 ? 'bg-brand-blue-600' : 
+                      idx === 1 ? 'bg-brand-blue-600' : 'bg-brand-blue-400'
                     }`}></div>
-                    <h4 className={`text-xl sm:text-2xl font-bold text-blue-700`}>
+                    <h4 className={`text-xl sm:text-2xl font-bold text-brand-blue-900`}>
                       {model.title}
                     </h4>
                   </div>
@@ -353,7 +353,7 @@ const Percy = () => {
                   <ul className="space-y-2 sm:space-y-3">
                     {model.points.map((point: string, i: number) => (
                       <li key={i} className="flex items-start text-gray-700">
-                        <span className="text-blue-500 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
+                        <span className="text-brand-blue-600 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
                         <span className="text-sm sm:text-base leading-relaxed">{point}</span>
                       </li>
                     ))}
@@ -367,8 +367,8 @@ const Percy = () => {
         title="Prêt à automatiser vos tests visuels avec Percy ?"
         description="Nos experts Percy vous accompagnent pour créer une stratégie de tests visuels robuste et automatisée."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         features={[]}
         secondaryButton={{ text: "Voir nos autres services", href: "/#services", icon: "📋" }}
       />

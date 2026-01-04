@@ -3,6 +3,7 @@ import { useState } from "react";
 import SEOHead from "@/components/SEOHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PatternBackground from "@/components/PatternBackground";
 
 const GestionProjetAgile = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
@@ -10,17 +11,18 @@ const GestionProjetAgile = () => {
   return (
     <>
       <SEOHead 
-        title="Gestion de Projet Agile - Accompagnement Scrum - Central Test Consulting"
+        title="Gestion de Projet Agile - Accompagnement Scrum - Central Test Agency"
         description="Accompagnement dans la structuration d'équipes Scrum avec création de feature teams. Formation aux méthodologies agiles, ceremonies Scrum et organisation de sprints."
-        keywords="gestion projet agile, Scrum, feature team, sprint, ceremonies Scrum, accompagnement agile, Central Test Consulting"
+        keywords="gestion projet agile, Scrum, feature team, sprint, ceremonies Scrum, accompagnement agile, Central Test Agency"
         ogUrl="https://centraltestagency.com/#/services/gestion-projet-agile"
         canonical="https://centraltestagency.com/#/services/gestion-projet-agile"
       />
       <Header />
-      <main className="py-20 md:py-24">
+      <PatternBackground variant="light" opacity={0.1} className="py-20 md:py-24 bg-white">
+      <main>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Section avec design moderne */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 rounded-3xl p-8 md:p-12 mb-16">
+          <div className="relative overflow-hidden bg-gradient-to-br from-brand-blue-900 via-brand-blue-600 to-brand-blue-500 rounded-3xl p-8 md:p-12 mb-16">
             <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent"></div>
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -trangray-y-32 trangray-x-32"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full trangray-y-24 -trangray-x-24"></div>
@@ -32,11 +34,11 @@ const GestionProjetAgile = () => {
                 </div>
                 <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
                   Gestion de Projet
-                  <span className="block bg-gradient-to-r from-blue-200 to-blue-100 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-brand-blue-200 to-brand-blue-100 bg-clip-text text-transparent">
                     Agile
                   </span>
                 </h1>
-                <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+                <p className="text-xl text-brand-blue-100 mb-8 leading-relaxed">
                   Structurez vos équipes avec des <strong>feature teams</strong> autonomes et 
                   implémentez <strong>Scrum</strong> pour une livraison continue de valeur métier.
                 </p>
@@ -56,19 +58,19 @@ const GestionProjetAgile = () => {
                   <h3 className="text-white font-semibold text-lg mb-4 text-center">Nos expertises</h3>
                   <div className="space-y-3">
                     <div className="flex items-center text-white/90">
-                      <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
                       <span className="text-sm">Structuration Feature Teams</span>
                     </div>
                     <div className="flex items-center text-white/90">
-                      <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
                       <span className="text-sm">Implémentation Scrum</span>
                     </div>
                     <div className="flex items-center text-white/90">
-                      <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
                       <span className="text-sm">Coaching équipes & management</span>
                     </div>
                     <div className="flex items-center text-white/90">
-                      <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
                       <span className="text-sm">Amélioration continue</span>
                     </div>
                   </div>
@@ -90,7 +92,7 @@ const GestionProjetAgile = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -100,7 +102,7 @@ const GestionProjetAgile = () => {
               </div>
               
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -110,7 +112,7 @@ const GestionProjetAgile = () => {
               </div>
               
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
@@ -120,7 +122,7 @@ const GestionProjetAgile = () => {
               </div>
               
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
@@ -133,7 +135,7 @@ const GestionProjetAgile = () => {
 
           {/* Section Feature Team avec schéma */}
           <section className="mb-20" id="feature-team">
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                   Qu'est-ce qu'une Feature Team ?
@@ -148,8 +150,8 @@ const GestionProjetAgile = () => {
                   <div className="bg-white rounded-2xl p-8 shadow-xl">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">Composition idéale</h3>
                     <div className="space-y-4">
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🎯
                         </div>
                         <div>
@@ -158,8 +160,8 @@ const GestionProjetAgile = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🔄
                         </div>
                         <div>
@@ -168,8 +170,8 @@ const GestionProjetAgile = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           👩‍💻
                         </div>
                         <div>
@@ -178,8 +180,8 @@ const GestionProjetAgile = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🧪
                         </div>
                         <div>
@@ -188,8 +190,8 @@ const GestionProjetAgile = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🎨
                         </div>
                         <div>
@@ -206,7 +208,7 @@ const GestionProjetAgile = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">Principes clés</h3>
                     <div className="space-y-6">
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">1</span>
                         </div>
                         <div>
@@ -216,7 +218,7 @@ const GestionProjetAgile = () => {
                       </div>
                       
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">2</span>
                         </div>
                         <div>
@@ -226,7 +228,7 @@ const GestionProjetAgile = () => {
                       </div>
                       
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">3</span>
                         </div>
                         <div>
@@ -236,7 +238,7 @@ const GestionProjetAgile = () => {
                       </div>
                       
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">4</span>
                         </div>
                         <div>
@@ -273,23 +275,23 @@ const GestionProjetAgile = () => {
                     onTouchEnd={() => setHoveredCard(null)}
                     style={{
                       background: hoveredCard === 'planning' 
-                        ? 'linear-gradient(to right, #1e3a8a, #2563eb, #60a5fa)'
-                        : 'linear-gradient(to bottom right, #2563eb, #1d4ed8)',
+                        ? 'linear-gradient(to right, #001233, #08224c, #143666)'
+                        : 'linear-gradient(to bottom right, #001233, #08224c)',
                       minHeight: '320px'
                     }}
                   >
                     <div className="flex-1">
                       <div className="text-3xl mb-4">🚀</div>
                       <h3 className="text-xl font-bold mb-2">Sprint Planning</h3>
-                      <div className="text-blue-100 text-sm mb-4">Jour 1 • 4 heures</div>
-                      <p className="text-blue-100 text-sm">Sélection des stories, estimation des tâches, définition de l'objectif du sprint.</p>
+                      <div className="text-brand-blue-100 text-sm mb-4">Jour 1 • 4 heures</div>
+                      <p className="text-brand-blue-100 text-sm">Sélection des stories, estimation des tâches, définition de l'objectif du sprint.</p>
                     </div>
-                    <div className="bg-blue-50 rounded-xl p-4 mt-auto">
+                    <div className="bg-brand-blue-50 rounded-xl p-4 mt-auto">
                       <h4 className="font-semibold text-blue-900 mb-2">Participants</h4>
                       <div className="flex flex-wrap gap-2">
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">PO</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">SM</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Dev Team</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">PO</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">SM</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Dev Team</span>
                       </div>
                     </div>
                   </div>
@@ -304,23 +306,23 @@ const GestionProjetAgile = () => {
                     onTouchEnd={() => setHoveredCard(null)}
                     style={{
                       background: hoveredCard === 'daily' 
-                        ? 'linear-gradient(to right, #1e3a8a, #2563eb, #60a5fa)'
-                        : 'linear-gradient(to bottom right, #2563eb, #1d4ed8)',
+                        ? 'linear-gradient(to right, #001233, #08224c, #143666)'
+                        : 'linear-gradient(to bottom right, #001233, #08224c)',
                       minHeight: '320px'
                     }}
                   >
                     <div className="flex-1">
                       <div className="text-3xl mb-4">💬</div>
                       <h3 className="text-xl font-bold mb-2">Daily Scrum</h3>
-                      <div className="text-blue-100 text-sm mb-4">Jours 2-9 • 15 min/jour</div>
-                      <p className="text-blue-100 text-sm">Synchronisation quotidienne, identification des obstacles, ajustement du plan d'action.</p>
+                      <div className="text-brand-blue-100 text-sm mb-4">Jours 2-9 • 15 min/jour</div>
+                      <p className="text-brand-blue-100 text-sm">Synchronisation quotidienne, identification des obstacles, ajustement du plan d'action.</p>
                     </div>
-                    <div className="bg-blue-50 rounded-xl p-4 mt-auto">
+                    <div className="bg-brand-blue-50 rounded-xl p-4 mt-auto">
                       <h4 className="font-semibold text-blue-900 mb-2">3 Questions</h4>
                       <div className="flex flex-wrap gap-2">
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Hier ?</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Aujourd'hui ?</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Obstacles ?</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Hier ?</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Aujourd'hui ?</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Obstacles ?</span>
                       </div>
                     </div>
                   </div>
@@ -335,23 +337,23 @@ const GestionProjetAgile = () => {
                     onTouchEnd={() => setHoveredCard(null)}
                     style={{
                       background: hoveredCard === 'review' 
-                        ? 'linear-gradient(to right, #1e3a8a, #2563eb, #60a5fa)'
-                        : 'linear-gradient(to bottom right, #2563eb, #1d4ed8)',
+                        ? 'linear-gradient(to right, #001233, #08224c, #143666)'
+                        : 'linear-gradient(to bottom right, #001233, #08224c)',
                       minHeight: '320px'
                     }}
                   >
                     <div className="flex-1">
                       <div className="text-3xl mb-4">📊</div>
                       <h3 className="text-xl font-bold mb-2">Sprint Review</h3>
-                      <div className="text-blue-100 text-sm mb-4">Jour 10 • 2 heures</div>
-                      <p className="text-blue-100 text-sm">Démonstration des fonctionnalités, collecte des feedbacks parties prenantes.</p>
+                      <div className="text-brand-blue-100 text-sm mb-4">Jour 10 • 2 heures</div>
+                      <p className="text-brand-blue-100 text-sm">Démonstration des fonctionnalités, collecte des feedbacks parties prenantes.</p>
                     </div>
-                    <div className="bg-blue-50 rounded-xl p-4 mt-auto">
+                    <div className="bg-brand-blue-50 rounded-xl p-4 mt-auto">
                       <h4 className="font-semibold text-blue-900 mb-2">Livrables</h4>
                       <div className="flex flex-wrap gap-2">
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Demo</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Feedback</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Metrics</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Demo</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Feedback</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Metrics</span>
                       </div>
                     </div>
                   </div>
@@ -366,23 +368,23 @@ const GestionProjetAgile = () => {
                     onTouchEnd={() => setHoveredCard(null)}
                     style={{
                       background: hoveredCard === 'retro' 
-                        ? 'linear-gradient(to right, #1e3a8a, #2563eb, #60a5fa)'
-                        : 'linear-gradient(to bottom right, #2563eb, #1d4ed8)',
+                        ? 'linear-gradient(to right, #001233, #08224c, #143666)'
+                        : 'linear-gradient(to bottom right, #001233, #08224c)',
                       minHeight: '320px'
                     }}
                   >
                     <div className="flex-1">
                       <div className="text-3xl mb-4">🔄</div>
                       <h3 className="text-xl font-bold mb-2">Retrospective</h3>
-                      <div className="text-blue-100 text-sm mb-4">Jour 10 • 1h30</div>
-                      <p className="text-blue-100 text-sm">Analyse du sprint, identification des améliorations, plan d'actions.</p>
+                      <div className="text-brand-blue-100 text-sm mb-4">Jour 10 • 1h30</div>
+                      <p className="text-brand-blue-100 text-sm">Analyse du sprint, identification des améliorations, plan d'actions.</p>
                     </div>
-                    <div className="bg-blue-50 rounded-xl p-4 mt-auto">
+                    <div className="bg-brand-blue-50 rounded-xl p-4 mt-auto">
                       <h4 className="font-semibold text-blue-900 mb-2">Format</h4>
                       <div className="flex flex-wrap gap-2">
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Start</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Stop</span>
-                        <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Continue</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Start</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Stop</span>
+                        <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Continue</span>
                       </div>
                     </div>
                   </div>
@@ -405,17 +407,17 @@ const GestionProjetAgile = () => {
             <div className="space-y-8">
               <div className="flex flex-col lg:flex-row items-center gap-8">
                 <div className="flex-1">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-500 rounded-3xl p-8 text-white">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-600 rounded-3xl p-8 text-white">
                     <div className="flex items-center mb-6">
                       <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mr-4">
                         <span className="text-2xl">🔍</span>
                       </div>
                       <div>
                         <h3 className="text-2xl font-bold">Phase 1 : Diagnostic</h3>
-                        <p className="text-blue-100">1-2 semaines</p>
+                        <p className="text-brand-blue-100">1-2 semaines</p>
                       </div>
                     </div>
-                    <ul className="space-y-3 text-blue-100">
+                    <ul className="space-y-3 text-brand-blue-100">
                       <li className="flex items-center">
                         <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
                         Audit de l'organisation actuelle
@@ -435,21 +437,21 @@ const GestionProjetAgile = () => {
                     </ul>
                   </div>
                 </div>
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-400 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-24 h-24 bg-gradient-to-br from-brand-blue-500 to-brand-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   →
                 </div>
                 <div className="flex-1">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-500 rounded-3xl p-8 text-white">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-600 rounded-3xl p-8 text-white">
                     <div className="flex items-center mb-6">
                       <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mr-4">
                         <span className="text-2xl">⚙️</span>
                       </div>
                       <div>
                         <h3 className="text-2xl font-bold">Phase 2 : Mise en place</h3>
-                        <p className="text-blue-100">2-4 semaines</p>
+                        <p className="text-brand-blue-100">2-4 semaines</p>
                       </div>
                     </div>
-                    <ul className="space-y-3 text-blue-100">
+                    <ul className="space-y-3 text-brand-blue-100">
                       <li className="flex items-center">
                         <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
                         Constitution des feature teams
@@ -472,25 +474,25 @@ const GestionProjetAgile = () => {
               </div>
               
               <div className="flex justify-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-400 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg rotate-90">
+                <div className="w-24 h-24 bg-gradient-to-br from-brand-blue-500 to-brand-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg rotate-90">
                   →
                 </div>
               </div>
               
               <div className="flex justify-center">
                 <div className="max-w-2xl">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-500 rounded-3xl p-8 text-white">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-600 rounded-3xl p-8 text-white">
                     <div className="flex items-center mb-6 justify-center">
                       <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mr-4">
                         <span className="text-2xl">🎯</span>
                       </div>
                       <div className="text-center">
                         <h3 className="text-2xl font-bold">Phase 3 : Accompagnement</h3>
-                        <p className="text-blue-100">3-6 mois</p>
+                        <p className="text-brand-blue-100">3-6 mois</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <ul className="space-y-3 text-blue-100">
+                      <ul className="space-y-3 text-brand-blue-100">
                         <li className="flex items-center">
                           <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
                           Coaching des premiers sprints
@@ -500,7 +502,7 @@ const GestionProjetAgile = () => {
                           Animation des cérémonies
                         </li>
                       </ul>
-                      <ul className="space-y-3 text-blue-100">
+                      <ul className="space-y-3 text-brand-blue-100">
                         <li className="flex items-center">
                           <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
                           Support Product Owner
@@ -519,7 +521,7 @@ const GestionProjetAgile = () => {
 
           {/* Section CTA avec design moderne */}
           <section className="mb-20" id="diagnostic">
-            <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-blue-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-br from-gray-900 via-brand-blue-900 to-brand-blue-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -trangray-y-32 trangray-x-32"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full trangray-y-24 -trangray-x-24"></div>
               
@@ -546,6 +548,7 @@ const GestionProjetAgile = () => {
           </section>
         </div>
       </main>
+      </PatternBackground>
       <Footer />
     </>
   );

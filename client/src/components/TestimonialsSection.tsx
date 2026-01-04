@@ -1,4 +1,6 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
+import { useInfiniteHorizontalScroll } from "@/hooks/useInfiniteHorizontalScroll";
+import PatternBackground from "./PatternBackground";
 
 const partners = [
   {
@@ -39,126 +41,86 @@ const partners = [
   },
 ];
 
+const PartnerCard = ({ partner, index }: { partner: typeof partners[0]; index: number }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  if (imageError) return null;
+  
+  return (
+    <div
+      key={`${partner.name}-${index}`}
+      role="listitem"
+      tabIndex={0}
+      className="group bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center justify-center flex-shrink-0 w-56 h-32 transition-all duration-500 ease-out hover:scale-105 hover:bg-white/20 cursor-pointer border border-white/20 hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50"
+    >
+      <img
+        src={partner.logo}
+        alt={partner.name}
+        loading="lazy"
+        className="max-h-16 max-w-40 object-contain opacity-90 group-hover:opacity-100 transition-opacity"
+        onError={() => {
+          setImageError(true);
+        }}
+      />
+    </div>
+  );
+};
+
 const TestimonialsSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const handleScroll = () => {
-    setIsScrolling(true);
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-    scrollTimeoutRef.current = setTimeout(() => {
-      setIsScrolling(false);
-    }, 150);
-  };
-
-  useEffect(() => {
-    let animationId: number;
-    let scrollPosition = 0;
-    const speed = 0.8; // Vitesse de défilement
-
-    const autoScroll = () => {
-      if (scrollRef.current && !hovered && !isScrolling) {
-        scrollPosition += speed;
-        
-        // Calculer la largeur totale du contenu
-        const container = scrollRef.current;
-        const totalWidth = container.scrollWidth;
-        const visibleWidth = container.clientWidth;
-        
-        // Si on a dépassé la moitié du contenu (car on a dupliqué les éléments)
-        // on repart du début pour un effet infini
-        if (scrollPosition >= totalWidth / 2) {
-          scrollPosition = 0;
-        }
-        
-        container.scrollLeft = scrollPosition;
-      }
-      
-      animationId = requestAnimationFrame(autoScroll);
-    };
-
-    // Démarrer l'animation
-    animationId = requestAnimationFrame(autoScroll);
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, [hovered, isScrolling]);
+  const hoverHandlers = useInfiniteHorizontalScroll(scrollRef, {
+    speed: 0.6,
+    pauseOnHover: true,
+  });
 
   return (
-    <section
-      id="testimonials"
+    <PatternBackground 
+      variant="dark" 
+      opacity={0.2}
       className="py-20 gradient-bg text-white overflow-hidden"
     >
-      <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Nos partenaires
-          </h2>
-          <p className="text-lg text-secondary-light max-w-2xl mx-auto">
-            Voici quelques entreprises avec lesquelles nous avons collaboré.
-          </p>
-        </div>
+    <section
+      id="testimonials"
+    >
+      <div className="container text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          Nos partenaires
+        </h2>
+        <p className="text-lg text-secondary-light max-w-2xl mx-auto">
+          Voici quelques entreprises avec lesquelles nous avons collaboré.
+        </p>
       </div>
 
-      {/* Carousel amélioré avec dégradés et animations */}
       <div className="relative">
-        {/* Dégradé gauche */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-blue-600 to-transparent z-10 pointer-events-none"></div>
-        
-        {/* Dégradé droit */}
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-blue-600 to-transparent z-10 pointer-events-none"></div>
-        
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-brand-blue-700 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-brand-blue-700 to-transparent z-10 pointer-events-none" />
+
         <div
           ref={scrollRef}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          onScroll={handleScroll}
-          className="flex overflow-x-hidden no-scrollbar whitespace-nowrap gap-8 px-8 py-4"
-          style={{ 
-            scrollBehavior: "auto",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch"
-          }}
+          {...hoverHandlers}
+          className="flex overflow-x-auto no-scrollbar whitespace-nowrap gap-8 px-8 py-4"
+          role="list"
         >
-          {/* Duplication pour effet infini plus fluide */}
           {[...partners, ...partners, ...partners].map((partner, index) => (
-            <div
-              key={`${partner.name}-${index}`}
-              className="group bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center justify-center flex-shrink-0 w-56 h-32 transition-all duration-500 ease-out hover:scale-105 hover:bg-white/20 cursor-pointer border border-white/20 hover:border-white/40"
-            >
-              <img
-                src={partner.logo}
-                alt={partner.name}
-                className="max-h-16 max-w-40 object-contain mx-auto opacity-90 group-hover:opacity-100 transition-opacity duration-300"
-                loading="lazy"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                }}
-              />
-            </div>
+            <PartnerCard key={`${partner.name}-${index}`} partner={partner} index={index} />
           ))}
         </div>
-        
-        {/* Indicateurs de scroll */}
+
         <div className="flex justify-center mt-6 space-x-2">
-          <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
-          <div className="w-2 h-2 bg-white/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-          <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <span className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
+          <span
+            className="w-2 h-2 bg-white/50 rounded-full animate-pulse"
+            style={{ animationDelay: "0.5s" }}
+          />
+          <span
+            className="w-2 h-2 bg-white/30 rounded-full animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
         </div>
       </div>
     </section>
+    </PatternBackground>
   );
 };
 

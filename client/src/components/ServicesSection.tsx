@@ -2,39 +2,39 @@ import { FaPuzzlePiece, FaRocket, FaCheckCircle, FaExchangeAlt, FaRedo, FaUser, 
 
 // Service de gestion de projet agile
 const agileProjectManagement = {
-  icon: <FaUsers className="text-blue-600 text-lg" />, 
+  icon: <FaUsers className="text-brand-blue-700 text-lg" />, 
   title: "Gestion de projet agile", 
-  color: "text-blue-700",
+  color: "text-brand-blue-900",
   tooltip: "Structuration d'équipes Scrum avec création de feature teams et accompagnement méthodologique.",
   link: "/#/services/gestion-projet-agile"
 };
 
 const functionalTests = [
   {
-    icon: <FaCheckCircle className="text-blue-600 text-lg" />, 
+    icon: <FaCheckCircle className="text-brand-blue-700 text-lg" />, 
     title: "Validation", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "Vérifie que l'application répond au cahier des charges et aux user stories.",
     link: "/#/services/validation"
   },
   {
-    icon: <FaExchangeAlt className="text-blue-600 text-lg" />, 
+    icon: <FaExchangeAlt className="text-brand-blue-700 text-lg" />, 
     title: "Intégration", 
-    color: "text-blue-700", 
+    color: "text-brand-blue-900", 
     tooltip: "Vérifie les interactions entre modules (UI/API).",
     link: "/#/services/integration"
   },
   {
     icon: <FaRedo className="text-blue-500 text-lg" />, 
     title: "Régression", 
-    color: "text-blue-700", 
+    color: "text-brand-blue-900", 
     tooltip: "S'assure que l'existant fonctionne après chaque modification.",
     link: "/#/services/regression"
   },
   {
-    icon: <FaUser className="text-blue-600 text-lg" />, 
+    icon: <FaUser className="text-brand-blue-700 text-lg" />, 
     title: "Acceptation utilisateur", 
-    color: "text-blue-700", 
+    color: "text-brand-blue-900", 
     tooltip: "Tests réalisés par ou avec les clients/utilisateurs.",
     link: "/#/services/acceptation"
   },
@@ -42,152 +42,188 @@ const functionalTests = [
 
 const nonFunctionalTests = [
   {
-    icon: <FaChartLine className="text-blue-600 text-lg" />, 
+    icon: <FaChartLine className="text-brand-blue-700 text-lg" />, 
     title: "Charge", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "Combien d'utilisateurs simultanés peuvent être supportés ?",
     link: "/#/services/charge"
   },
   {
     icon: <FaBolt className="text-blue-500 text-lg" />, 
     title: "Stress", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "Que se passe-t-il si on dépasse les limites ?",
     link: "/#/services/stress"
   },
   {
-    icon: <FaArrowsAltH className="text-blue-400 text-lg" />, 
+    icon: <FaArrowsAltH className="text-brand-blue-600 text-lg" />, 
     title: "Montée en charge", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "La performance reste-t-elle stable avec plus d'utilisateurs ?",
     link: "/#/services/montee-charge"
   },
   {
-    icon: <FaKeyboard className="text-blue-700 text-lg" />, 
+    icon: <FaKeyboard className="text-brand-blue-900 text-lg" />, 
     title: "Accessibilité", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "L'application est-elle utilisable par tous (navigation clavier, etc.) ?",
     link: "/#/services/accessibilite"
   },
   {
-    icon: <FaTabletAlt className="text-blue-700 text-lg" />, 
+    icon: <FaTabletAlt className="text-brand-blue-900 text-lg" />, 
     title: "Compatibilité", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "Fonctionne-t-elle sur tous les navigateurs, résolutions, appareils ?",
     link: "/#/services/compatibilite"
   },
   {
-    icon: <FaUserFriends className="text-blue-600 text-lg" />, 
+    icon: <FaUserFriends className="text-brand-blue-700 text-lg" />, 
     title: "Utilisabilité (UX)", 
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     tooltip: "Le parcours utilisateur est-il simple et cohérent ?",
     link: "/#/services/ux"
   },
 ];
 
+import PatternBackground from "./PatternBackground";
+
 export default function ServicesSection() {
   return (
-    <section className="py-20 md:py-24 bg-gradient-to-b from-white via-gray-50 to-gray-200" id="services">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 drop-shadow-lg">Nos services</h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-medium leading-relaxed">
-            Nous accompagnons vos équipes dans la gestion de projet agile et proposons des tests classés par objectifs fonctionnels/non fonctionnels et par méthodes d'exécution <span className="text-blue-600 font-semibold">statique</span>/<span className="text-blue-600 font-semibold">dynamique</span>.
+    <PatternBackground 
+      variant="light" 
+      opacity={0.1}
+      className="py-16 md:py-24 bg-white"
+    >
+    <section id="services">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* En-tête simplifié */}
+        <div className="text-center mb-16 md:mb-20">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-blue-900 mb-4">
+            Nos services
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Accompagnement méthodologique et tests logiciels pour garantir la qualité de vos applications
           </p>
         </div>
 
-        {/* Bloc Gestion de projet agile */}
-        <div className="mb-20">
-          <div className="flex flex-col items-center mb-8">
-            <span className="inline-block mb-4 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Accompagnement méthodologique</span>
-            <div className="bg-gradient-to-br from-blue-500 to-blue-400 text-white rounded-full p-6 shadow text-4xl mb-4">
-              <FaUsers />
-            </div>
-            <h3 className="text-3xl font-bold text-blue-700 mb-2">Gestion de projet agile</h3>
-          </div>
-          <div className="flex justify-center">
-            <a 
-              href={agileProjectManagement.link}
-              className="group relative bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100 hover:border-blue-200 w-full max-w-md"
-            >
-              <div className="flex items-center mb-4">
-                <div className="mr-4 bg-blue-50 p-3 rounded-full">
-                  {agileProjectManagement.icon}
+        {/* Gestion de projet agile - Carte principale */}
+        <div className="mb-16 md:mb-20">
+          <a 
+            href={agileProjectManagement.link}
+            className="group block bg-gradient-to-br from-brand-blue-50 via-white to-brand-blue-50 rounded-3xl p-8 md:p-10 shadow-lg hover:shadow-2xl border-2 border-brand-blue-100 hover:border-brand-blue-300 transition-all duration-300"
+          >
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div className="flex-shrink-0 bg-gradient-to-br from-brand-blue-600 to-brand-blue-700 text-white rounded-2xl p-5 shadow-lg group-hover:scale-105 transition-transform">
+                <FaUsers className="text-4xl" />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <div className="inline-block mb-3 bg-brand-blue-100 text-brand-blue-900 text-xs font-semibold px-3 py-1 rounded-full">
+                  Accompagnement méthodologique
                 </div>
-                <h4 className={`text-xl font-bold ${agileProjectManagement.color} group-hover:text-blue-600 transition-colors`}>
+                <h3 className="text-2xl md:text-3xl font-bold text-brand-blue-900 mb-3 group-hover:text-brand-blue-700 transition-colors">
                   {agileProjectManagement.title}
-                </h4>
+                </h3>
+                <p className="text-gray-600 leading-relaxed mb-4 max-w-2xl">
+                  {agileProjectManagement.tooltip}
+                </p>
+                <div className="inline-flex items-center text-brand-blue-700 font-semibold text-sm group-hover:text-brand-blue-900 transition-colors">
+                  <span className="mr-2">Découvrir</span>
+                  <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                </div>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                {agileProjectManagement.tooltip}
-              </p>
-              <div className="flex items-center text-blue-600 font-medium text-sm group-hover:text-blue-700 transition-colors">
-                <span className="mr-2">En savoir plus</span>
-                <span className="transform group-hover:trangray-x-1 transition-transform">→</span>
-              </div>
-            </a>
-          </div>
+            </div>
+          </a>
         </div>
 
-        {/* Bloc Test fonctionnel */}
-        <div className="mb-20">
-          <div className="flex flex-col items-center mb-8">
-            <span className="inline-block mb-4 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Test statique</span>
-            <div className="bg-gradient-to-br from-blue-500 to-blue-400 text-white rounded-full p-6 shadow text-4xl mb-4">
-              <FaPuzzlePiece />
+        {/* Tests fonctionnels */}
+        <div className="mb-16 md:mb-20">
+          <div className="mb-8 md:mb-10">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-700 text-white rounded-xl p-3 shadow-md">
+                <FaPuzzlePiece className="text-2xl" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-brand-blue-700 uppercase tracking-wide mb-1">
+                  Tests statiques
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-brand-blue-900">
+                  Tests fonctionnels
+                </h3>
+              </div>
             </div>
-            <h3 className="text-3xl font-bold text-blue-700 mb-2">Test fonctionnel</h3>
+            <p className="text-gray-600 ml-16 max-w-2xl">
+              Vérifiez que votre application répond aux spécifications et fonctionne comme prévu
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {functionalTests.map((test, idx) => (
               <a 
                 key={idx} 
                 href={test.link}
-                className="flex flex-col items-center justify-center bg-white rounded-xl p-6 shadow-lg border border-blue-100 min-h-[100px] h-full w-full hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer group"
+                className="group bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-brand-blue-300 hover:shadow-lg transition-all duration-200"
               >
-                <div className={`flex items-center gap-3 mb-3 text-lg font-bold ${test.color} group-hover:text-blue-600 transition-colors`}>
-                  {test.icon} {test.title}
+                <div className="flex items-start gap-4 mb-3">
+                  <div className="flex-shrink-0 bg-brand-blue-50 p-3 rounded-lg group-hover:bg-brand-blue-100 transition-colors">
+                    {test.icon}
+                  </div>
+                  <h4 className={`text-lg font-bold ${test.color} group-hover:text-brand-blue-700 transition-colors pt-1`}>
+                    {test.title}
+                  </h4>
                 </div>
-                <div className="text-sm text-gray-600 text-center leading-relaxed group-hover:text-gray-800 transition-colors">
+                <p className="text-sm text-gray-600 leading-relaxed ml-14">
                   {test.tooltip}
-                </div>
-                <div className="mt-4 text-blue-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  En savoir plus →
-                </div>
+                </p>
               </a>
             ))}
           </div>
         </div>
-        {/* Bloc Test non-fonctionnel */}
+
+        {/* Tests non-fonctionnels */}
         <div>
-          <div className="flex flex-col items-center mb-8">
-            <span className="inline-block mb-4 bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Test statique</span>
-            <div className="bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-full p-6 shadow text-4xl mb-4">
-              <FaRocket />
+          <div className="mb-8 md:mb-10">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-700 text-white rounded-xl p-3 shadow-md">
+                <FaRocket className="text-2xl" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-brand-blue-700 uppercase tracking-wide mb-1">
+                  Tests statiques
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-brand-blue-900">
+                  Tests non-fonctionnels
+                </h3>
+              </div>
             </div>
-            <h3 className="text-3xl font-bold text-blue-700 mb-2">Test non-fonctionnel</h3>
+            <p className="text-gray-600 ml-16 max-w-2xl">
+              Évaluez les performances, la qualité et l'expérience utilisateur de votre application
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {nonFunctionalTests.map((test, idx) => (
               <a 
                 key={idx} 
                 href={test.link}
-                className="flex flex-col items-center justify-center bg-white rounded-xl p-6 shadow-lg border border-blue-100 min-h-[100px] h-full w-full hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer group"
+                className="group bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-brand-blue-300 hover:shadow-lg transition-all duration-200"
               >
-                <div className={`flex items-center gap-3 mb-3 text-lg font-bold ${test.color} group-hover:text-blue-600 transition-colors`}>
-                  {test.icon} {test.title}
+                <div className="flex items-start gap-4 mb-3">
+                  <div className="flex-shrink-0 bg-brand-blue-50 p-3 rounded-lg group-hover:bg-brand-blue-100 transition-colors">
+                    {test.icon}
+                  </div>
+                  <h4 className={`text-lg font-bold ${test.color} group-hover:text-brand-blue-700 transition-colors pt-1`}>
+                    {test.title}
+                  </h4>
                 </div>
-                <div className="text-sm text-gray-600 text-center leading-relaxed group-hover:text-gray-800 transition-colors">
+                <p className="text-sm text-gray-600 leading-relaxed ml-14">
                   {test.tooltip}
-                </div>
-                <div className="mt-4 text-blue-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  En savoir plus →
-                </div>
+                </p>
               </a>
             ))}
           </div>
         </div>
       </div>
     </section>
+    </PatternBackground>
   );
 }

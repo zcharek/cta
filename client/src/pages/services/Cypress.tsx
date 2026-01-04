@@ -11,7 +11,7 @@ const Cypress = () => {
     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
       <div>
         <div>
-          <svg className="h-12 w-12 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="h-12 w-12 text-brand-blue-900" viewBox="0 0 24 24" fill="currentColor">
           </svg>
         </div>
       </div>
@@ -19,7 +19,7 @@ const Cypress = () => {
       <div className="space-y-3">
         {['Interface développeur', 'Time-travel debugging', 'Tests en temps réel', 'Screenshots auto'].map((item, index) => (
           <div key={index} className="flex items-center text-white/90">
-            <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+            <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
             <span className="text-sm">{item}</span>
           </div>
         ))}
@@ -35,12 +35,12 @@ const Cypress = () => {
         title="Cypress"
         subtitle="Testing"
         description="Tests E2E modernes avec <strong>Cypress</strong>, l'outil qui révolutionne l'automatisation avec une <strong>interface développeur</strong> exceptionnelle."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500" 
-        gradientTo="to-blue-400"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600" 
+        gradientTo="to-brand-blue-500"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
         secondaryButton={{
           text: "Architecture",
           href: "#architecture",
@@ -66,37 +66,37 @@ const Cypress = () => {
               icon: "👁️",
               title: "Interface développeur unique",
               description: "Test Runner visuel avec debugging en temps réel et time-travel.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "⚡",
               title: "Rechargement automatique",
               description: "Tests qui se relancent automatiquement à chaque modification.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "📸",
               title: "Screenshots et vidéos",
               description: "Capture automatique des échecs avec timeline détaillée.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🎯",
               title: "Sélecteurs intelligents",
               description: "Attente automatique des éléments et retry logic intégré.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🔧",
               title: "Configuration minimale",
               description: "Prêt à l'emploi avec des conventions intelligentes.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🚀",
               title: "API intuitive",
               description: "Syntaxe naturelle proche du comportement utilisateur.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((advantage, index) => (
             <div key={index} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
@@ -113,7 +113,7 @@ const Cypress = () => {
 
       {/* Architecture avec schéma */}
       <section id="architecture" className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Architecture Cypress
@@ -128,10 +128,10 @@ const Cypress = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Composants clés</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Test Runner", desc: "Interface graphique pour exécution et debugging visuel.", color: "bg-blue-500" },
-                  { title: "Command Log", desc: "Timeline interactive de toutes les actions de test.", color: "bg-blue-500" },
-                  { title: "Application Preview", desc: "Vue en temps réel de l'application testée.", color: "bg-blue-500" },
-                  { title: "Network Tab", desc: "Monitoring des requêtes HTTP et réponses.", color: "bg-blue-500" }
+                  { title: "Test Runner", desc: "Interface graphique pour exécution et debugging visuel.", color: "bg-brand-blue-600" },
+                  { title: "Command Log", desc: "Timeline interactive de toutes les actions de test.", color: "bg-brand-blue-600" },
+                  { title: "Application Preview", desc: "Vue en temps réel de l'application testée.", color: "bg-brand-blue-600" },
+                  { title: "Network Tab", desc: "Monitoring des requêtes HTTP et réponses.", color: "bg-brand-blue-600" }
                 ].map((component, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${component.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -163,11 +163,11 @@ const Cypress = () => {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Points forts</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {['Debugging visuel', 'Time-travel', 'Rechargement auto', 'API intuitive'].map((strength, index) => (
-                    <div key={index} className="text-blue-700">• {strength}</div>
+                    <div key={index} className="text-brand-blue-900">• {strength}</div>
                   ))}
                 </div>
               </div>
@@ -194,28 +194,28 @@ const Cypress = () => {
               title: "Écriture",
               description: "Tests avec syntaxe naturelle et API intuitive",
               
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "2", 
               title: "Debugging",
               description: "Interface visuelle avec time-travel debugging",
               
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "3",
               title: "Exécution",
               description: "Tests en temps réel avec rechargement automatique",
               
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "4",
               title: "Analyse",
               description: "Screenshots, vidéos et command log détaillé",
               
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((workflow, index) => (
             <div key={index} className="text-center">
@@ -233,7 +233,7 @@ const Cypress = () => {
 
       {/* Time-travel debugging */}
       <section className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Time-travel Debugging
@@ -248,10 +248,10 @@ const Cypress = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Fonctionnalités</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Snapshots automatiques", desc: "Capture de l'état DOM à chaque commande.", color: "bg-blue-500" },
-                  { title: "Navigation temporelle", desc: "Retour en arrière pour inspecter chaque étape.", color: "bg-blue-500" },
-                  { title: "Inspection interactive", desc: "Hover sur les commandes pour voir les changements.", color: "bg-blue-500" },
-                  { title: "État des éléments", desc: "Visualisation des propriétés et attributs en temps réel.", color: "bg-blue-500" }
+                  { title: "Snapshots automatiques", desc: "Capture de l'état DOM à chaque commande.", color: "bg-brand-blue-600" },
+                  { title: "Navigation temporelle", desc: "Retour en arrière pour inspecter chaque étape.", color: "bg-brand-blue-600" },
+                  { title: "Inspection interactive", desc: "Hover sur les commandes pour voir les changements.", color: "bg-brand-blue-600" },
+                  { title: "État des éléments", desc: "Visualisation des propriétés et attributs en temps réel.", color: "bg-brand-blue-600" }
                 ].map((feature, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${feature.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -277,14 +277,14 @@ const Cypress = () => {
                 ].map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="font-medium text-gray-900">{item.benefit}</span>
-                    <span className="text-sm text-blue-600 font-semibold">{item.impact}</span>
+                    <span className="text-sm text-brand-blue-900 font-semibold">{item.impact}</span>
                   </div>
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Cas d'usage</h4>
-                <div className="text-sm text-blue-700 space-y-1">
+                <div className="text-sm text-brand-blue-900 space-y-1">
                   <div>• Identifier pourquoi un élément n'est pas cliquable</div>
                   <div>• Comprendre les changements d'état DOM</div>
                   <div>• Analyser les timings et les animations</div>
@@ -300,8 +300,8 @@ const Cypress = () => {
         title="Prêt à révolutionner vos tests avec Cypress ?"
         description="Nos experts Cypress vous accompagnent pour créer des tests visuels et intuitifs."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         secondaryButton={{
           text: "Voir nos autres services",
           href: "/#services",

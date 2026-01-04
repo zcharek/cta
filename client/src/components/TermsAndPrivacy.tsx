@@ -30,7 +30,7 @@ const TermsAndPrivacy = () => {
             <button
               className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
                 activeTab === "terms"
-                  ? "text-blue-600 border-blue-600"
+                  ? "text-brand-blue-900 border-brand-blue-900"
                   : "text-gray-500 border-transparent hover:text-gray-700"
               }`}
               onClick={() => setActiveTab("terms")}
@@ -40,7 +40,7 @@ const TermsAndPrivacy = () => {
             <button
               className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
                 activeTab === "privacy"
-                  ? "text-blue-600 border-blue-600"
+                  ? "text-brand-blue-900 border-brand-blue-900"
                   : "text-gray-500 border-transparent hover:text-gray-700"
               }`}
               onClick={() => setActiveTab("privacy")}
@@ -66,11 +66,11 @@ const TermsAndPrivacy = () => {
 
               <h3>1. Identification de l'entreprise</h3>
               <p>
-                Central Test Consulting est une entreprise de services informatiques spécialisée dans les tests logiciels 
+                Central Test Agency est une entreprise de services informatiques spécialisée dans les tests logiciels 
                 et l'automatisation QA, établie en Algérie conformément à la législation commerciale algérienne.
               </p>
               <ul>
-                <li>Raison sociale : Central Test Consulting</li>
+                <li>Raison sociale : Central Test Agency</li>
                 <li>Secteur d'activité : Services de tests logiciels et automatisation QA</li>
                 <li>Pays d'établissement : République Algérienne Démocratique et Populaire</li>
                 <li>Contact : centraltestagency@gmail.com</li>
@@ -106,12 +106,12 @@ const TermsAndPrivacy = () => {
               <h3>4. Propriété intellectuelle</h3>
               <p>
                 Les scripts de tests, documentations et livrables développés spécifiquement pour le client 
-                lui appartiennent. Central Test Consulting conserve ses méthodologies et outils propriétaires.
+                lui appartiennent. Central Test Agency conserve ses méthodologies et outils propriétaires.
               </p>
 
               <h3>5. Confidentialité</h3>
               <p>
-                Central Test Consulting s'engage à maintenir la confidentialité de toutes les informations 
+                Central Test Agency s'engage à maintenir la confidentialité de toutes les informations 
                 communiquées par le client dans le cadre de la prestation.
               </p>
 

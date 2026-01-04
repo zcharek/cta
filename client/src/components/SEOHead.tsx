@@ -16,7 +16,7 @@ interface SEOHeadProps {
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
-  title = "Central Test Consulting - Tests Logiciels et Automatisation QA en Algérie",
+  title = "Central Test Agency - Tests Logiciels et Automatisation QA en Algérie",
   description = "Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux.",
   keywords = "test logiciel, automatisation QA, Playwright, Cypress, tests E2E, API testing, régression, qualité logicielle, CI/CD, Algérie, tests fonctionnels, tests automatisés",
   ogImage = "https://centraltestagency.com/generated-icon.png",
@@ -25,7 +25,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   type = "website",
   publishedTime,
   modifiedTime,
-  author = "Central Test Consulting",
+  author = "Central Test Agency",
   locale = "fr_DZ",
   alternateLocales = ["en_US", "ar_DZ"]
 }) => {
@@ -61,7 +61,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     setMetaTag('og:type', type, true);
     setMetaTag('og:url', ogUrl, true);
     setMetaTag('og:locale', locale, true);
-    setMetaTag('og:site_name', 'Central Test Consulting', true);
+    setMetaTag('og:site_name', 'Central Test Agency', true);
     setMetaTag('og:image', ogImage, true);
 
     // Twitter Cards
