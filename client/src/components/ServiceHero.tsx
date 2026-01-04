@@ -1,4 +1,5 @@
 import React from 'react';
+import PatternBackground from './PatternBackground';
 
 interface ServiceHeroProps {
   badge: string;
@@ -42,10 +43,15 @@ const ServiceHero: React.FC<ServiceHeroProps> = ({
   rightContent
 }) => {
   return (
-    <div className={`relative overflow-hidden bg-gradient-to-br ${gradientFrom} ${gradientVia} ${gradientTo} rounded-3xl p-8 md:p-12 mb-16`}>
+    <PatternBackground 
+      variant="dark" 
+      opacity={0.15}
+      className={`relative overflow-hidden bg-gradient-to-br ${gradientFrom} ${gradientVia} ${gradientTo} rounded-3xl p-8 md:p-12 mb-16`}
+    >
+    <div className="relative z-10">
       <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent"></div>
-      <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -trangray-y-32 trangray-x-32"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full trangray-y-24 -trangray-x-24"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
       
       <div className={`relative z-10 flex flex-col ${rightContent ? 'lg:flex-row' : ''} items-center gap-8`}>
         <div className={`${rightContent ? 'flex-1' : 'w-full'} text-center ${rightContent ? 'lg:text-left' : ''}`}>
@@ -69,7 +75,7 @@ const ServiceHero: React.FC<ServiceHeroProps> = ({
               {primaryButton && (
                 <a 
                   href={primaryButton.href}
-                  className={`inline-flex items-center px-8 py-4 ${primaryButton.bgColor} text-white font-semibold rounded-xl ${primaryButton.hoverColor} transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1`}
+                  className={`inline-flex items-center px-8 py-4 ${primaryButton.bgColor} text-white font-semibold rounded-xl ${primaryButton.hoverColor} transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1`}
                 >
                   <span className="mr-2">{primaryButton.icon}</span>
                   {primaryButton.text}
@@ -95,6 +101,7 @@ const ServiceHero: React.FC<ServiceHeroProps> = ({
         )}
       </div>
     </div>
+    </PatternBackground>
   );
 };
 

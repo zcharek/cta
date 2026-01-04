@@ -127,7 +127,7 @@ export const AccessibilityControls: React.FC = () => {
           onClick={toggleHighContrast}
           className={`w-full px-3 py-2 text-xs rounded-md transition-colors ${
             isHighContrast 
-              ? 'bg-blue-600 text-white' 
+              ? 'bg-brand-blue-900 text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
           aria-label={isHighContrast ? 'Désactiver le contraste élevé' : 'Activer le contraste élevé'}
@@ -139,7 +139,7 @@ export const AccessibilityControls: React.FC = () => {
           onClick={toggleReducedMotion}
           className={`w-full px-3 py-2 text-xs rounded-md transition-colors ${
             isReducedMotion 
-              ? 'bg-blue-600 text-white' 
+              ? 'bg-brand-blue-900 text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
           aria-label={isReducedMotion ? 'Désactiver la réduction de mouvement' : 'Activer la réduction de mouvement'}
@@ -156,7 +156,7 @@ export const AccessibilityControls: React.FC = () => {
                 onClick={() => setFontSize(size)}
                 className={`px-2 py-1 text-xs rounded ${
                   fontSize === size 
-                    ? 'bg-blue-600 text-white' 
+                    ? 'bg-brand-blue-900 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
                 aria-label={`Taille de police ${size}`}

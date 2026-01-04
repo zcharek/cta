@@ -1,5 +1,6 @@
+import { WorkflowStep } from "./WorkflowStep";
 import { m } from "framer-motion";
-import React from "react";
+import PatternBackground from "./PatternBackground";
 
 const workflowSteps = [
   {
@@ -34,56 +35,49 @@ const workflowSteps = [
 
 const WorkflowSection = () => {
   return (
-    <section className="py-20 bg-white">
-      <div className="container">
+    <PatternBackground 
+      variant="light" 
+      opacity={0.1}
+      className="py-20 bg-white"
+    >
+    <section className="container">
         <m.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
             Notre approche
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Nous appliquons une méthodologie stricte pour assurer une couverture
-            de test exhaustive et garantir des résultats de haute qualité.
+            Une méthodologie rigoureuse pour une qualité sans compromis.
           </p>
         </m.div>
 
-        <div className="relative mt-14 mb-10 max-w-6xl mx-auto">
-          {/* Timeline verticale mobile */}
+        <div className="relative max-w-6xl mx-auto">
+          {/* Ligne animée */}
+          <m.div
+            className="hidden md:block absolute top-7 left-1/2 -translate-x-1/2 h-1
+            bg-gradient-to-r from-brand-blue-200 via-brand-blue-400 to-brand-blue-600 rounded-full"
+            initial={{ width: 0 }}
+            whileInView={{ width: "90%" }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          />
+
           {/* Steps */}
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full gap-y-12 md:gap-y-0 md:gap-x-8">
+          <div
+            role="list"
+            className="relative z-10 flex flex-col md:flex-row gap-y-12 md:gap-x-8 justify-center"
+          >
             {workflowSteps.map((step, idx) => (
-              <m.div
-                key={step.number}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.1 * idx }}
-                className="relative flex flex-col items-center w-full md:w-72 max-w-xs mx-auto"
-              >
-                {/* Icône */}
-                <span className="z-10 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white text-2xl shadow-xl border-4 border-white ring-4 ring-blue-100 mb-2">
-                  <i className={`fas ${step.icon}`}></i>
-                </span>
-                {/* Titre et étape */}
-                <div className="text-center mb-2 flex flex-col items-center">
-                  <h3 className="text-lg font-bold text-blue-900 mb-1">{step.title}</h3>
-                  <p className="text-blue-700 text-sm italic">Étape {step.number}</p>
-                </div>
-                {/* Carte */}
-                <div className="bg-white/90 rounded-3xl shadow-2xl border border-blue-100 px-6 py-6 transition-all duration-300 w-full min-h-[180px] md:min-h-[210px] flex flex-col justify-center">
-                  <div className="text-gray-800 text-xs md:text-sm leading-relaxed text-center">{step.description}</div>
-                </div>
-              </m.div>
+              <WorkflowStep key={step.number} step={step} index={idx} />
             ))}
           </div>
         </div>
-      </div>
     </section>
+    </PatternBackground>
   );
 };
 

@@ -3,6 +3,7 @@ import { m } from "framer-motion";
 import ContactModal from "./ContactModal";
 import { useLocation } from "wouter";
 import QuizTestSelector from "./QuizTestSelector";
+import LogoCT from "./LogoCT";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,12 +56,15 @@ const Header = () => {
           <div className="flex items-center">
             <a href="/" className="hover:opacity-80 transition-opacity duration-200">
               <m.div
-                className="text-blue-600 font-poppins font-semibold text-2xl"
+                className="flex items-center gap-2"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                Central<span className="text-gray-700">TestAgency</span>
+                <LogoCT className="h-10 w-10" variant="dark" />
+                <span className="text-brand-blue-900 font-lexend font-semibold text-xl hidden sm:inline">
+                  Central<span className="text-brand-red-700">TestAgency</span>
+                </span>
               </m.div>
             </a>
           </div>
@@ -70,19 +74,19 @@ const Header = () => {
             <nav className="hidden md:flex items-center space-x-8">
               <a
                 href="/#services"
-                className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-blue-600"
+                className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-brand-blue-700 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-brand-blue-700"
               >
                 Nos services
               </a>
               <a
                 href="/#/faq"
-                className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-blue-600"
+                className="font-medium text-gray-700 relative after:content-[''] after:block after:h-[2px] after:bg-brand-blue-700 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 after:origin-left hover:text-brand-blue-700"
               >
                 FAQ
               </a>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 shadow-sm"
+                className="px-5 py-2 bg-brand-blue-700 text-white rounded-md hover:bg-brand-blue-800 transition-colors duration-200 shadow-sm"
               >
                 Contactez-nous
               </button>
@@ -91,7 +95,7 @@ const Header = () => {
             {/* Mobile menu button */}
             <button
               type="button"
-              className="md:hidden text-gray-700 hover:text-blue-600 focus:outline-none ml-2"
+              className="md:hidden text-gray-700 hover:text-brand-blue-700 focus:outline-none ml-2"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Ouvrir le menu"
             >
@@ -117,13 +121,13 @@ const Header = () => {
             <button
               type="button"
               onClick={handleMobileServicesClick}
-              className="font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 text-center"
+              className="font-medium text-gray-700 hover:text-brand-blue-700 transition-colors duration-200 text-center"
             >
               Services
             </button>
             <a
               href="/#/faq"
-              className="font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 text-center"
+              className="font-medium text-gray-700 hover:text-brand-blue-700 transition-colors duration-200 text-center"
               onClick={() => setIsOpen(false)}
             >
               FAQ

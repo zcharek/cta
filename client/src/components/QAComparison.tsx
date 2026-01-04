@@ -25,7 +25,7 @@ const QAComparison: React.FC<QAComparisonProps> = ({
       
       <div className="mb-6">
         <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
-          <span className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center mr-2 text-sm">👤</span>
+          <span className="bg-brand-blue-100 text-brand-blue-900 rounded-full w-6 h-6 flex items-center justify-center mr-2 text-sm">👤</span>
           {manualQA.title} ({manualQA.priority})
         </h4>
         <ul className="text-sm text-gray-600 space-y-1 ml-8">
@@ -37,7 +37,7 @@ const QAComparison: React.FC<QAComparisonProps> = ({
       
       <div>
         <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
-          <span className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center mr-2 text-sm">🤖</span>
+          <span className="bg-brand-blue-100 text-brand-blue-900 rounded-full w-6 h-6 flex items-center justify-center mr-2 text-sm">🤖</span>
           {automatedTests.title} ({automatedTests.priority})
         </h4>
         <ul className="text-sm text-gray-600 space-y-1 ml-8">
@@ -47,7 +47,7 @@ const QAComparison: React.FC<QAComparisonProps> = ({
         </ul>
       </div>
       
-      <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-blue-50 rounded-lg">
+      <div className="mt-6 p-4 bg-gradient-to-r from-brand-blue-50 to-brand-blue-50 rounded-lg">
         <p className="text-sm text-gray-700 font-medium">
           <strong>Notre approche :</strong> {approach}
         </p>

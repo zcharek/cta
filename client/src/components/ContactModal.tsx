@@ -80,16 +80,16 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
     },
     onSuccess: () => {
       toast({
-        title: "Message envoyé !",
-        description: "Nous vous répondrons dans les plus brefs délais.",
+        title: "✅ Message envoyé avec succès !",
+        description: "Merci pour votre confiance. Notre équipe vous répondra sous 24h ouvrées.",
       });
       form.reset();
       onClose();
     },
     onError: (error: any) => {
       toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi du message.",
+        title: "❌ Erreur d'envoi",
+        description: "Désolé, une erreur est survenue. Veuillez réessayer ou nous contacter directement par email.",
         variant: "destructive",
       });
     },
@@ -133,7 +133,7 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
           <button
             onClick={handleClose}
             aria-label="Fermer la modale"
-            className="absolute top-4 right-4 text-gray-400 hover:text-blue-500 text-3xl font-light transition-all duration-200 hover:scale-110 z-50 cursor-pointer bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200"
+            className="absolute top-4 right-4 text-gray-400 hover:text-brand-blue-600 text-3xl font-light transition-all duration-200 hover:scale-110 z-50 cursor-pointer bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200"
           >
             ×
           </button>
@@ -146,32 +146,32 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Prénom <span className="text-blue-500">*</span>
+                  Prénom <span className="text-brand-blue-600">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="Votre prénom"
-                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                   {...form.register("firstName")}
                 />
                 {form.formState.errors.firstName && (
-                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                  <p className="text-brand-blue-600 text-xs sm:text-sm mt-1">
                     {form.formState.errors.firstName.message}
                   </p>
                 )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Nom <span className="text-blue-500">*</span>
+                  Nom <span className="text-brand-blue-600">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="Votre nom"
-                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                   {...form.register("lastName")}
                 />
                 {form.formState.errors.lastName && (
-                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                  <p className="text-brand-blue-600 text-xs sm:text-sm mt-1">
                     {form.formState.errors.lastName.message}
                   </p>
                 )}
@@ -180,32 +180,32 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Adresse Email <span className="text-blue-500">*</span>
+                  Adresse Email <span className="text-brand-blue-600">*</span>
                 </label>
                 <input
                   type="email"
                   placeholder="votre@email.com"
-                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                   {...form.register("email")}
                 />
                 {form.formState.errors.email && (
-                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                  <p className="text-brand-blue-600 text-xs sm:text-sm mt-1">
                     {form.formState.errors.email.message}
                   </p>
                 )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Entreprise / Organisation <span className="text-blue-500">*</span>
+                  Entreprise / Organisation <span className="text-brand-blue-600">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="Nom de l'entreprise"
-                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                   {...form.register("company")}
                 />
                 {form.formState.errors.company && (
-                  <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                  <p className="text-brand-blue-600 text-xs sm:text-sm mt-1">
                     {form.formState.errors.company.message}
                   </p>
                 )}
@@ -213,10 +213,10 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Service souhaité <span className="text-blue-500">*</span>
+                Service souhaité <span className="text-brand-blue-600">*</span>
               </label>
               <select
-                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base bg-white"
+                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:border-transparent transition-all duration-200 text-sm sm:text-base bg-white"
                 {...form.register("service")}
               >
                 <option value="">Sélectionnez un service</option>
@@ -225,30 +225,30 @@ const ContactModal = ({ isOpen, onClose, preselectedService }: ContactModalProps
                 ))}
               </select>
               {form.formState.errors.service && (
-                <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                <p className="text-brand-blue-600 text-xs sm:text-sm mt-1">
                   {form.formState.errors.service.message}
                 </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Message <span className="text-blue-500">*</span>
+                Message <span className="text-brand-blue-600">*</span>
               </label>
               <textarea
                 rows={4}
                 placeholder="Décrivez votre besoin, votre projet ou posez-nous votre question..."
-                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none"
+                className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-600 focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none"
                 {...form.register("message")}
               />
               {form.formState.errors.message && (
-                <p className="text-blue-500 text-xs sm:text-sm mt-1">
+                <p className="text-brand-blue-600 text-xs sm:text-sm mt-1">
                   {form.formState.errors.message.message}
                 </p>
               )}
             </div>
             <button
               type="submit"
-              className="w-full py-3 mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-base sm:text-lg shadow-lg transition-all duration-200"
+              className="w-full py-3 mt-2 bg-brand-blue-900 hover:bg-brand-blue-800 text-white font-bold rounded-xl text-base sm:text-lg shadow-lg transition-all duration-200"
               disabled={contactMutation.isPending}
             >
               {contactMutation.isPending ? "Envoi en cours..." : "Envoyer ma demande"}

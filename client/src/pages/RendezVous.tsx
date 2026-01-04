@@ -3,10 +3,11 @@ import { m } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CalendlyWidget from "@/components/CalendlyWidget";
+import PatternBackground from "@/components/PatternBackground";
 
 const RendezVous = () => {
   useEffect(() => {
-    document.title = "Prendre un rendez-vous | Central Test Consulting";
+    document.title = "Prendre un rendez-vous | Central Test Agency";
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
@@ -19,8 +20,9 @@ const RendezVous = () => {
   return (
     <>
       <Header />
-      <main className="pt-20">
-        <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-50 min-h-screen">
+      <PatternBackground variant="light" opacity={0.1} className="pt-20">
+      <main>
+        <section className="py-20 bg-gradient-to-br from-brand-blue-50 to-brand-blue-50 min-h-screen">
           <div className="container">
             <m.div
               className="text-center mb-16"
@@ -73,20 +75,20 @@ const RendezVous = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                   <div className="text-center">
-                    <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-blue-600 text-xl">1</span>
+                    <div className="bg-brand-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-brand-blue-900 text-xl">1</span>
                     </div>
                     <p className="text-gray-800">Analyse de vos besoins et objectifs</p>
                   </div>
                   <div className="text-center">
-                    <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-blue-600 text-xl">2</span>
+                    <div className="bg-brand-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-brand-blue-900 text-xl">2</span>
                     </div>
                     <p className="text-gray-800">Présentation de nos solutions adaptées</p>
                   </div>
                   <div className="text-center">
-                    <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-blue-600 text-xl">3</span>
+                    <div className="bg-brand-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-brand-blue-900 text-xl">3</span>
                     </div>
                     <p className="text-gray-800">Devis personnalisé et planning</p>
                   </div>
@@ -96,6 +98,7 @@ const RendezVous = () => {
           </div>
         </section>
       </main>
+      </PatternBackground>
       <Footer />
     </>
   );

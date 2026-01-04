@@ -19,7 +19,7 @@ const RestAssured = () => {
     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
       <div>
         <div>
-          <svg className="h-12 w-12 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="h-12 w-12 text-brand-blue-900" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8.851 18.56s-.917.534.653.714c1.902.218 2.874.187 4.969-.211 0 0 .552.346 1.321.646-4.699 2.013-10.633-.118-6.943-1.149M8.276 15.933s-1.028.761.542.924c2.032.209 3.636.227 6.413-.308 0 0 .384.389.987.602-5.679 1.661-12.007.13-7.942-1.218"/>
           </svg>
         </div>
@@ -28,7 +28,7 @@ const RestAssured = () => {
       <div className="space-y-3">
         {["Syntaxe fluide", "Intégration Java", "Validations avancées", "JSON/XML support"].map((item, index) => (
           <div key={index} className="flex items-center text-white/90">
-            <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+            <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
             <span className="text-sm">{item}</span>
           </div>
         ))}
@@ -43,12 +43,12 @@ const RestAssured = () => {
         title="RestAssured"
         subtitle="API Testing"
         description="Bibliothèque <strong>Java puissante</strong> pour tester vos APIs REST avec une <strong>syntaxe fluide</strong> et intuitive."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500"
-        gradientTo="to-blue-400"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600"
+        gradientTo="to-brand-blue-500"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
         secondaryButton={{ text: "Architecture", href: "#architecture", icon: "🏗️" }}
         rightContent={heroRightContent}
       />
@@ -70,37 +70,37 @@ const RestAssured = () => {
               icon: "💬",
               title: "Syntaxe fluide",
               description: "API expressive given().when().then() pour des tests lisibles.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "✅",
               title: "Validations",
               description: "Assertions puissantes pour JSON, XML, headers et status codes.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "⚡",
               title: "Performance",
               description: "Exécution rapide et optimisée pour les tests d'intégration.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "☕",
               title: "Écosystème Java",
               description: "Intégration parfaite avec TestNG, JUnit et Maven/Gradle.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🔧",
               title: "Configuration zéro",
               description: "Prêt à l'emploi avec des paramètres intelligents par défaut.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🚀",
               title: "CI/CD intégré",
               description: "Optimisé pour l'intégration continue avec reporting avancé.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((advantage, index) => (
             <div key={index} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
@@ -116,7 +116,7 @@ const RestAssured = () => {
 
       {/* Architecture avec schéma */}
       <section id="architecture" className="mb-20">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Architecture RestAssured
@@ -131,10 +131,10 @@ const RestAssured = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Composants clés</h3>
               <div className="space-y-4">
                 {[
-                  { title: "Request Builder", desc: "Construction fluide des requêtes HTTP avec given().when().", color: "bg-blue-500" },
-                  { title: "Response Validator", desc: "Validation puissante des réponses avec then().", color: "bg-blue-500" },
-                  { title: "JSON/XML Parser", desc: "Parsing automatique et validation des formats de données.", color: "bg-blue-500" },
-                  { title: "Authentication", desc: "Support natif de l'authentification OAuth, Basic, etc.", color: "bg-blue-500" }
+                  { title: "Request Builder", desc: "Construction fluide des requêtes HTTP avec given().when().", color: "bg-brand-blue-600" },
+                  { title: "Response Validator", desc: "Validation puissante des réponses avec then().", color: "bg-brand-blue-600" },
+                  { title: "JSON/XML Parser", desc: "Parsing automatique et validation des formats de données.", color: "bg-brand-blue-600" },
+                  { title: "Authentication", desc: "Support natif de l'authentification OAuth, Basic, etc.", color: "bg-brand-blue-600" }
                 ].map((component, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${component.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -166,11 +166,11 @@ const RestAssured = () => {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Points forts</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {['Syntaxe fluide', 'Validations avancées', 'Java natif', 'Performance'].map((strength, index) => (
-                    <div key={index} className="text-blue-700">• {strength}</div>
+                    <div key={index} className="text-brand-blue-900">• {strength}</div>
                   ))}
                 </div>
               </div>
@@ -196,25 +196,25 @@ const RestAssured = () => {
               step: "1",
               title: "Écriture",
               description: "Tests avec syntaxe fluide given().when().then()",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "2", 
               title: "Configuration",
               description: "Setup des headers, auth et paramètres de test",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "3",
               title: "Exécution",
               description: "Tests automatisés avec validation des réponses",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "4",
               title: "Rapport",
               description: "Génération de rapports détaillés avec métriques",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((workflow, index) => (
             <div key={index} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 h-full">
@@ -230,7 +230,7 @@ const RestAssured = () => {
 
       {/* Section nos services RestAssured */}
       <section className="mb-20">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-br from-brand-blue-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Nos services RestAssured
@@ -242,7 +242,7 @@ const RestAssured = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                 <span className="text-white text-xl">🏗️</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Architecture API Testing</h3>
@@ -255,7 +255,7 @@ const RestAssured = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                 <span className="text-white text-xl">🧪</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Tests API complets</h3>
@@ -268,7 +268,7 @@ const RestAssured = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                 <span className="text-white text-xl">🎓</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Formation équipes</h3>
@@ -281,7 +281,7 @@ const RestAssured = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                 <span className="text-white text-xl">🔗</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Intégration CI/CD</h3>
@@ -294,7 +294,7 @@ const RestAssured = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                 <span className="text-white text-xl">📊</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Rapports & Analytics</h3>
@@ -307,7 +307,7 @@ const RestAssured = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                 <span className="text-white text-xl">⚡</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Optimisation</h3>
@@ -323,7 +323,7 @@ const RestAssured = () => {
       </section>
 
       {/* Section modèles de coopération */}
-      <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-blue-100 mb-20">
+      <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-brand-blue-100 mb-20">
         <div className="text-center mb-6 sm:mb-8">
           <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
             Nos modèles de coopération
@@ -336,14 +336,14 @@ const RestAssured = () => {
           {cooperationModels.map((model: CooperationModel, idx: number) => (
             <div
               key={idx}
-              className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:border-blue-300 h-full transform hover:-trangray-y-2"
+              className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-brand-blue-100 hover:border-brand-blue-400 h-full transform hover:-trangray-y-2"
             >
               <div className="flex items-center mb-4 sm:mb-6">
                 <div className={`w-4 h-4 rounded-full mr-3 sm:mr-4 ${
-                  idx === 0 ? 'bg-blue-500' : 
-                  idx === 1 ? 'bg-blue-500' : 'bg-blue-300'
+                  idx === 0 ? 'bg-brand-blue-600' : 
+                  idx === 1 ? 'bg-brand-blue-600' : 'bg-brand-blue-400'
                 }`}></div>
-                <h4 className={`text-xl sm:text-2xl font-bold text-blue-700`}>
+                <h4 className={`text-xl sm:text-2xl font-bold text-brand-blue-900`}>
                   {model.title}
                 </h4>
               </div>
@@ -353,7 +353,7 @@ const RestAssured = () => {
               <ul className="space-y-2 sm:space-y-3">
                 {model.points.map((point: string, i: number) => (
                   <li key={i} className="flex items-start text-gray-700">
-                    <span className="text-blue-500 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
+                    <span className="text-brand-blue-600 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
                     <span className="text-sm sm:text-base leading-relaxed">{point}</span>
                   </li>
                 ))}
@@ -367,8 +367,8 @@ const RestAssured = () => {
         title="Prêt à optimiser vos tests API avec RestAssured ?"
         description="Nos experts RestAssured vous accompagnent pour créer des tests API Java robustes et maintenables."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         secondaryButton={{ text: "Voir nos autres services", href: "/#services", icon: "📋" }}
       />
     </ServiceLayout>

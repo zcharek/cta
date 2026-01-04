@@ -19,7 +19,7 @@ const K6 = () => {
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
       <div>
         <div>
-                      <svg className="h-12 w-12 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className="h-12 w-12 text-brand-blue-900" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                       </svg>
                     </div>
@@ -28,7 +28,7 @@ const K6 = () => {
                   <div className="space-y-3">
         {["JavaScript moderne", "Métriques temps réel", "Cloud & on-premise", "Intégration CI/CD"].map((item, index) => (
           <div key={index} className="flex items-center text-white/90">
-                      <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
             <span className="text-sm">{item}</span>
                     </div>
         ))}
@@ -43,12 +43,12 @@ const K6 = () => {
         title="k6"
         subtitle="Performance"
         description="Tests de <strong>performance modernes</strong> avec JavaScript ES6+ et <strong>métriques temps réel</strong> pour applications cloud-native."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500"
-        gradientTo="to-blue-400"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600"
+        gradientTo="to-brand-blue-500"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
         secondaryButton={{ text: "Architecture", href: "#architecture", icon: "🏗️" }}
         rightContent={heroRightContent}
       />
@@ -70,37 +70,37 @@ const K6 = () => {
               icon: "⚡",
               title: "JavaScript moderne",
               description: "Scripts de test avec ES6+, modules et syntaxe familière aux développeurs.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🚀",
               title: "Performance",
               description: "Runtime Go optimisé pour des tests haute performance avec faible empreinte.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "📊",
               title: "Métriques riches",
               description: "Métriques détaillées temps réel avec seuils personnalisables et alertes.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "☁️",
               title: "Flexibilité",
               description: "Tests locaux, cloud k6, ou intégration avec votre infrastructure existante.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🔧",
               title: "Configuration zéro",
               description: "Prêt à l'emploi avec des paramètres intelligents par défaut.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               icon: "🚀",
               title: "CI/CD intégré",
               description: "Optimisé pour l'intégration continue avec reporting avancé.",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((advantage, index) => (
             <div key={index} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
@@ -116,7 +116,7 @@ const K6 = () => {
 
       {/* Architecture avec schéma */}
       <section id="architecture" className="mb-20">
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-8">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Architecture k6
@@ -131,10 +131,10 @@ const K6 = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Composants clés</h3>
                     <div className="space-y-4">
                 {[
-                  { title: "JavaScript Runtime", desc: "Moteur V8 optimisé pour l'exécution des scripts de test.", color: "bg-blue-500" },
-                  { title: "Go Engine", desc: "Runtime Go haute performance pour la gestion des requêtes.", color: "bg-blue-500" },
-                  { title: "Metrics Engine", desc: "Collecte et analyse des métriques en temps réel.", color: "bg-blue-500" },
-                  { title: "Cloud Platform", desc: "Infrastructure distribuée pour tests à grande échelle.", color: "bg-blue-500" }
+                  { title: "JavaScript Runtime", desc: "Moteur V8 optimisé pour l'exécution des scripts de test.", color: "bg-brand-blue-600" },
+                  { title: "Go Engine", desc: "Runtime Go haute performance pour la gestion des requêtes.", color: "bg-brand-blue-600" },
+                  { title: "Metrics Engine", desc: "Collecte et analyse des métriques en temps réel.", color: "bg-brand-blue-600" },
+                  { title: "Cloud Platform", desc: "Infrastructure distribuée pour tests à grande échelle.", color: "bg-brand-blue-600" }
                 ].map((component, index) => (
                   <div key={index} className="flex items-start">
                     <div className={`${component.color} text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0`}>
@@ -166,11 +166,11 @@ const K6 = () => {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-brand-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Points forts</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {['JavaScript moderne', 'Haute performance', 'Cloud ready', 'Métriques avancées'].map((strength, index) => (
-                    <div key={index} className="text-blue-700">• {strength}</div>
+                    <div key={index} className="text-brand-blue-900">• {strength}</div>
                   ))}
                 </div>
                   </div>
@@ -196,25 +196,25 @@ const K6 = () => {
               step: "1",
               title: "Écriture",
               description: "Scripts JavaScript ES6+ avec API intuitive",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "2", 
               title: "Configuration",
               description: "Setup des scénarios et seuils de performance",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "3",
               title: "Exécution",
               description: "Tests locaux ou cloud avec métriques temps réel",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             },
             {
               step: "4",
               title: "Analyse",
               description: "Rapports détaillés et alertes automatiques",
-              color: "from-blue-500 to-blue-600"
+              color: "from-brand-blue-600 to-brand-blue-900"
             }
           ].map((workflow, index) => (
             <div key={index} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 h-full">
@@ -230,7 +230,7 @@ const K6 = () => {
 
           {/* Section nos services k6 */}
           <section className="mb-20">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-3xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-brand-blue-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                   Nos services k6
@@ -242,7 +242,7 @@ const K6 = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🎯</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Stratégie de performance</h3>
@@ -255,7 +255,7 @@ const K6 = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">📝</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Scripts k6 avancés</h3>
@@ -268,7 +268,7 @@ const K6 = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🎓</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Formation équipes</h3>
@@ -281,7 +281,7 @@ const K6 = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">☁️</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">k6 Cloud Setup</h3>
@@ -294,7 +294,7 @@ const K6 = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🔗</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Intégration CI/CD</h3>
@@ -307,7 +307,7 @@ const K6 = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">📊</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Monitoring & Analytics</h3>
@@ -323,7 +323,7 @@ const K6 = () => {
           </section>
 
           {/* Section modèles de coopération */}
-          <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-blue-100 mb-20">
+          <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-brand-blue-100 mb-20">
             <div className="text-center mb-6 sm:mb-8">
               <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Nos modèles de coopération
@@ -336,14 +336,14 @@ const K6 = () => {
               {cooperationModels.map((model: CooperationModel, idx: number) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:border-blue-300 h-full transform hover:-trangray-y-2"
+                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-brand-blue-100 hover:border-brand-blue-400 h-full transform hover:-trangray-y-2"
                 >
                   <div className="flex items-center mb-4 sm:mb-6">
                     <div className={`w-4 h-4 rounded-full mr-3 sm:mr-4 ${
-                      idx === 0 ? 'bg-blue-500' : 
-                      idx === 1 ? 'bg-blue-500' : 'bg-blue-300'
+                      idx === 0 ? 'bg-brand-blue-600' : 
+                      idx === 1 ? 'bg-brand-blue-600' : 'bg-brand-blue-400'
                     }`}></div>
-                    <h4 className={`text-xl sm:text-2xl font-bold text-blue-700`}>
+                    <h4 className={`text-xl sm:text-2xl font-bold text-brand-blue-900`}>
                       {model.title}
                     </h4>
                   </div>
@@ -353,7 +353,7 @@ const K6 = () => {
                   <ul className="space-y-2 sm:space-y-3">
                     {model.points.map((point: string, i: number) => (
                       <li key={i} className="flex items-start text-gray-700">
-                        <span className="text-blue-500 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
+                        <span className="text-brand-blue-600 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
                         <span className="text-sm sm:text-base leading-relaxed">{point}</span>
                       </li>
                     ))}
@@ -367,8 +367,8 @@ const K6 = () => {
         title="Prêt à optimiser vos tests de performance avec k6 ?"
         description="Nos experts k6 vous accompagnent pour créer des tests de performance modernes et efficaces."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         secondaryButton={{ text: "Voir nos autres services", href: "/#services", icon: "📋" }}
       />
     </ServiceLayout>

@@ -15,7 +15,7 @@ window.motion = motion;
 // Amélioration du SEO - Ajout de métadonnées dynamiques
 const updateMetaTags = () => {
   // Mise à jour du titre
-  document.title = "Central Test Consulting - Tests Logiciels et Automatisation QA en Algérie";
+  document.title = "Central Test Agency - Tests Logiciels et Automatisation QA en Algérie";
   
   // Mise à jour de la description
   const metaDescription = document.querySelector('meta[name="description"]');
@@ -38,7 +38,7 @@ const updateMetaTags = () => {
 
   // Métadonnées pour les réseaux sociaux
   addMetaTag('twitter:card', 'summary_large_image');
-  addMetaTag('twitter:title', 'Central Test Consulting - Tests Logiciels et Automatisation QA en Algérie');
+  addMetaTag('twitter:title', 'Central Test Agency - Tests Logiciels et Automatisation QA en Algérie');
   addMetaTag('twitter:description', 'Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression.');
   addMetaTag('twitter:image', 'https://centraltestagency.com/generated-icon.png');
 

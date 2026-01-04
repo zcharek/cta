@@ -28,7 +28,7 @@ const CalendlyModal = ({ isOpen, onClose }: CalendlyModalProps) => {
     >
       <div className="bg-white w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl relative">
         {/* En-tête de la modale */}
-        <div className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 text-white p-6 sm:p-8 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
+        <div className="bg-gradient-to-br from-brand-blue-900 via-brand-blue-800 to-brand-blue-900 text-white p-6 sm:p-8 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
           <button
             onClick={handleClose}
@@ -42,7 +42,7 @@ const CalendlyModal = ({ isOpen, onClose }: CalendlyModalProps) => {
             <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-white drop-shadow-lg">
               Prendre un rendez-vous
             </h2>
-            <p className="text-blue-100 text-base sm:text-lg">
+            <p className="text-brand-blue-100 text-base sm:text-lg">
               Réservez votre créneau pour une consultation gratuite de 30 minutes avec nos experts.
             </p>
           </div>
@@ -73,20 +73,20 @@ const CalendlyModal = ({ isOpen, onClose }: CalendlyModalProps) => {
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-xs sm:text-sm">
               <div className="text-center">
-                <div className="bg-blue-100 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-blue-600 font-semibold text-sm sm:text-base">1</span>
+                <div className="bg-brand-blue-100 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="text-brand-blue-900 font-semibold text-sm sm:text-base">1</span>
                 </div>
                 <p className="text-gray-700">Analyse de vos besoins et objectifs</p>
               </div>
               <div className="text-center">
-                <div className="bg-blue-100 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-blue-600 font-semibold text-sm sm:text-base">2</span>
+                <div className="bg-brand-blue-100 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="text-brand-blue-900 font-semibold text-sm sm:text-base">2</span>
                 </div>
                 <p className="text-gray-700">Présentation de nos solutions adaptées</p>
               </div>
               <div className="text-center">
-                <div className="bg-blue-100 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-blue-600 font-semibold text-sm sm:text-base">3</span>
+                <div className="bg-brand-blue-100 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="text-brand-blue-900 font-semibold text-sm sm:text-base">3</span>
                 </div>
                 <p className="text-gray-700">Devis personnalisé et planning</p>
               </div>

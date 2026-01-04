@@ -1,4 +1,5 @@
 import React from 'react';
+import PatternBackground from './PatternBackground';
 
 interface ServiceCTAProps {
   title: string;
@@ -39,9 +40,14 @@ const ServiceCTA: React.FC<ServiceCTAProps> = ({
 }) => {
   return (
     <section className="mb-20">
-      <div className={`bg-gradient-to-br ${gradientFrom} ${gradientVia} ${gradientTo} rounded-3xl p-8 md:p-12 text-white relative overflow-hidden`}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -trangray-y-32 trangray-x-32"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full trangray-y-24 -trangray-x-24"></div>
+      <PatternBackground 
+        variant="dark" 
+        opacity={0.15}
+        className={`bg-gradient-to-br ${gradientFrom} ${gradientVia} ${gradientTo} rounded-3xl p-8 md:p-12 text-white relative overflow-hidden`}
+      >
+      <div className="relative z-10">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
         
         <div className="relative z-10 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -67,7 +73,7 @@ const ServiceCTA: React.FC<ServiceCTAProps> = ({
             {primaryButton && (
               <a 
                 href={primaryButton.href}
-                className={`inline-flex items-center px-8 py-4 bg-gradient-to-r ${primaryButton.gradientFrom} ${primaryButton.gradientTo} text-white font-semibold rounded-xl hover:${primaryButton.hoverFrom} hover:${primaryButton.hoverTo} transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1`}
+                className={`inline-flex items-center px-8 py-4 bg-gradient-to-r ${primaryButton.gradientFrom} ${primaryButton.gradientTo} text-white font-semibold rounded-xl hover:${primaryButton.hoverFrom} hover:${primaryButton.hoverTo} transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1`}
               >
                 <span className="mr-2">{primaryButton.icon}</span>
                 {primaryButton.text}
@@ -85,6 +91,7 @@ const ServiceCTA: React.FC<ServiceCTAProps> = ({
           </div>
         </div>
       </div>
+      </PatternBackground>
     </section>
   );
 };

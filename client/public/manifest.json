@@ -1,6 +1,6 @@
 {
-  "name": "Central Test Consulting - Tests Logiciels et Automatisation QA",
-  "short_name": "Central Test Consulting",
+  "name": "Central Test Agency - Tests Logiciels et Automatisation QA",
+  "short_name": "Central Test Agency",
   "description": "Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression.",
   "start_url": "/",
   "display": "standalone",
@@ -13,23 +13,23 @@
   "categories": ["business", "productivity", "technology"],
   "icons": [
     {
-      "src": "/images/cta.png",
+      "src": "/images/logo-dark-icon.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/cta.png",
+      "src": "/images/logo-dark-icon.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "/images/cta.png",
+      "src": "/images/logo-dark-icon.svg",
       "sizes": "1280x720",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "form_factor": "wide"
     }
   ],
@@ -41,8 +41,9 @@
       "url": "/#services",
       "icons": [
         {
-          "src": "/images/cta.png",
-          "sizes": "96x96"
+          "src": "/images/logo-dark-icon.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
         }
       ]
     },
@@ -53,8 +54,9 @@
       "url": "/#contact",
       "icons": [
         {
-          "src": "/images/cta.png",
-          "sizes": "96x96"
+          "src": "/images/logo-dark-icon.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
         }
       ]
     }

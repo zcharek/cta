@@ -19,14 +19,14 @@ const Postman = () => {
     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
       <div>
         <div>
-          <svg className="h-12 w-12 text-blue-600" viewBox="0 0 24 24" fill="currentColor"></svg>
+          <svg className="h-12 w-12 text-brand-blue-900" viewBox="0 0 24 24" fill="currentColor"></svg>
         </div>
       </div>
       <h3 className="text-white font-semibold text-lg mb-4 text-center">Avantages Postman</h3>
       <div className="space-y-3">
         {["Interface intuitive", "Tests automatisés", "Documentation auto", "Collaboration équipe"].map((item, index) => (
           <div key={index} className="flex items-center text-white/90">
-            <div className="w-2 h-2 bg-blue-300 rounded-full mr-3"></div>
+            <div className="w-2 h-2 bg-brand-blue-400 rounded-full mr-3"></div>
             <span className="text-sm">{item}</span>
           </div>
         ))}
@@ -41,12 +41,12 @@ const Postman = () => {
         title="Postman"
         subtitle="API Testing"
         description="La <strong>plateforme leader</strong> pour tester, documenter et collaborer sur vos <strong>APIs REST & GraphQL</strong> avec une interface intuitive."
-        gradientFrom="from-blue-600"
-        gradientVia="via-blue-500"
-        gradientTo="to-blue-400"
-        titleGradientFrom="from-blue-200"
-        titleGradientTo="to-blue-100"
-        descriptionColor="text-blue-100"
+        gradientFrom="from-brand-blue-900"
+        gradientVia="via-brand-blue-600"
+        gradientTo="to-brand-blue-500"
+        titleGradientFrom="from-brand-blue-200"
+        titleGradientTo="to-brand-blue-100"
+        descriptionColor="text-brand-blue-100"
         secondaryButton={{ text: "Fonctionnalités", href: "#architecture", icon: "🏗️" }}
         rightContent={heroRightContent}
       />
@@ -64,7 +64,7 @@ const Postman = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
@@ -74,7 +74,7 @@ const Postman = () => {
               </div>
               
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -84,7 +84,7 @@ const Postman = () => {
               </div>
               
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
@@ -94,7 +94,7 @@ const Postman = () => {
               </div>
               
               <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-trangray-y-2 border border-gray-100">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
@@ -107,7 +107,7 @@ const Postman = () => {
 
       {/* Section Fonctionnalités avec schéma */}
       <section className="mb-20" id="architecture">
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-gray-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                   Fonctionnalités Postman
@@ -122,8 +122,8 @@ const Postman = () => {
                   <div className="bg-white rounded-2xl p-8 shadow-xl">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">Outils de développement</h3>
                     <div className="space-y-4">
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🚀
                         </div>
                         <div>
@@ -132,8 +132,8 @@ const Postman = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           📁
                         </div>
                         <div>
@@ -142,8 +142,8 @@ const Postman = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🌍
                         </div>
                         <div>
@@ -152,8 +152,8 @@ const Postman = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                        <div className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                      <div className="flex items-center p-4 bg-brand-blue-50 rounded-xl border-l-4 border-brand-blue-600">
+                        <div className="bg-brand-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
                           🎭
                         </div>
                         <div>
@@ -170,7 +170,7 @@ const Postman = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">Fonctionnalités avancées</h3>
                     <div className="space-y-6">
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">1</span>
                         </div>
                         <div>
@@ -180,7 +180,7 @@ const Postman = () => {
                       </div>
                       
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">2</span>
                         </div>
                         <div>
@@ -190,7 +190,7 @@ const Postman = () => {
                       </div>
                       
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">3</span>
                         </div>
                         <div>
@@ -200,7 +200,7 @@ const Postman = () => {
                       </div>
                       
                       <div className="flex items-start">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                        <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
                           <span className="text-white text-sm font-bold">4</span>
                         </div>
                         <div>
@@ -229,76 +229,76 @@ const Postman = () => {
             <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="group cursor-pointer">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
                     <div className="text-3xl mb-4">🎯</div>
                     <h3 className="text-lg font-bold mb-2">Design API</h3>
-                    <p className="text-blue-100 text-sm">Spécification et mocking</p>
+                    <p className="text-brand-blue-100 text-sm">Spécification et mocking</p>
                   </div>
-                  <div className="mt-4 bg-blue-50 rounded-xl p-4">
+                  <div className="mt-4 bg-brand-blue-50 rounded-xl p-4">
                     <h4 className="font-semibold text-blue-900 mb-2 text-sm">Formats</h4>
                     <div className="flex flex-wrap gap-1">
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">OpenAPI</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">GraphQL</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">OpenAPI</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">GraphQL</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="group cursor-pointer">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
                     <div className="text-3xl mb-4">🧪</div>
                     <h3 className="text-lg font-bold mb-2">Test Manuel</h3>
-                    <p className="text-blue-100 text-sm">Interface interactive</p>
+                    <p className="text-brand-blue-100 text-sm">Interface interactive</p>
                   </div>
-                  <div className="mt-4 bg-blue-50 rounded-xl p-4">
+                  <div className="mt-4 bg-brand-blue-50 rounded-xl p-4">
                     <h4 className="font-semibold text-blue-900 mb-2 text-sm">Méthodes</h4>
                     <div className="flex flex-wrap gap-1">
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">GET</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">POST</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">GET</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">POST</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="group cursor-pointer">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
                     <div className="text-3xl mb-4">⚡</div>
                     <h3 className="text-lg font-bold mb-2">Automatisation</h3>
-                    <p className="text-blue-100 text-sm">Scripts et Collections</p>
+                    <p className="text-brand-blue-100 text-sm">Scripts et Collections</p>
                   </div>
-                  <div className="mt-4 bg-blue-50 rounded-xl p-4">
+                  <div className="mt-4 bg-brand-blue-50 rounded-xl p-4">
                     <h4 className="font-semibold text-blue-900 mb-2 text-sm">Scripts</h4>
                     <div className="flex flex-wrap gap-1">
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Pre-request</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Tests</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Pre-request</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Tests</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="group cursor-pointer">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
                     <div className="text-3xl mb-4">🔄</div>
                     <h3 className="text-lg font-bold mb-2">CI/CD</h3>
-                    <p className="text-blue-100 text-sm">Newman CLI</p>
+                    <p className="text-brand-blue-100 text-sm">Newman CLI</p>
                   </div>
-                  <div className="mt-4 bg-blue-50 rounded-xl p-4">
+                  <div className="mt-4 bg-brand-blue-50 rounded-xl p-4">
                     <h4 className="font-semibold text-blue-900 mb-2 text-sm">Intégrations</h4>
                     <div className="flex flex-wrap gap-1">
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Jenkins</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">GitHub</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Jenkins</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">GitHub</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="group cursor-pointer">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300">
                     <div className="text-3xl mb-4">📊</div>
                     <h3 className="text-lg font-bold mb-2">Monitoring</h3>
-                    <p className="text-blue-100 text-sm">Surveillance continue</p>
+                    <p className="text-brand-blue-100 text-sm">Surveillance continue</p>
                   </div>
-                  <div className="mt-4 bg-blue-50 rounded-xl p-4">
+                  <div className="mt-4 bg-brand-blue-50 rounded-xl p-4">
                     <h4 className="font-semibold text-blue-900 mb-2 text-sm">Alertes</h4>
                     <div className="flex flex-wrap gap-1">
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Email</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Slack</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Email</span>
+                      <span className="bg-brand-blue-200 text-brand-blue-900 px-2 py-1 rounded-full text-xs">Slack</span>
                     </div>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ const Postman = () => {
 
       {/* Section nos services Postman */}
       <section className="mb-20">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-3xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-brand-blue-50 to-brand-blue-50 rounded-3xl p-8 md:p-12">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                   Nos services Postman
@@ -320,7 +320,7 @@ const Postman = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🎯</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Setup & Configuration</h3>
@@ -333,7 +333,7 @@ const Postman = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">📁</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Collections avancées</h3>
@@ -346,7 +346,7 @@ const Postman = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🎓</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Formation équipes</h3>
@@ -359,7 +359,7 @@ const Postman = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">🔗</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Intégration CI/CD</h3>
@@ -372,7 +372,7 @@ const Postman = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">📊</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Monitoring & Alertes</h3>
@@ -385,7 +385,7 @@ const Postman = () => {
                 </div>
                 
                 <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                  <div className="bg-gradient-to-br from-brand-blue-600 to-brand-blue-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <span className="text-white text-xl">📚</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Documentation API</h3>
@@ -401,7 +401,7 @@ const Postman = () => {
           </section>
 
       {/* Section modèles de coopération */}
-      <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-blue-100 mb-20">
+      <section className="mt-8 sm:mt-12 bg-gradient-to-b from-white via-gray-50 to-gray-200 rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-brand-blue-100 mb-20">
             <div className="text-center mb-6 sm:mb-8">
               <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Nos modèles de coopération
@@ -414,14 +414,14 @@ const Postman = () => {
               {cooperationModels.map((model: CooperationModel, idx: number) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100 hover:border-blue-300 h-full transform hover:-trangray-y-2"
+                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-brand-blue-100 hover:border-brand-blue-400 h-full transform hover:-trangray-y-2"
                 >
                   <div className="flex items-center mb-4 sm:mb-6">
                     <div className={`w-4 h-4 rounded-full mr-3 sm:mr-4 ${
-                      idx === 0 ? 'bg-blue-500' : 
-                      idx === 1 ? 'bg-blue-500' : 'bg-blue-300'
+                      idx === 0 ? 'bg-brand-blue-600' : 
+                      idx === 1 ? 'bg-brand-blue-600' : 'bg-brand-blue-400'
                     }`}></div>
-                    <h4 className={`text-xl sm:text-2xl font-bold text-blue-700`}>
+                    <h4 className={`text-xl sm:text-2xl font-bold text-brand-blue-900`}>
                       {model.title}
                     </h4>
                   </div>
@@ -431,7 +431,7 @@ const Postman = () => {
                   <ul className="space-y-2 sm:space-y-3">
                     {model.points.map((point: string, i: number) => (
                       <li key={i} className="flex items-start text-gray-700">
-                        <span className="text-blue-500 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
+                        <span className="text-brand-blue-600 mr-2 sm:mr-3 mt-1 text-base sm:text-lg">✓</span>
                         <span className="text-sm sm:text-base leading-relaxed">{point}</span>
                       </li>
                     ))}
@@ -445,8 +445,8 @@ const Postman = () => {
         title="Prêt à optimiser vos tests API avec Postman ?"
         description="Nos experts Postman vous accompagnent pour créer des workflows API efficaces et une collaboration optimale."
         gradientFrom="from-gray-900"
-        gradientVia="via-blue-900"
-        gradientTo="to-blue-900"
+        gradientVia="via-brand-blue-900"
+        gradientTo="to-brand-blue-900"
         secondaryButton={{ text: "Voir nos autres services", href: "/#services", icon: "📋" }}
       />
     </ServiceLayout>

@@ -63,6 +63,38 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Nouvelles couleurs de marque - Rouge/Orange
+        brand: {
+          red: {
+            50: "#ffe8e6",
+            100: "#ffd1cc",
+            200: "#ffbcb3",
+            300: "#ffa599",
+            400: "#ff8f80",
+            500: "#ff7f66",
+            600: "#ff6f4d",
+            700: "#e8491d",
+            800: "#cc3715",
+            900: "#b21900",
+          },
+          // Nouvelles couleurs de marque - Bleu
+          blue: {
+            50: "#e6f9ff",
+            100: "#ccefff",
+            200: "#a1cde5",
+            300: "#7aabcc",
+            400: "#598ab2",
+            500: "#3d6b99",
+            600: "#264f7f",
+            700: "#143666",
+            800: "#08224c",
+            900: "#001233",
+          },
+        },
+      },
+      fontFamily: {
+        sans: ['Lexend', 'sans-serif'],
+        lexend: ['Lexend', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {

@@ -40,7 +40,7 @@ const Home = () => {
   return (
     <>
       <SEOHead 
-        title="Central Test Consulting - Tests Logiciels et Automatisation QA en Algérie"
+        title="Central Test Agency - Tests Logiciels et Automatisation QA en Algérie"
         description="Expert en tests logiciels et automatisation QA en Algérie. Services Playwright, Cypress, tests E2E, API, régression. Qualité logicielle garantie pour vos projets digitaux."
         keywords="test logiciel, automatisation QA, Playwright, Cypress, tests E2E, API testing, régression, qualité logicielle, CI/CD, Algérie, tests fonctionnels, tests automatisés"
         ogUrl="https://centraltestagency.com"

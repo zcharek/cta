@@ -645,7 +645,7 @@ const cooperationModels = [
   {
     title: "Renforcement d'équipe",
     subtitle: "(Staff augmentation)",
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     points: [
       "Idéal pour les projets à court ou moyen terme.",
       "Expertise Selenide sans engagement à long terme.",
@@ -656,7 +656,7 @@ const cooperationModels = [
   {
     title: "Équipe dédiée",
     subtitle: "(Dedicated team)",
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     points: [
       "Idéal pour les projets à long terme évolutifs.",
       "Contrôle total sur le processus QA.",
@@ -667,7 +667,7 @@ const cooperationModels = [
   {
     title: "Externalisation",
     subtitle: "(Outsourcing)",
-    color: "text-blue-700",
+    color: "text-brand-blue-900",
     points: [
       "Idéal pour externaliser totalement les tests.",
       "Élimine les coûts d'infrastructure et recrutement.",
@@ -707,9 +707,11 @@ const TechCarousel = React.memo(() => {
   }, [selectedTool]);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-gray-200">
+    <>
+    <section className="py-16 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col items-center my-10">
-        <span className="inline-block mb-2 bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">Test dynamique</span>
+        <span className="inline-block mb-2 bg-brand-blue-100 text-brand-blue-900 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">Test dynamique</span>
         <p className="text-3xl md:text-4xl font-bold text-center text-gray-700 max-w-2xl">L'automatisation au service des test statique.</p>
       </div>
       <div className="container mx-auto max-w-6xl text-center mb-12">
@@ -717,9 +719,8 @@ const TechCarousel = React.memo(() => {
         Pour répondre à chaque objectif de test, nous sélectionnons et intégrons les meilleurs outils d’automatisation  </p>
       </div>
 
-      {/* Cards with logo + */}
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+        {/* Grille des outils */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {tools.map((tool, idx) => {
             const toolNamesWithPage = [
               "Cypress", "Postman", "k6", "Percy", "TestNG", "Cucumber", "RestAssured", "Selenium", "Playwright"
@@ -729,7 +730,7 @@ const TechCarousel = React.memo(() => {
                 <a
                   key={idx}
                   href={`/#/services/${tool.name.toLowerCase()}`}
-                  className="relative cursor-pointer w-40 h-24 md:w-56 md:h-32 p-4 bg-white rounded-3xl shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:shadow-xl hover:-trangray-y-1 hover:border-blue-300"
+                  className="group relative bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-brand-blue-300 hover:shadow-lg transition-all duration-200 flex flex-col items-center justify-center aspect-square"
                   role="button"
                   tabIndex={0}
                   aria-label={`En savoir plus sur ${tool.name}`}
@@ -737,11 +738,14 @@ const TechCarousel = React.memo(() => {
                   <img
                     src={tool.logo}
                     alt={tool.name}
-                    className="max-h-12 md:max-h-16 object-contain"
+                    className="max-h-12 md:max-h-16 object-contain mb-3 group-hover:scale-110 transition-transform"
                     loading="lazy"
                   />
+                  <span className="text-xs font-medium text-gray-600 group-hover:text-brand-blue-700 transition-colors">
+                    {tool.name}
+                  </span>
                   <span
-                    className="absolute bottom-2 right-2 text-gray-600 text-xl font-bold pointer-events-none select-none"
+                    className="absolute top-3 right-3 text-brand-blue-700 text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-hidden="true"
                   >
                     →
@@ -753,7 +757,7 @@ const TechCarousel = React.memo(() => {
                 <div
                   key={idx}
                   onClick={() => setSelectedTool(tool)}
-                  className="relative cursor-pointer w-40 h-24 md:w-56 md:h-32 p-4 bg-white rounded-3xl shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:shadow-xl hover:-trangray-y-1 hover:border-blue-300"
+                  className="group relative bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-brand-blue-300 hover:shadow-lg transition-all duration-200 flex flex-col items-center justify-center aspect-square cursor-pointer"
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -766,11 +770,14 @@ const TechCarousel = React.memo(() => {
                   <img
                     src={tool.logo}
                     alt={tool.name}
-                    className="max-h-12 md:max-h-16 object-contain"
+                    className="max-h-12 md:max-h-16 object-contain mb-3 group-hover:scale-110 transition-transform"
                     loading="lazy"
                   />
+                  <span className="text-xs font-medium text-gray-600 group-hover:text-brand-blue-700 transition-colors">
+                    {tool.name}
+                  </span>
                   <span
-                    className="absolute bottom-2 right-2 text-gray-600 text-xl font-bold pointer-events-none select-none"
+                    className="absolute top-3 right-3 text-brand-blue-700 text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-hidden="true"
                   >
                     →
@@ -781,6 +788,7 @@ const TechCarousel = React.memo(() => {
           })}
         </div>
       </div>
+    </section>
 
       {/* Enhanced Modal */}
       {selectedTool && (
@@ -797,7 +805,7 @@ const TechCarousel = React.memo(() => {
             onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
           >
             {/* Header with enhanced gradient */}
-            <div className="bg-gradient-to-br from-blue-700 via-blue-500 to-blue-300 text-white p-6 sm:p-10 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-brand-blue-800 via-brand-blue-700 to-brand-blue-600 text-white p-6 sm:p-10 rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
               <button
                 onClick={handleClose}
@@ -859,7 +867,7 @@ const TechCarousel = React.memo(() => {
                           idx === 0 ? 'bg-blue-500' : 
                           idx === 1 ? 'bg-blue-500' : 'bg-blue-300'
                         }`}></div>
-                        <h4 className={`text-xl sm:text-2xl font-bold text-blue-700`}>
+                        <h4 className={`text-xl sm:text-2xl font-bold text-brand-blue-900`}>
                           {model.title}
                         </h4>
                       </div>
@@ -894,7 +902,7 @@ const TechCarousel = React.memo(() => {
                         setSelectedTool(null);
                         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1 text-sm sm:text-base"
+                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-brand-blue-700 to-brand-blue-600 text-white font-semibold rounded-xl hover:from-brand-blue-800 hover:to-brand-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1 text-sm sm:text-base"
                     >
                       <span className="mr-2">🚀</span>
                       Demander une consultation
@@ -904,7 +912,7 @@ const TechCarousel = React.memo(() => {
                         setSelectedTool(null);
                         document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-700 font-semibold rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1 text-sm sm:text-base"
+                      className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-brand-blue-900 font-semibold rounded-xl border-2 border-brand-blue-200 hover:bg-brand-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-trangray-y-1 text-sm sm:text-base"
                     >
                       <span className="mr-2">📋</span>
                       Voir nos services
@@ -916,7 +924,7 @@ const TechCarousel = React.memo(() => {
           </div>
         </div>
       )}
-    </section>
+    </>
   );
 });
 
