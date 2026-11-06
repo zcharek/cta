@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "tsc",
-    "deploy": "gh-pages -d dist/public"
+    "deploy": "gh-pages -d dist/public --nojekyll"
   },
   "dependencies": {
     "react": "^18.3.1",
