@@ -1,0 +1,6 @@
+.env
+.env.*
+presentation
+attached_assets
+dist
+node_modules
