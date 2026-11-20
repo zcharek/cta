@@ -4,16 +4,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:full": "vercel dev",
     "build": "vite build",
     "preview": "vite preview",
     "check": "tsc",
-    "deploy": "vercel deploy --prod"
+    "deploy": "vercel deploy --prod",
+    "db:setup": "node --env-file=.env scripts/db-setup.mjs",
+    "db:make-admin": "node --env-file=.env scripts/db-setup.mjs make-admin"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.1",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.2",

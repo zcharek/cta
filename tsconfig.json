@@ -1,17 +1,29 @@
 {
-  "include": ["client/src/**/*"],
+  "include": [
+    "client/src/**/*",
+    "api/**/*"
+  ],
   "compilerOptions": {
     "noEmit": true,
     "module": "ESNext",
     "target": "ES2020",
     "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client",
+      "node"
+    ],
     "paths": {
-      "@/*": ["./client/src/*"]
+      "@/*": [
+        "./client/src/*"
+      ]
     }
   }
 }

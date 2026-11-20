@@ -1,0 +1,252 @@
+{
+  "slug": "cadrage-cta",
+  "title": "Questionnaire de cadrage",
+  "description": "Quelques questions pour bien comprendre votre projet et vous proposer l'accompagnement le plus adapté. Comptez 10 à 15 minutes. Vos réponses sont enregistrées au fur et à mesure : vous pouvez vous arrêter et reprendre plus tard.",
+  "sections": [
+    {
+      "id": "contexte",
+      "title": "Votre contexte",
+      "questions": [
+        {
+          "id": "secteur",
+          "label": "Dans quel secteur évolue votre entreprise ?",
+          "type": "single",
+          "required": true,
+          "options": ["E-commerce / retail", "Santé", "Banque / finance / assurance", "Éditeur de logiciel / SaaS", "Industrie / logistique", "Secteur public", "Autre"]
+        },
+        {
+          "id": "produit",
+          "label": "Décrivez en quelques lignes le produit ou l'application concerné(e).",
+          "help": "À quoi sert-il, qui l'utilise ?",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "stade",
+          "label": "À quel stade en est le produit ?",
+          "type": "single",
+          "required": true,
+          "options": ["Idée ou maquettes", "En cours de développement", "En production", "En refonte"]
+        },
+        {
+          "id": "plateformes",
+          "label": "Sur quelles plateformes est-il disponible ?",
+          "type": "multi",
+          "options": ["Web", "Mobile iOS", "Mobile Android", "API", "Application desktop"]
+        },
+        {
+          "id": "utilisateurs",
+          "label": "Combien d'utilisateurs (actuels ou visés) ?",
+          "type": "single",
+          "options": ["Moins de 1 000", "1 000 à 10 000", "10 000 à 100 000", "Plus de 100 000", "Je ne sais pas"]
+        }
+      ]
+    },
+    {
+      "id": "besoin",
+      "title": "Votre besoin",
+      "questions": [
+        {
+          "id": "services",
+          "label": "Sur quels sujets souhaitez-vous être accompagné ?",
+          "help": "Plusieurs choix possibles. Les questions suivantes s'adaptent à votre sélection.",
+          "type": "multi",
+          "required": true,
+          "options": ["Gestion de projet agile", "Tests fonctionnels", "Tests non-fonctionnels", "Automatisation des tests", "Développement sur mesure", "Je ne sais pas encore"]
+        },
+        {
+          "id": "declencheur",
+          "label": "Qu'est-ce qui motive votre demande aujourd'hui ?",
+          "help": "Un incident en production, une mise en ligne qui approche, un besoin de structurer l'équipe…",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "objectifs",
+          "label": "Quels résultats attendez-vous en priorité ?",
+          "type": "multi",
+          "options": ["Réduire les bugs en production", "Sécuriser une mise en production", "Livrer plus vite et plus souvent", "Valider les performances", "Se mettre en conformité (accessibilité, réglementaire)", "Structurer ou renforcer l'équipe", "Autre"]
+        }
+      ]
+    },
+    {
+      "id": "agile",
+      "title": "Gestion de projet agile",
+      "showIf": { "question": "services", "includes": "Gestion de projet agile" },
+      "questions": [
+        {
+          "id": "agile_equipe",
+          "label": "Combien de personnes travaillent sur le produit ?",
+          "type": "single",
+          "options": ["1 à 5", "6 à 15", "16 à 50", "Plus de 50"]
+        },
+        {
+          "id": "agile_methode",
+          "label": "Quelle organisation suivez-vous aujourd'hui ?",
+          "type": "single",
+          "options": ["Pas de méthode formalisée", "Scrum", "Kanban", "Cycle en V", "SAFe ou autre cadre à l'échelle", "Autre"]
+        },
+        {
+          "id": "agile_difficultes",
+          "label": "Quelles difficultés rencontrez-vous ?",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "id": "fonctionnels",
+      "title": "Tests fonctionnels",
+      "showIf": { "question": "services", "includes": "Tests fonctionnels" },
+      "questions": [
+        {
+          "id": "fonc_types",
+          "label": "Quels types de tests vous intéressent ?",
+          "type": "multi",
+          "options": ["Validation de nouvelles fonctionnalités", "Tests d'intégration", "Tests de régression", "Recette / acceptation utilisateur", "Je ne sais pas"]
+        },
+        {
+          "id": "fonc_actuel",
+          "label": "Comment testez-vous aujourd'hui ?",
+          "type": "single",
+          "options": ["Pas de tests formalisés", "Les développeurs testent eux-mêmes", "Une équipe QA interne", "Un prestataire externe"]
+        },
+        {
+          "id": "fonc_documentation",
+          "label": "Quelle documentation existe déjà ?",
+          "type": "multi",
+          "options": ["Spécifications fonctionnelles", "User stories", "Cas de test", "Aucune"]
+        },
+        {
+          "id": "fonc_outils",
+          "label": "Quels outils utilisez-vous ?",
+          "type": "multi",
+          "options": ["Jira", "Xray / Zephyr", "TestRail", "Azure DevOps", "Squash", "Aucun", "Autre"]
+        },
+        {
+          "id": "fonc_recette",
+          "label": "Disposez-vous d'un environnement de recette séparé de la production ?",
+          "type": "single",
+          "options": ["Oui", "Non", "En partie", "Je ne sais pas"]
+        }
+      ]
+    },
+    {
+      "id": "non_fonctionnels",
+      "title": "Tests non-fonctionnels",
+      "showIf": { "question": "services", "includes": "Tests non-fonctionnels" },
+      "questions": [
+        {
+          "id": "nf_types",
+          "label": "Quels aspects souhaitez-vous tester ?",
+          "type": "multi",
+          "options": ["Charge et stress", "Montée en charge", "Accessibilité (RGAA / WCAG)", "Compatibilité navigateurs et appareils", "Utilisabilité (UX)"]
+        },
+        {
+          "id": "nf_volume",
+          "label": "Quel pic d'utilisateurs simultanés anticipez-vous ?",
+          "type": "text"
+        },
+        {
+          "id": "nf_contraintes",
+          "label": "Avez-vous des contraintes réglementaires ou contractuelles (temps de réponse, accessibilité…) ?",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "id": "automatisation",
+      "title": "Automatisation des tests",
+      "showIf": { "question": "services", "includes": "Automatisation des tests" },
+      "questions": [
+        {
+          "id": "auto_stack",
+          "label": "Quelle est votre stack technique ?",
+          "help": "Langages, frameworks : React, Java, .NET, Flutter…",
+          "type": "text"
+        },
+        {
+          "id": "auto_ci",
+          "label": "Quelle intégration continue (CI/CD) utilisez-vous ?",
+          "type": "single",
+          "options": ["GitHub Actions", "GitLab CI", "Jenkins", "Azure DevOps", "Aucune", "Autre"]
+        },
+        {
+          "id": "auto_existant",
+          "label": "Où en êtes-vous de l'automatisation ?",
+          "type": "single",
+          "options": ["Aucun test automatisé", "Quelques tests isolés", "Une suite existante à reprendre ou fiabiliser"]
+        },
+        {
+          "id": "auto_outils",
+          "label": "Avez-vous une préférence d'outil ?",
+          "type": "multi",
+          "options": ["Playwright", "Cypress", "Selenium", "Postman", "k6", "Pas de préférence"]
+        }
+      ]
+    },
+    {
+      "id": "dev",
+      "title": "Développement sur mesure",
+      "showIf": { "question": "services", "includes": "Développement sur mesure" },
+      "questions": [
+        {
+          "id": "dev_type",
+          "label": "Que souhaitez-vous faire développer ?",
+          "type": "multi",
+          "options": ["Application web", "Plateforme SaaS", "Outil interne", "Application mobile"]
+        },
+        {
+          "id": "dev_description",
+          "label": "Décrivez les fonctionnalités principales attendues.",
+          "type": "textarea"
+        },
+        {
+          "id": "dev_maquettes",
+          "label": "Disposez-vous de maquettes ou d'un cahier des charges ?",
+          "type": "single",
+          "options": ["Oui", "En cours", "Non"]
+        },
+        {
+          "id": "dev_integrations",
+          "label": "L'outil doit-il se connecter à d'autres systèmes (ERP, paiement, API…) ?",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "id": "organisation",
+      "title": "Délais et organisation",
+      "questions": [
+        {
+          "id": "delai",
+          "label": "Quand souhaitez-vous démarrer ?",
+          "type": "single",
+          "required": true,
+          "options": ["Dès que possible", "D'ici 1 à 3 mois", "D'ici 3 à 6 mois", "Pas de date arrêtée"]
+        },
+        {
+          "id": "echeance",
+          "label": "Y a-t-il une échéance clé (mise en production, salon, audit…) ?",
+          "type": "text"
+        },
+        {
+          "id": "collaboration",
+          "label": "Quel format de collaboration envisagez-vous ?",
+          "type": "single",
+          "options": ["Mission ponctuelle", "Accompagnement sur la durée", "Renfort d'équipe (régie)", "À définir ensemble"]
+        },
+        {
+          "id": "budget",
+          "label": "Une enveloppe budgétaire est-elle déjà prévue ?",
+          "type": "single",
+          "options": ["Oui, définie", "Une fourchette indicative", "Pas encore"]
+        },
+        {
+          "id": "remarques",
+          "label": "Autre chose à nous dire ?",
+          "type": "textarea"
+        }
+      ]
+    }
+  ]
+}
