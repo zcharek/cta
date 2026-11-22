@@ -49,9 +49,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             <a href="#realisation" className="hidden text-gray-700 hover:text-brand-blue-700 sm:inline">
               Réalisation
             </a>
-            <a href="#/espace" className="text-gray-700 hover:text-brand-blue-700">
-              Espace client
-            </a>
             <a href="#contact" className="rounded-lg bg-brand-blue-900 px-4 py-2 text-white hover:bg-brand-blue-700">
               Contact
             </a>
@@ -121,6 +118,10 @@ export default function Layout({ children }: { children: ReactNode }) {
           <p className="text-center">
             <a href="#/legal" className="text-brand-blue-300 hover:text-white">
               Mentions légales
+            </a>
+            <span className="mx-2">•</span>
+            <a href="#/espace" className="text-brand-blue-300 hover:text-white">
+              Espace client
             </a>
             <span className="mx-2">•</span>© {new Date().getFullYear()} Central Test Agency. Tous droits réservés.
           </p>
