@@ -3,7 +3,7 @@ import { CHAMPS_COORDONNEES, MOT_DE_PASSE_MIN, ONGLET_LABEL, ROLE_LABEL, SITUATI
 import { api, type Moi } from "../api";
 import { Avatar, Bouton, Carte, Champ, Chargement, EnTete, EnteteSection, Erreur, Icone, classeChamp } from "../ui";
 
-type Profil = { nom: string; email: string; role: Role; mot_de_passe_le: string | null } & Coordonnees;
+type Profil = { nom: string; email: string; role: Role; matricule: string | null; date_entree: string | null; mot_de_passe_le: string | null } & Coordonnees;
 
 const CHAMPS = Object.keys(CHAMPS_COORDONNEES) as (keyof Coordonnees)[];
 
@@ -105,7 +105,9 @@ function Entete({ profil, onModifier }: { profil: Profil; onModifier: () => void
           <Avatar nom={profil.nom} couleur="#DC5A2E" taille={84} />
           <div className="min-w-0">
             <p className="ck-titre truncate text-2xl">{profil.nom}</p>
-            <p className="text-ck-texte-2">{ROLE_LABEL[profil.role]} · Central Test Agency</p>
+            <p className="text-ck-texte-2">
+              {[ROLE_LABEL[profil.role], profil.matricule && `Matricule ${profil.matricule}`, profil.date_entree && `entré le ${profil.date_entree.split("-").reverse().join("/")}`, "Central Test Agency"].filter(Boolean).join(" · ")}
+            </p>
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               Compte actif

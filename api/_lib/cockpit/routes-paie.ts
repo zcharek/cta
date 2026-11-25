@@ -6,7 +6,8 @@ import { identiteEntreprise } from "./entreprise.js";
 import { exigerOnglet } from "./session.js";
 
 // Bulletins de paie (onglet « paie », données sensibles) : le brut est calculé à partir du net convenu.
-// Les informations manquantes (matricule, fonction, date d'entrée, N° adhérent…) sont saisies à la première
+// Matricule et date d'entrée sont attribués à la création du compte. Les informations manquantes (fonction,
+// N° adhérent…) sont saisies à la première
 // génération puis enregistrées, pour être reprises les mois suivants.
 
 const MOIS_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
@@ -39,15 +40,10 @@ async function entreprise() {
   return e;
 }
 
-async function prochainMatricule(): Promise<string> {
-  const [r] = await sql`SELECT COALESCE(max(matricule::int), 0)::int AS max FROM profils WHERE matricule ~ '^[0-9]+$'`;
-  return String(r!.max + 1).padStart(3, "0");
-}
-
 export function routesPaie(r: Routeur) {
   r.ajouter("GET", "paie", async ({ req }) => {
     await exigerOnglet(req, "paie");
-    const [e, salaries, bulletins, matricule] = await Promise.all([
+    const [e, salaries, bulletins] = await Promise.all([
       entreprise(),
       sql`
         SELECT id, nom, email, role, matricule, fonction, affectation, date_entree::text AS date_entree, salaire_net::float8 AS salaire_net,
@@ -57,10 +53,9 @@ export function routesPaie(r: Routeur) {
         SELECT b.id, b.mois, b.profil_id, p.nom, b.brut::float8 AS brut, b.net::float8 AS net, b.cree_le::text AS cree_le
         FROM bulletins b JOIN profils p ON p.id = b.profil_id
         ORDER BY b.mois DESC, p.nom`,
-      prochainMatricule(),
     ]);
     const adherentFige = !!process.env.ENTREPRISE_CTA && !!(JSON.parse(process.env.ENTREPRISE_CTA) as { numero_adherent?: string }).numero_adherent;
-    return json({ numeroAdherent: e.numero_adherent ?? null, adherentFige, entreprise: { raison_sociale: e.raison_sociale, siege: e.siege }, salaries, bulletins, prochainMatricule: matricule });
+    return json({ numeroAdherent: e.numero_adherent ?? null, adherentFige, entreprise: { raison_sociale: e.raison_sociale, siege: e.siege }, salaries, bulletins });
   });
 
   r.ajouter("GET", "paie/apercu", async ({ req, url }) => {
@@ -88,7 +83,6 @@ export function routesPaie(r: Routeur) {
     const situation = texte(b.situationFamiliale, "Situation familiale", 1);
     if (situation && !["C", "M", "D", "V"].includes(situation)) throw new HttpError(400, "Situation familiale invalide.");
     const champs = {
-      matricule: texte(b.matricule, "Matricule", 20, true)!,
       fonction: texte(b.fonction, "Fonction", 120, true)!,
       affectation: texte(b.affectation, "Affectation", 120),
       dateEntree: dateIso(b.dateEntree, "Date d'entrée"),
@@ -96,10 +90,8 @@ export function routesPaie(r: Routeur) {
       numeroCompte: texte(b.numeroCompte, "N° de compte", 40),
     };
 
-    let p;
-    try {
-      [p] = await sql`
-        UPDATE profils SET matricule = ${champs.matricule}, fonction = ${champs.fonction},
+    const [p] = await sql`
+        UPDATE profils SET fonction = ${champs.fonction},
           -- Champ absent de la requête : valeur déjà enregistrée conservée ; champ envoyé vide : effacé.
           affectation = CASE WHEN ${b.affectation === undefined}::boolean THEN affectation ELSE ${champs.affectation} END,
           date_entree = CASE WHEN ${b.dateEntree === undefined}::boolean THEN date_entree ELSE ${champs.dateEntree}::date END,
@@ -108,10 +100,6 @@ export function routesPaie(r: Routeur) {
           numero_ss = COALESCE(${champs.numeroSs}, numero_ss), numero_compte = COALESCE(${champs.numeroCompte}, numero_compte)
         WHERE id = ${profilId}
         RETURNING nom, matricule, fonction, affectation, date_entree::text AS date_entree, situation_familiale, numero_ss, numero_compte`;
-    } catch (err) {
-      if ((err as { code?: string }).code === "23505") throw new HttpError(409, "Ce matricule est déjà attribué à un autre salarié.");
-      throw err;
-    }
     if (!p) throw new HttpError(404, "Salarié introuvable.");
 
     const paie = paieDepuisNet(montantNet);

@@ -5,7 +5,11 @@ import { connecter } from "./outils";
 test("premier bulletin de paie : informations demandées une fois, brut calculé depuis le net, PDF téléchargé", async ({ page }) => {
   await connecter(page, "admin@cta.test");
   await page.getByRole("link", { name: "Bulletins de paie" }).click();
-  await page.getByLabel("Salarié", { exact: true }).selectOption({ label: "Sofiane Mekki" });
+  const choixSalarie = page.getByLabel("Salarié", { exact: true });
+  // Chaque salarié a un matricule attribué à la création de son compte : « Sofiane Mekki (00x) »
+  const option = (await choixSalarie.locator("option", { hasText: "Sofiane Mekki" }).textContent())!;
+  expect(option).toMatch(/^Sofiane Mekki \(\d{3}\)$/);
+  await choixSalarie.selectOption({ label: option });
   await expect(page.getByText("Premier bulletin de Sofiane Mekki")).toBeVisible();
   await page.getByLabel("Salaire net à payer (DA)").fill("80000");
   await expect(page.getByText("109 730,77 DA")).toBeVisible();

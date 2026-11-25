@@ -46,13 +46,13 @@ describe("génération des bulletins", () => {
     await appeler("PATCH", "profil", { cookie: omar.cookie, corps: { situation_familiale: "C", numero_ss: "1234567890 12", numero_compte: "00799999001234567890" } });
   });
 
-  it("premier bulletin : N° adhérent, matricule et fonction obligatoires, puis repris", async () => {
-    const sansAdherent = await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-11", net: "80 000", matricule: "002", fonction: "Ingénieur logiciel" } });
+  it("premier bulletin : N° adhérent et fonction obligatoires, puis repris ; matricule attribué à la création du compte", async () => {
+    const sansAdherent = await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-11", net: "80 000", fonction: "Ingénieur logiciel" } });
     expect(sansAdherent.status).toBe(400);
 
     const r = await appeler("POST", "paie/bulletins", {
       cookie: rh,
-      corps: { profilId: omar.id, mois: "2025-11", net: "80 000", numeroAdherent: "12345678 90", matricule: "002", fonction: "Ingénieur logiciel", dateEntree: "2025-10-06" },
+      corps: { profilId: omar.id, mois: "2025-11", net: "80 000", numeroAdherent: "12345678 90", fonction: "Ingénieur logiciel", dateEntree: "2025-10-06" },
     });
     expect(r.status).toBe(201);
     expect(r.data.donnees).toMatchObject({
@@ -65,24 +65,28 @@ describe("génération des bulletins", () => {
     const liste = await appeler("GET", "paie", { cookie: rh });
     expect(liste.data.numeroAdherent).toBe("12345678 90");
     expect(liste.data.salaries.find((s: { id: string }) => s.id === omar.id)).toMatchObject({ matricule: "002", fonction: "Ingénieur logiciel", salaire_net: 80000 });
-    expect(liste.data.prochainMatricule).toBe("003");
 
     // Regénérer le même mois remplace le bulletin
-    await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-11", net: 85000, matricule: "002", fonction: "Ingénieur logiciel" } });
+    await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-11", net: 85000, fonction: "Ingénieur logiciel" } });
     const [{ n }] = (await sql`SELECT count(*)::int AS n FROM bulletins WHERE profil_id = ${omar.id}`) as [{ n: number }];
     expect(n).toBe(1);
   });
 
-  it("matricule unique ; réservé à l'onglet Bulletins de paie (pas un Assistant par défaut)", async () => {
+  it("matricule unique et définitif, date d'entrée = jour de création ; réservé à l'onglet Bulletins de paie", async () => {
     const autre = await creerProfil(sql, "collaborateur");
-    expect((await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: autre.id, mois: "2025-11", net: 50000, matricule: "002", fonction: "Testeur" } })).status).toBe(409);
+    const [a] = await sql`SELECT matricule, date_entree::text AS date_entree FROM profils WHERE id = ${autre.id}`;
+    expect(a).toMatchObject({ matricule: "003", date_entree: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) });
+    // Un matricule envoyé est ignoré ; il ne peut pas être modifié en base
+    const r = await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: autre.id, mois: "2025-11", net: 50000, numeroAdherent: "12345678 90", matricule: "002", fonction: "Testeur" } });
+    expect(r.data.donnees.salarie.matricule).toBe("003");
+    await expect(sql`UPDATE profils SET matricule = '999' WHERE id = ${autre.id}`).rejects.toThrow();
     expect((await appeler("GET", "paie", { cookie: omar.cookie })).status).toBe(403);
     const assistant = await creerProfil(sql, "assistant");
     expect((await appeler("GET", "paie", { cookie: assistant.cookie })).status).toBe(403);
   });
 
   it("produit un PDF d'une page", async () => {
-    const r = await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-12", net: 80000, matricule: "002", fonction: "Ingénieur logiciel" } });
+    const r = await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-12", net: 80000, fonction: "Ingénieur logiciel" } });
     const logo = new Uint8Array(readFileSync(new URL("../../client/public/images/logo-cta-icone.png", import.meta.url)));
     expect(r.data.donnees.salarie.date_entree).toBe("2025-10-06"); // repris sans être renvoyé
     const octets = await genererBulletin(r.data.donnees, logo);

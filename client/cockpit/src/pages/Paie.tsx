@@ -8,7 +8,7 @@ import { Bouton, Carte, Champ, Chargement, ChiffreCle, EnTete, Erreur, Etape, Ic
 type Salarie = {
   id: string;
   nom: string;
-  matricule: string | null;
+  matricule: string;
   fonction: string | null;
   affectation: string | null;
   date_entree: string | null;
@@ -24,11 +24,9 @@ type Donnees = {
   entreprise: { raison_sociale: string; siege: string };
   salaries: Salarie[];
   bulletins: Bulletin[];
-  prochainMatricule: string;
 };
 type Infos = {
   numeroAdherent: string;
-  matricule: string;
   fonction: string;
   dateEntree: string;
   affectation: string;
@@ -144,7 +142,6 @@ function ApercuBulletin({ d }: { d: DonneesBulletin }) {
 function infosDe(s: Salarie, d: Donnees): Infos {
   return {
     numeroAdherent: d.numeroAdherent ?? "",
-    matricule: s.matricule ?? d.prochainMatricule,
     fonction: s.fonction ?? "",
     dateEntree: s.date_entree ?? "",
     affectation: s.affectation ?? "",
@@ -165,8 +162,8 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
   const [occupe, setOccupe] = useState(false);
   const [message, setMessage] = useState("");
   // Informations dépliées si quelque chose d'obligatoire manque, à l'ouverture et à chaque changement de salarié
-  const aCompleter = (i: Infos) => !i.numeroAdherent.trim() || !i.matricule.trim() || !i.fonction.trim();
-  const [ouvert, setOuvert] = useState(() => !salarie.matricule || aCompleter(infos));
+  const aCompleter = (i: Infos) => !i.numeroAdherent.trim() || !i.fonction.trim();
+  const [ouvert, setOuvert] = useState(() => aCompleter(infos));
 
   function choisir(id: string) {
     const s = donnees.salaries.find((x) => x.id === id)!;
@@ -174,7 +171,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
     setNet(s.salaire_net ? String(s.salaire_net) : "");
     const i = infosDe(s, donnees);
     setInfos(i);
-    setOuvert(!s.matricule || aCompleter(i));
+    setOuvert(aCompleter(i));
     setMessage("");
     setErreur("");
   }
@@ -192,10 +189,10 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
   }, [net]);
 
   const maj = (cle: keyof Infos) => (e: { target: { value: string } }) => setInfos((i) => ({ ...i, [cle]: e.target.value }));
-  const premiereFois = !salarie.matricule;
+  const premiereFois = !salarie.fonction;
   const dejaFait = donnees.bulletins.some((b) => b.profil_id === salarie.id && b.mois === mois);
   const adherentOk = !!infos.numeroAdherent.trim();
-  const ficheOk = !!infos.matricule.trim() && !!infos.fonction.trim();
+  const ficheOk = !!infos.fonction.trim();
   const bancaireOk = !!infos.numeroSs.trim() && !!infos.numeroCompte.trim();
   const manque = [!infos.numeroSs.trim() && "N° de sécurité sociale", !infos.numeroCompte.trim() && "N° de compte"].filter(Boolean);
 
@@ -204,7 +201,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
         mois,
         entreprise: { ...donnees.entreprise, numero_adherent: infos.numeroAdherent.trim() },
         salarie: {
-          matricule: infos.matricule.trim(),
+          matricule: salarie.matricule,
           nom: salarie.nom,
           situation_familiale: infos.situationFamiliale || null,
           fonction: infos.fonction.trim(),
@@ -268,7 +265,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
                   {donnees.salaries.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.nom}
-                      {s.matricule ? ` (${s.matricule})` : ""}
+                      {` (${s.matricule})`}
                     </option>
                   ))}
                 </select>
@@ -288,7 +285,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
                 titre={adherentOk ? "N° adhérent de l'employeur renseigné" : "N° adhérent de l'employeur à saisir"}
                 detail={donnees.adherentFige ? "Identité de l'entreprise : non modifiable." : adherentOk ? "Enregistré, repris sur tous les bulletins." : "Demandé une seule fois, puis repris sur tous les bulletins."}
               />
-              <Verification ok={ficheOk} titre={ficheOk ? "Matricule et fonction renseignés" : "Matricule et fonction obligatoires"} detail={ficheOk ? `Matricule ${infos.matricule}, ${infos.fonction}.` : "Complétez-les dans les informations ci-dessous."} />
+              <Verification ok={ficheOk} titre={ficheOk ? "Fonction renseignée" : "Fonction obligatoire"} detail={ficheOk ? `Matricule ${salarie.matricule}, ${infos.fonction}.` : `Matricule ${salarie.matricule}. Complétez la fonction dans les informations ci-dessous.`} />
               <Verification
                 ok={bancaireOk}
                 titre={bancaireOk ? "N° de sécurité sociale et compte renseignés" : "Informations du salarié incomplètes"}
@@ -314,11 +311,11 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
                   placeholder="12345678 90"
                 />
                 <div className="grid gap-4 sm:grid-cols-3">
-                  <Champ libelle="Matricule" name="matricule" required maxLength={20} value={infos.matricule} onChange={maj("matricule")} />
+                  <Champ libelle="Matricule" name="matricule" value={salarie.matricule} readOnly aide="Attribué à la création du compte." />
                   <Champ libelle="Fonction" name="fonction" required maxLength={120} value={infos.fonction} onChange={maj("fonction")} placeholder="Ingénieur logiciel" className="sm:col-span-2" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
-                  <Champ libelle="Date d'entrée" name="dateEntree" type="date" value={infos.dateEntree} onChange={maj("dateEntree")} />
+                  <Champ libelle="Date d'entrée" name="dateEntree" type="date" value={infos.dateEntree} onChange={maj("dateEntree")} aide="Par défaut, le jour de création du compte." />
                   <Champ libelle="Affectation" name="affectation" maxLength={120} value={infos.affectation} onChange={maj("affectation")} placeholder="Facultatif" className="sm:col-span-2" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">

@@ -126,3 +126,32 @@ describe("type Comptable", () => {
     expect(ongletsDe({ role: "comptable", onglets: null })).not.toContain("validation");
   });
 });
+
+describe("suppression d'un collaborateur", () => {
+  it("réservée à la gestion des accès ; efface le compte et ses temps ; jamais le Founder, soi-même ni un salarié avec bulletins", async () => {
+    const cible = await creerProfil(sql, "collaborateur");
+    const [{ id: clientId }] = (await sql`INSERT INTO clients (nom, tjm_dzd) VALUES ('Client suppression', 100) RETURNING id`) as [{ id: string }];
+    const [s] = await sql`INSERT INTO semaines (profil_id, lundi, statut, validee_par) VALUES (${cible.id}, '2026-03-02', 'validee', ${qa.id}) RETURNING id`;
+    await sql`INSERT INTO temps (semaine_id, client_id, jour, valeur) VALUES (${s!.id}, ${clientId}, '2026-03-02', 1)`;
+    // Une semaine d'un autre validée par la personne supprimée reste, sans valideur
+    const valideur = await creerProfil(sql, "assistant");
+    const autre = await creerProfil(sql, "collaborateur");
+    await sql`INSERT INTO semaines (profil_id, lundi, statut, validee_par) VALUES (${autre.id}, '2026-03-02', 'validee', ${valideur.id})`;
+
+    expect((await appeler("DELETE", `collaborateurs/${cible.id}`, { cookie: assistant.cookie })).status).toBe(403);
+    expect((await appeler("DELETE", `collaborateurs/${founder.id}`, { cookie: cofounder.cookie })).status).toBe(403);
+    expect((await appeler("DELETE", `collaborateurs/${qa.id}`, { cookie: qa.cookie })).status).toBe(400);
+
+    expect((await appeler("DELETE", `collaborateurs/${cible.id}`, { cookie: qa.cookie })).status).toBe(200);
+    expect(await sql`SELECT 1 FROM profils WHERE id = ${cible.id}`).toHaveLength(0);
+    expect(await sql`SELECT 1 FROM semaines WHERE profil_id = ${cible.id}`).toHaveLength(0);
+    expect((await appeler("GET", "auth/moi", { cookie: cible.cookie })).data.moi).toBeNull();
+
+    expect((await appeler("DELETE", `collaborateurs/${valideur.id}`, { cookie: qa.cookie })).status).toBe(200);
+    expect((await sql`SELECT validee_par FROM semaines WHERE profil_id = ${autre.id}`)[0]).toMatchObject({ validee_par: null });
+
+    const salarie = await creerProfil(sql, "collaborateur");
+    await sql`INSERT INTO bulletins (profil_id, mois, brut, retenue_ss, irg, net, donnees) VALUES (${salarie.id}, '2026-03', 100, 9, 0, 91, '{}'::jsonb)`;
+    expect((await appeler("DELETE", `collaborateurs/${salarie.id}`, { cookie: qa.cookie })).status).toBe(409);
+  });
+});

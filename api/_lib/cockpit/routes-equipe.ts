@@ -53,7 +53,7 @@ function facturation(b: Record<string, unknown>) {
   };
 }
 
-const RESERVE_GESTION = "Seuls le Founder, un Co-Founder ou un QA Manager peuvent changer le type, les onglets ou l'archivage d'un utilisateur.";
+const RESERVE_GESTION = "Seuls le Founder, un Co-Founder ou un QA Manager peuvent changer le type, les onglets, l'archivage ou la suppression d'un utilisateur.";
 
 /** Remplace la liste des clients d'un collaborateur (seuls les clients actifs sont retenus). */
 async function affecterClients(profilId: string, clientIds: string[]) {
@@ -91,7 +91,7 @@ export function routesEquipe(r: Routeur) {
     await exigerOnglet(req, "collaborateurs", "clients", "validation");
     const { debut, fin } = bornesMois(aujourdhui());
     const rows = await sql`
-      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.telephone, p.adresse, p.ville, p.wilaya,
+      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.matricule, p.date_entree::text AS date_entree, p.telephone, p.adresse, p.ville, p.wilaya,
         p.date_naissance::text AS date_naissance, p.lieu_naissance, p.nationalite,
         p.nin IS NOT NULL AS nin_renseigne, -- NIN, N° SS et compte restent sur la fiche de la personne
         p.situation_familiale, p.numero_ss IS NOT NULL AS ss_renseigne, p.numero_compte IS NOT NULL AS compte_renseigne,
@@ -187,6 +187,25 @@ export function routesEquipe(r: Routeur) {
     // Un compte archivé ne doit plus pouvoir utiliser un lien en attente.
     if (actif === false) await sql`DELETE FROM jetons WHERE profil_id = ${id} AND utilise_le IS NULL`;
     if (b.clientIds !== undefined) await affecterClients(id, idsListe(b.clientIds, "Client"));
+    return json({ ok: true });
+  });
+
+  // Suppression définitive (gestion des accès) : profil, affectations, liens et temps saisis.
+  // Les factures émises gardent leur copie figée. Les bulletins de paie, à conserver, bloquent la suppression.
+  r.ajouter("DELETE", "collaborateurs/:id", async ({ req, params }) => {
+    const auteur = await exigerOnglet(req, "collaborateurs");
+    if (!gereLesAcces(auteur)) throw new HttpError(403, RESERVE_GESTION);
+    const id = uuid(params.id, "Collaborateur");
+    const [p] = await sql`SELECT role, (SELECT count(*) FROM bulletins b WHERE b.profil_id = profils.id)::int AS bulletins FROM profils WHERE id = ${id}`;
+    if (!p) throw new HttpError(404, "Collaborateur introuvable.");
+    if (p.role === "founder") throw new HttpError(403, "Le compte Founder ne peut pas être supprimé.");
+    if (id === auteur.id) throw new HttpError(400, "Vous ne pouvez pas supprimer votre propre compte.");
+    if (p.bulletins > 0) throw new HttpError(409, "Ce collaborateur a des bulletins de paie, qui doivent être conservés : archivez-le plutôt.");
+    // Traces laissées sur le travail des autres : on garde le travail, sans l'auteur.
+    await sql`UPDATE semaines SET validee_par = NULL WHERE validee_par = ${id}`;
+    await sql`UPDATE factures SET cree_par = NULL WHERE cree_par = ${id}`;
+    await sql`UPDATE bulletins SET cree_par = NULL WHERE cree_par = ${id}`;
+    await sql`DELETE FROM profils WHERE id = ${id}`;
     return json({ ok: true });
   });
 

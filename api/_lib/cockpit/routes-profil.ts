@@ -48,7 +48,7 @@ export function routesProfil(r: Routeur) {
   r.ajouter("GET", "profil", async ({ req }) => {
     const moi = await exigerProfil(req);
     const [p] = await sql`
-      SELECT nom, email, role, date_naissance::text AS date_naissance, lieu_naissance, nationalite, nin, telephone, adresse, ville, wilaya, situation_familiale, numero_ss, numero_compte,
+      SELECT nom, email, role, matricule, date_entree::text AS date_entree, date_naissance::text AS date_naissance, lieu_naissance, nationalite, nin, telephone, adresse, ville, wilaya, situation_familiale, numero_ss, numero_compte,
         mot_de_passe_le::text AS mot_de_passe_le
       FROM profils WHERE id = ${moi.id}`;
     return json({ profil: p });

@@ -27,6 +27,9 @@ export type Invitation = { envoye: boolean; lien?: string; avertissement?: strin
 export type Collaborateur = {
   id: string;
   nom: string;
+  /** Identifiant unique attribué à la création du compte (001, 002…). */
+  matricule: string;
+  date_entree: string | null;
   email: string;
   role: Role;
   actif: boolean;

@@ -163,6 +163,9 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
   );
 }
 
+const confirmationSuppression = (nom: string) =>
+  `Supprimer définitivement ${nom} ?\n\nSon compte, ses affectations et tous ses temps saisis seront effacés. Les factures déjà émises ne changent pas. Cette action est irréversible : pour simplement couper l'accès, archivez-le.`;
+
 function FenetreCollaborateur({
   collaborateur,
   clients,
@@ -217,6 +220,19 @@ function FenetreCollaborateur({
     }
   }
 
+  async function supprimer() {
+    if (!existant || !window.confirm(confirmationSuppression(existant.nom))) return;
+    setErreur("");
+    setOccupe(true);
+    try {
+      await api(`collaborateurs/${existant.id}`, { methode: "DELETE" });
+      onEnregistre();
+    } catch (err) {
+      setErreur((err as Error).message);
+      setOccupe(false);
+    }
+  }
+
   function soumettre(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
@@ -236,10 +252,17 @@ function FenetreCollaborateur({
       onFermer={onFermer}
       pied={
         <>
-          {existant?.actif && !soiMeme && gestion && (
-            <Bouton variante="danger" className="mr-auto" disabled={occupe} onClick={() => void envoyer({ actif: false })}>
-              Archiver
-            </Bouton>
+          {existant && !soiMeme && gestion && (
+            <span className="mr-auto flex gap-2">
+              {existant.actif && (
+                <Bouton variante="danger" disabled={occupe} onClick={() => void envoyer({ actif: false })}>
+                  Archiver
+                </Bouton>
+              )}
+              <Bouton variante="discret" className="!text-red-700" disabled={occupe} onClick={() => void supprimer()}>
+                Supprimer
+              </Bouton>
+            </span>
           )}
           <Bouton variante="discret" onClick={onFermer}>
             Annuler
@@ -355,6 +378,17 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
     setMessage(null);
     try {
       await api(chemin, { methode: "PATCH", corps: { actif: true } });
+      charger();
+    } catch (e) {
+      setMessage({ texte: (e as Error).message });
+    }
+  }
+
+  async function supprimerArchive(id: string, nom: string) {
+    if (!window.confirm(confirmationSuppression(nom))) return;
+    setMessage(null);
+    try {
+      await api(`collaborateurs/${id}`, { methode: "DELETE" });
       charger();
     } catch (e) {
       setMessage({ texte: (e as Error).message });
@@ -513,6 +547,9 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-bold text-ck-titre">{c.nom}</p>
+                      <span className="rounded-md bg-[var(--ck-champ)] px-1.5 py-0.5 text-xs font-semibold tabular-nums text-ck-texte-2" title={c.date_entree ? `Entré le ${c.date_entree.split("-").reverse().join("/")}` : undefined}>
+                        N° {c.matricule}
+                      </span>
                       <BadgeRole role={c.role} />
                       <BadgeAcces statut={c.statut} />
                     </div>
@@ -560,6 +597,11 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                   {(a.type === "client" || moi.gereAcces) && (
                     <Bouton variante="discret" className="!px-3 !py-1.5" onClick={() => void reactiver(`${a.type === "client" ? "clients" : "collaborateurs"}/${a.id}`)}>
                       Réactiver
+                    </Bouton>
+                  )}
+                  {a.type === "collaborateur" && moi.gereAcces && (
+                    <Bouton variante="discret" className="!px-3 !py-1.5 !text-red-700" onClick={() => void supprimerArchive(a.id, a.nom)}>
+                      Supprimer
                     </Bouton>
                   )}
                 </li>
