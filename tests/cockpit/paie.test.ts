@@ -83,7 +83,7 @@ describe("génération des bulletins", () => {
 
   it("produit un PDF d'une page", async () => {
     const r = await appeler("POST", "paie/bulletins", { cookie: rh, corps: { profilId: omar.id, mois: "2025-12", net: 80000, matricule: "002", fonction: "Ingénieur logiciel" } });
-    const logo = new Uint8Array(readFileSync(new URL("../../client/public/images/logo-cta-facture.png", import.meta.url)));
+    const logo = new Uint8Array(readFileSync(new URL("../../client/public/images/logo-cta-icone.png", import.meta.url)));
     expect(r.data.donnees.salarie.date_entree).toBe("2025-10-06"); // repris sans être renvoyé
     const octets = await genererBulletin(r.data.donnees, logo);
     expect((await PDFDocument.load(octets)).getPageCount()).toBe(1);

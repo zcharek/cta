@@ -60,7 +60,7 @@ export function routesPaie(r: Routeur) {
       prochainMatricule(),
     ]);
     const adherentFige = !!process.env.ENTREPRISE_CTA && !!(JSON.parse(process.env.ENTREPRISE_CTA) as { numero_adherent?: string }).numero_adherent;
-    return json({ numeroAdherent: e.numero_adherent ?? null, adherentFige, salaries, bulletins, prochainMatricule: matricule });
+    return json({ numeroAdherent: e.numero_adherent ?? null, adherentFige, entreprise: { raison_sociale: e.raison_sociale, siege: e.siege }, salaries, bulletins, prochainMatricule: matricule });
   });
 
   r.ajouter("GET", "paie/apercu", async ({ req, url }) => {

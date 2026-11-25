@@ -193,7 +193,7 @@ class Dessin {
   }
 }
 
-/** Génère la facture. `logo` : PNG du logo CTA (facultatif), placé en haut à gauche. */
+/** Génère la facture. `logo` : PNG du logo CTA seul (sans texte, facultatif), placé en haut à gauche. */
 export async function genererFacture(d: DonneesFacture, logo?: Uint8Array): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`Facture ${d.numero} - ${d.client.raison_sociale}`);
@@ -212,7 +212,7 @@ export async function genererFacture(d: DonneesFacture, logo?: Uint8Array): Prom
   // En-tête : logo à gauche, raison sociale à côté
   if (logo) {
     const image = await doc.embedPng(logo);
-    const h = 40;
+    const h = 46;
     const w = (image.width / image.height) * h;
     page.drawImage(image, { x: M, y: y - h + 10, width: w, height: h });
     g.texte(d.entreprise.raison_sociale, M + w + 18, y - 14, 15, g.gras);

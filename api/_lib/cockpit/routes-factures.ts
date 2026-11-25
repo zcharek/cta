@@ -38,7 +38,7 @@ async function calculer(clientId: string, m: string, tauxTva: number) {
   const [[client], [jours]] = await Promise.all([
     sql`
       SELECT id, nom, COALESCE(raison_sociale_facture, raison_sociale, nom) AS raison_sociale, adresse, rc, nif,
-        COALESCE(raison_sociale, nom) AS raison_sociale_timesheet, numero_contrat,
+        COALESCE(raison_sociale, nom) AS raison_sociale_timesheet, numero_contrat, mission,
         tjm_dzd, forfait_mensuel_dzd, jours_forfait
       FROM clients WHERE id = ${clientId}`,
     sql`
@@ -81,11 +81,20 @@ export function routesFactures(r: Routeur) {
       SELECT f.id, f.annee, f.numero, f.mois, f.date_emission::text AS date_emission, f.jours::float8 AS jours,
         f.montant_ht::float8 AS montant_ht, f.montant_tva::float8 AS montant_tva, f.montant_ttc::float8 AS montant_ttc,
         f.donnees->'client'->>'raison_sociale' AS client, c.nom AS client_nom, f.client_id, p.nom AS cree_par, f.cree_le::text AS cree_le,
-        f.numero = (SELECT max(numero) FROM factures x WHERE x.annee = f.annee) AS derniere
+        f.numero = (SELECT max(numero) FROM factures x WHERE x.annee = f.annee) AS derniere,
+        f.payee_le::text AS payee_le,
+        -- Statut : payée, en retard (non payée 30 jours après l'émission) ou envoyée
+        CASE WHEN f.payee_le IS NOT NULL THEN 'payee'
+             WHEN f.date_emission + 30 < ${aujourdhui()}::date THEN 'en_retard'
+             ELSE 'envoyee' END AS statut
       FROM factures f JOIN clients c ON c.id = f.client_id LEFT JOIN profils p ON p.id = f.cree_par
       ORDER BY f.annee DESC, f.numero DESC`;
+    // Clients dont des jours sont soumis mais pas encore validés (à valider avant de facturer)
+    const [attente] = await sql`
+      SELECT count(DISTINCT t.client_id)::int AS n FROM temps t JOIN semaines s ON s.id = t.semaine_id WHERE s.statut = 'soumise'`;
     return json({
       factures: factures.map((f) => ({ ...f, numero_affiche: numeroFacture(f.numero, f.annee) })),
+      clientsEnAttente: attente!.n,
       tva: facturation.tva,
       derniereHorsCockpit: facturation.derniere ? numeroFacture(facturation.derniere.numero, facturation.derniere.annee) : null,
       prochain: numeroFacture(await prochainNumero(annee, facturation), annee),
@@ -150,6 +159,18 @@ export function routesFactures(r: Routeur) {
     const [f] = await sql`SELECT donnees FROM factures WHERE id = ${uuid(params.id, "Facture")}`;
     if (!f) throw new HttpError(404, "Facture introuvable.");
     return json({ donnees: f.donnees });
+  });
+
+  // Suivi du paiement : marquer payée (date du jour par défaut) ou revenir à « envoyée ».
+  r.ajouter("PATCH", "factures/:id", async ({ req, params }) => {
+    await exigerOnglet(req, "factures");
+    const id = uuid(params.id, "Facture");
+    const b = await readBody<{ payee?: unknown; payeeLe?: unknown }>(req);
+    if (typeof b.payee !== "boolean") throw new HttpError(400, "Valeur « payée » attendue.");
+    const date = b.payee ? (b.payeeLe === undefined ? aujourdhui() : dateIso(b.payeeLe, "Date de paiement")) : null;
+    const [f] = await sql`UPDATE factures SET payee_le = ${date}::date WHERE id = ${id} RETURNING id`;
+    if (!f) throw new HttpError(404, "Facture introuvable.");
+    return json({ ok: true });
   });
 
   // Seule la dernière facture de l'année peut être supprimée : la numérotation reste continue.

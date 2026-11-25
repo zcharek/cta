@@ -96,6 +96,19 @@ describe("émission des factures", () => {
     expect((await appeler("GET", `factures/${r.data.id}`, { cookie: admin })).data.donnees.numero).toBe("013-26");
   });
 
+  it("statut de paiement : envoyée, payée, puis annulation", async () => {
+    const r = await appeler("POST", "factures", { cookie: admin, corps: { clientId, mois: "2026-04", dateEmission: "2026-05-03", confirmerDoublon: true } });
+    const statut = async () => (await appeler("GET", "factures", { cookie: admin })).data.factures.find((f: { id: string }) => f.id === r.data.id);
+    // Émise il y a plus de 30 jours sans paiement : en retard
+    expect((await statut()).statut).toBe("en_retard");
+    expect((await appeler("PATCH", `factures/${r.data.id}`, { cookie: admin, corps: { payee: true, payeeLe: "2026-05-20" } })).status).toBe(200);
+    expect(await statut()).toMatchObject({ statut: "payee", payee_le: "2026-05-20" });
+    await appeler("PATCH", `factures/${r.data.id}`, { cookie: admin, corps: { payee: false } });
+    expect((await statut()).payee_le).toBeNull();
+    expect((await appeler("GET", "factures", { cookie: admin })).data.clientsEnAttente).toBe(0);
+    await appeler("DELETE", `factures/${r.data.id}`, { cookie: admin });
+  });
+
   it("refuse une facture sans jour validé", async () => {
     expect((await appeler("POST", "factures", { cookie: admin, corps: { clientId, mois: "2026-06", dateEmission: "2026-07-01" } })).status).toBe(409);
   });
@@ -113,7 +126,7 @@ describe("émission des factures", () => {
 
   it("produit un PDF d'une page avec le logo", async () => {
     const r = await appeler("POST", "factures", { cookie: admin, corps: { clientId, mois: "2026-04", dateEmission: "2026-05-01", confirmerDoublon: true } });
-    const logo = new Uint8Array(readFileSync(new URL("../../client/public/images/logo-cta-facture.png", import.meta.url)));
+    const logo = new Uint8Array(readFileSync(new URL("../../client/public/images/logo-cta-icone.png", import.meta.url)));
     const octets = await genererFacture(r.data.donnees, logo);
     const pdf = await PDFDocument.load(octets);
     expect(pdf.getPageCount()).toBe(1);

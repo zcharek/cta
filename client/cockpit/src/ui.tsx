@@ -408,3 +408,51 @@ export function IconeWhatsApp({ taille = 18 }: { taille?: number }) {
     </svg>
   );
 }
+
+// ——— Pages à étapes (Factures, Paie) ———
+
+export function ChiffreCle({ icone, teinte, valeur, libelle }: { icone: string; teinte: string; valeur: string | number; libelle: string }) {
+  return (
+    <Carte className="!p-5">
+      <div className="flex items-center gap-4">
+        <span aria-hidden="true" className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${teinte}`}>
+          <Icone nom={icone} taille={20} />
+        </span>
+        <div className="min-w-0">
+          <p className="ck-titre truncate text-2xl leading-tight">{valeur}</p>
+          <p className="text-xs text-ck-texte-2">{libelle}</p>
+        </div>
+      </div>
+    </Carte>
+  );
+}
+
+export function Etape({ numero, titre, children }: { numero: number; titre: string; children: ReactNode }) {
+  return (
+    <section className="border-t border-ck-bordure pt-5 first:border-0 first:pt-0">
+      <h3 className="mb-3 flex items-center gap-2.5 font-bold text-ck-titre">
+        <span className="grid h-6 w-6 place-items-center rounded-full bg-ck-plein text-xs text-white">{numero}</span>
+        {titre}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
+export function Verification({ ok, titre, detail, action }: { ok: boolean; titre: string; detail: string; action?: ReactNode }) {
+  return (
+    <li className="flex items-start gap-3 py-2.5">
+      <span aria-hidden="true" className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${ok ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-ck-orange"}`}>
+        <Icone nom={ok ? "coche" : "info"} taille={14} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-bold text-ck-titre">
+          <span className="sr-only">{ok ? "Vérifié : " : "À faire : "}</span>
+          {titre}
+        </p>
+        <p className="text-xs text-ck-texte-2">{detail}</p>
+      </div>
+      {action}
+    </li>
+  );
+}

@@ -151,7 +151,7 @@ class Dessin {
   }
 }
 
-/** Génère le bulletin. `logo` : PNG du logo CTA (facultatif), en haut à gauche. */
+/** Génère le bulletin. `logo` : PNG du logo CTA seul (sans texte, facultatif), en haut à gauche. */
 export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`Bulletin de paie ${moisBulletin(d.mois)} - ${d.salarie.nom}`);
@@ -167,7 +167,7 @@ export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array): Pr
   let xTexte = M;
   if (logo) {
     const img = await doc.embedPng(logo);
-    const h = 38;
+    const h = 46;
     const w = (img.width / img.height) * h;
     page.drawImage(img, { x: M, y: y - h + 6, width: w, height: h });
     xTexte = M + w + 18;
@@ -257,7 +257,7 @@ export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array): Pr
 
   // Pied de page
   page.drawLine({ start: { x: M, y: 46 }, end: { x: M + L, y: 46 }, thickness: 0.6, color: FILET });
-  g.texte(`${d.entreprise.raison_sociale} - ${d.entreprise.siege}`, M, 34, 7.5, { couleur: GRIS });
+  g.texte([d.entreprise.raison_sociale, d.entreprise.siege].filter(Boolean).join(" - "), M, 34, 7.5, { couleur: GRIS });
   g.droite("Document confidentiel", M + L, 34, 7.5, { couleur: GRIS });
 
   return doc.save();
