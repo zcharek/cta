@@ -1,6 +1,6 @@
 // Vocabulaire commun à l'API et à l'interface Cockpit.
 
-export const ROLES = ["collaborateur", "assistant", "qa_manager", "cofounder", "founder"] as const;
+export const ROLES = ["collaborateur", "comptable", "assistant", "qa_manager", "cofounder", "founder"] as const;
 export type Role = (typeof ROLES)[number];
 
 /** Types qu'on peut attribuer depuis Cockpit. Founder est réservé au compte EMAIL_FOUNDER. */
@@ -11,6 +11,7 @@ export const EMAIL_FOUNDER = "centraltestagency@gmail.com";
 
 export const ROLE_LABEL: Record<Role, string> = {
   collaborateur: "Collaborateur",
+  comptable: "Comptable",
   assistant: "Assistant",
   qa_manager: "QA Manager",
   cofounder: "Co-Founder",
@@ -19,6 +20,7 @@ export const ROLE_LABEL: Record<Role, string> = {
 
 export const ROLE_DESCRIPTION: Record<Role, string> = {
   collaborateur: "Saisit ses temps sur ses clients. Ne voit ni TJM ni montants.",
+  comptable: "Récap mensuel, factures et bulletins de paie par défaut. Ne gère pas les accès.",
   assistant: "Accès complet par défaut. Ne gère pas les accès.",
   qa_manager: "Accès complet. Gère les accès et les onglets.",
   cofounder: "Accès complet. Gère les accès et les onglets.",
@@ -59,6 +61,7 @@ export const ONGLET_LABEL: Record<Onglet, string> = {
 
 export function ongletsParDefaut(role: Role): Onglet[] {
   if (role === "collaborateur") return ["saisie"];
+  if (role === "comptable") return ["aujourdhui", "recap", "factures", "paie"];
   // Les salaires sont confidentiels : pas de bulletins de paie par défaut pour un Assistant.
   if (role === "assistant") return ONGLETS.filter((o) => o !== "paie");
   return [...ONGLETS];

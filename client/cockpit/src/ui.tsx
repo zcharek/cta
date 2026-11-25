@@ -111,6 +111,7 @@ export function Pastille({ children, className, style }: { children: ReactNode; 
 /** Couleur propre à chaque type d'utilisateur. */
 export const COULEUR_ROLE: Record<Role, string> = {
   collaborateur: "#2F5BD3",
+  comptable: "#0E7C86",
   assistant: "#1E8A5A",
   qa_manager: "#7A5BC7",
   cofounder: "#DC5A2E",

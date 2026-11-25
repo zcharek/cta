@@ -113,3 +113,16 @@ describe("gestion des accès", () => {
     expect(f).toMatchObject({ role: "founder", onglets_personnalises: false });
   });
 });
+
+describe("type Comptable", () => {
+  it("a le récap, les factures et la paie par défaut, sans gérer les accès ni valider les temps", async () => {
+    const collab = await creerProfil(sql, "collaborateur");
+    expect((await modifier(qa.cookie, collab.id, { role: "comptable" })).status).toBe(200);
+    const comptable = await appeler("GET", "auth/moi", { cookie: collab.cookie });
+    expect(comptable.data.moi).toMatchObject({ role: "comptable", admin: false, gereAcces: false, onglets: ["aujourdhui", "recap", "factures", "paie"] });
+    expect((await appeler("GET", "factures", { cookie: collab.cookie })).status).toBe(200);
+    expect((await appeler("GET", "paie", { cookie: collab.cookie })).status).not.toBe(403);
+    expect((await appeler("GET", "collaborateurs", { cookie: collab.cookie })).status).toBe(403);
+    expect(ongletsDe({ role: "comptable", onglets: null })).not.toContain("validation");
+  });
+});
