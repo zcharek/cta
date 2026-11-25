@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  // Pas de mode sombre automatique : Cockpit reste clair quel que soit le réglage du système.
+  darkMode: "class",
   content: ["./client/index.html", "./client/src/**/*.{ts,tsx}", "./client/cockpit/**/*.{html,ts,tsx}", "./shared/**/*.ts"],
   theme: {
     extend: {

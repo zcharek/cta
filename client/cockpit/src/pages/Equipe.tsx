@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ONGLETS, ONGLET_LABEL, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
+import { ONGLETS, ONGLET_LABEL, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille } from "../ui";
 
@@ -422,7 +422,12 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                       <BadgeAcces statut={c.statut} />
                     </div>
                     <p className="truncate text-sm text-ck-texte-2">{[c.email, c.telephone].filter(Boolean).join(" · ")}</p>
-                    {c.adresse && <p className="truncate text-sm text-ck-texte-2">{c.adresse}</p>}
+                    {(c.adresse || c.ville || c.wilaya) && <p className="truncate text-sm text-ck-texte-2">{[c.adresse, c.ville, c.wilaya].filter(Boolean).join(", ")}</p>}
+                    {c.statut === "actif" && coordonneesManquantes(c).length > 0 && (
+                      <p className="mt-1 text-xs font-semibold text-ck-orange-texte" title={`Manque : ${coordonneesManquantes(c).join(", ")}`}>
+                        Coordonnées incomplètes ({coordonneesManquantes(c).length} {coordonneesManquantes(c).length > 1 ? "champs manquants" : "champ manquant"})
+                      </p>
+                    )}
                     <p className="mt-1 text-sm text-ck-texte-2">
                       {c.client_ids.length ? c.client_ids.map((id) => nomClient.get(id)).join(", ") : "Aucun client"} · {jours(c.jours_mois)} ce mois
                     </p>

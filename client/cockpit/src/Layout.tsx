@@ -46,7 +46,6 @@ export function PiedDePage() {
   return (
     <footer className="mt-16 flex flex-col items-center gap-2 pb-8 text-xs text-ck-texte-2">
       <picture>
-        <source srcSet="/images/logo-light-horizontal.svg" media="(prefers-color-scheme: dark)" />
         <img src="/images/logo-dark-horizontal.svg" alt="Central Test Agency" className="h-8 w-auto" />
       </picture>
       <p>

@@ -49,15 +49,23 @@ test("un Collaborateur renseigne ses coordonnées dans Mon profil", async ({ pag
   await expect(page).toHaveURL(/\/cockpit\/profil/);
   await expect(page.getByLabel("Adresse e-mail")).toHaveAttribute("readonly", "");
   await page.getByLabel("Téléphone").fill("0550 98 76 54");
-  await page.getByLabel("Adresse postale").fill("5 rue Larbi Ben M'hidi, Alger");
+  await expect(page.getByText("Fiche incomplète")).toBeVisible();
+  await page.getByLabel("Date de naissance").fill("1994-03-12");
+  await page.getByLabel("Lieu de naissance").fill("Tizi Ouzou");
+  await page.getByLabel("Adresse", { exact: true }).fill("5 rue Larbi Ben M'hidi");
+  await page.getByLabel("Ville").fill("Alger-Centre");
+  await page.getByLabel("Wilaya").fill("Alger");
   await page.getByRole("button", { name: "Enregistrer" }).click();
   await expect(page.getByRole("status")).toHaveText("Coordonnées enregistrées.");
   await page.screenshot({ path: "test-results/mon-profil.png" });
   await page.getByRole("button", { name: /^Mon compte/ }).click();
   await page.screenshot({ path: "test-results/menu-compte.png" });
   await page.keyboard.press("Escape");
+  await expect(page.getByText("Fiche incomplète")).toHaveCount(0);
   await page.reload();
   await expect(page.getByLabel("Téléphone")).toHaveValue("0550 98 76 54");
+  await expect(page.getByLabel("Date de naissance")).toHaveValue("1994-03-12");
+  await expect(page.getByLabel("Wilaya")).toHaveValue("Alger");
 });
 
 test("Clients et Collaborateurs sont deux pages séparées", async ({ page }) => {

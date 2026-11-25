@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { MOT_DE_PASSE_MIN } from "../../../shared/cockpit.js";
+import { MOT_DE_PASSE_MIN, aujourdhui } from "../../../shared/cockpit.js";
 import { HttpError, json, readBody } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
@@ -21,13 +21,27 @@ function telephone(v: unknown): string | null {
   return t;
 }
 
+/** Date de naissance au format aaaa-mm-jj, d'une personne de 16 à 100 ans. */
+function dateNaissance(v: unknown): string | null {
+  const d = facultatif(v, "Date de naissance", 10);
+  if (!d) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
+  const date = m ? new Date(`${d}T12:00:00Z`) : null;
+  if (!m || !date || isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== d) throw new HttpError(400, "Date de naissance invalide.");
+  const annee = Number(aujourdhui().slice(0, 4));
+  const age = annee - Number(m[1]);
+  if (age < 16 || age > 100) throw new HttpError(400, "Date de naissance invalide : vérifiez l'année.");
+  return d;
+}
+
 // « Mon profil » : chacun consulte et modifie ses propres coordonnées et son mot de passe.
 // Le type, les onglets et l'e-mail (identifiant de connexion) restent gérés dans Collaborateurs.
 export function routesProfil(r: Routeur) {
   r.ajouter("GET", "profil", async ({ req }) => {
     const moi = await exigerProfil(req);
     const [p] = await sql`
-      SELECT nom, email, role, telephone, adresse, mot_de_passe_le::text AS mot_de_passe_le
+      SELECT nom, email, role, date_naissance::text AS date_naissance, lieu_naissance, telephone, adresse, ville, wilaya,
+        mot_de_passe_le::text AS mot_de_passe_le
       FROM profils WHERE id = ${moi.id}`;
     return json({ profil: p });
   });
@@ -36,15 +50,26 @@ export function routesProfil(r: Routeur) {
     const moi = await exigerProfil(req);
     const b = await readBody<Record<string, unknown>>(req);
     const nom = b.nom === undefined ? null : texte(b.nom, "Prénom et nom");
+    // undefined = champ non envoyé (inchangé) ; null = champ vidé.
+    const lire = <T,>(cle: string, f: (v: unknown) => T) => (b[cle] === undefined ? undefined : f(b[cle]));
     const maj = {
-      telephone: b.telephone === undefined ? undefined : telephone(b.telephone),
-      adresse: b.adresse === undefined ? undefined : facultatif(b.adresse, "Adresse", 300),
+      date_naissance: lire("date_naissance", dateNaissance),
+      lieu_naissance: lire("lieu_naissance", (v) => facultatif(v, "Lieu de naissance", 120)),
+      telephone: lire("telephone", telephone),
+      adresse: lire("adresse", (v) => facultatif(v, "Adresse", 300)),
+      ville: lire("ville", (v) => facultatif(v, "Ville", 120)),
+      wilaya: lire("wilaya", (v) => facultatif(v, "Wilaya", 60)),
     };
+    const change = (k: keyof typeof maj) => maj[k] !== undefined;
     await sql`
       UPDATE profils SET
         nom = COALESCE(${nom}, nom),
-        telephone = CASE WHEN ${maj.telephone !== undefined}::boolean THEN ${maj.telephone ?? null} ELSE telephone END,
-        adresse = CASE WHEN ${maj.adresse !== undefined}::boolean THEN ${maj.adresse ?? null} ELSE adresse END
+        date_naissance = CASE WHEN ${change("date_naissance")}::boolean THEN ${maj.date_naissance ?? null}::date ELSE date_naissance END,
+        lieu_naissance = CASE WHEN ${change("lieu_naissance")}::boolean THEN ${maj.lieu_naissance ?? null} ELSE lieu_naissance END,
+        telephone = CASE WHEN ${change("telephone")}::boolean THEN ${maj.telephone ?? null} ELSE telephone END,
+        adresse = CASE WHEN ${change("adresse")}::boolean THEN ${maj.adresse ?? null} ELSE adresse END,
+        ville = CASE WHEN ${change("ville")}::boolean THEN ${maj.ville ?? null} ELSE ville END,
+        wilaya = CASE WHEN ${change("wilaya")}::boolean THEN ${maj.wilaya ?? null} ELSE wilaya END
       WHERE id = ${moi.id}`;
     return json({ ok: true });
   });

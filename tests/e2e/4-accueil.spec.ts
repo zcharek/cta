@@ -18,12 +18,12 @@ test("Aujourd'hui : tâches, prospection et temps du mois, avec des liens vers c
   await expect(page).toHaveURL(/semaine=S\d/);
 });
 
-test("mode sombre : les couleurs suivent le réglage du système", async ({ browser }) => {
+test("mode sombre du système : Cockpit reste sur fond clair", async ({ browser }) => {
   const contexte = await browser.newContext({ colorScheme: "dark" });
   const page = await contexte.newPage();
   await page.goto("/cockpit/connexion");
   const fond = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--ck-surface").trim());
-  expect(fond).toBe("#22305a");
+  expect(fond).toBe("#ffffff");
   await contexte.close();
 });
 

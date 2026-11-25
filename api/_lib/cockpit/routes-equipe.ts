@@ -66,7 +66,8 @@ export function routesEquipe(r: Routeur) {
     await exigerOnglet(req, "collaborateurs", "clients", "validation");
     const { debut, fin } = bornesMois(aujourdhui());
     const rows = await sql`
-      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.telephone, p.adresse,
+      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.telephone, p.adresse, p.ville, p.wilaya,
+        p.date_naissance::text AS date_naissance, p.lieu_naissance,
         p.mot_de_passe_hash IS NOT NULL AS a_mot_de_passe,
         p.invite_le::text AS invite_le, p.active_le::text AS active_le,
         COALESCE((SELECT json_agg(a.client_id) FROM affectations a WHERE a.profil_id = p.id), '[]'::json) AS client_ids,

@@ -1,6 +1,7 @@
 // « Mon profil » : coordonnées et mot de passe, pour chacun, quels que soient ses onglets.
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Sql } from "../../api/_lib/cockpit/db";
+import { coordonneesManquantes } from "../../shared/cockpit";
 import { appeler, creerProfil, preparerBase } from "./outils";
 
 let sql: Sql;
@@ -57,6 +58,27 @@ describe("mon profil", () => {
     await appeler("PATCH", `collaborateurs/${c.id}`, { cookie: qa.cookie, corps: { onglets: [] } });
     expect((await appeler("GET", "profil", { cookie: c.cookie })).status).toBe(200);
     expect((await appeler("GET", "auth/moi", { cookie: c.cookie })).data.moi.onglets).toEqual([]);
+  });
+});
+
+describe("coordonnées pour les contrats", () => {
+  it("enregistre naissance, ville et wilaya ; la fiche devient complète", async () => {
+    const c = await creerProfil(sql, "collaborateur");
+    const corps = { telephone: "0550 11 22 33", adresse: "3 rue Hassiba Ben Bouali", ville: "Sidi M'Hamed", wilaya: "Alger", date_naissance: "1992-07-05", lieu_naissance: "Béjaïa" };
+    expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps })).status).toBe(200);
+    const p = (await appeler("GET", "profil", { cookie: c.cookie })).data.profil;
+    expect(p).toMatchObject(corps);
+    expect(coordonneesManquantes(p)).toEqual([]);
+  });
+
+  it("refuse une date de naissance impossible ou invraisemblable", async () => {
+    const c = await creerProfil(sql, "collaborateur");
+    for (const d of ["1992-02-30", "05/07/1992", "2024-01-01", "1890-01-01"])
+      expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps: { date_naissance: d } })).status).toBe(400);
+  });
+
+  it("liste les champs manquants", () => {
+    expect(coordonneesManquantes({ telephone: "0550", ville: "Oran" })).toEqual(["date de naissance", "lieu de naissance", "adresse", "wilaya"]);
   });
 });
 

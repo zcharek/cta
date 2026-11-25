@@ -114,8 +114,39 @@ export type Moi = {
   onglets: Onglet[];
 };
 
-/** Coordonnées modifiables dans « Mon profil ». */
-export type Coordonnees = { telephone: string | null; adresse: string | null };
+/** Coordonnées modifiables dans « Mon profil » (nécessaires aux contrats). */
+export type Coordonnees = {
+  date_naissance: string | null;
+  lieu_naissance: string | null;
+  telephone: string | null;
+  adresse: string | null;
+  ville: string | null;
+  wilaya: string | null;
+};
+
+export const CHAMPS_COORDONNEES: Record<keyof Coordonnees, string> = {
+  date_naissance: "date de naissance",
+  lieu_naissance: "lieu de naissance",
+  telephone: "téléphone",
+  adresse: "adresse",
+  ville: "ville",
+  wilaya: "wilaya",
+};
+
+/** Champs encore vides : la fiche doit être complète pour générer un contrat. */
+export function coordonneesManquantes(c: Partial<Coordonnees>): string[] {
+  return (Object.keys(CHAMPS_COORDONNEES) as (keyof Coordonnees)[]).filter((k) => !c[k]).map((k) => CHAMPS_COORDONNEES[k]);
+}
+
+/** Les 58 wilayas, dans l'ordre de leur code (proposées à la saisie, sans être imposées). */
+export const WILAYAS = [
+  "Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa", "Biskra", "Béchar", "Blida", "Bouira",
+  "Tamanrasset", "Tébessa", "Tlemcen", "Tiaret", "Tizi Ouzou", "Alger", "Djelfa", "Jijel", "Sétif", "Saïda",
+  "Skikda", "Sidi Bel Abbès", "Annaba", "Guelma", "Constantine", "Médéa", "Mostaganem", "M'Sila", "Mascara", "Ouargla",
+  "Oran", "El Bayadh", "Illizi", "Bordj Bou Arréridj", "Boumerdès", "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela",
+  "Souk Ahras", "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent", "Ghardaïa", "Relizane", "Timimoun", "Bordj Badji Mokhtar",
+  "Ouled Djellal", "Béni Abbès", "In Salah", "In Guezzam", "Touggourt", "Djanet", "El M'Ghair", "El Meniaa",
+] as const;
 
 /** Format « 12 000 DZD ». */
 export function formatDzd(montant: number): string {

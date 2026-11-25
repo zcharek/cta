@@ -56,7 +56,7 @@ Cinq types d'utilisateur : **Collaborateur** (par défaut, uniquement sa propre 
 - **Founder** : le compte `centraltestagency@gmail.com`, unique. Il a toujours tous les onglets et ne peut être ni archivé, ni changé de type, ni restreint (règle vérifiée par l'API et par la base). Le type Founder ne s'attribue pas depuis l'interface.
 - **Onglets** : chaque personne a les onglets de son type, ou une liste choisie (`profils.onglets`, `NULL` = défaut du type). Seuls le Founder, les Co-Founders et les QA Managers changent les types, les onglets, l'archivage et l'e-mail des autres. Un Assistant peut inviter des Collaborateurs ou Assistants, avec les onglets par défaut.
 - L'API vérifie l'onglet de chaque route (`exigerOnglet`) : Cabinets, Validation (saisie des autres, validation), Récap, Espace client, Clients, Collaborateurs, Message WhatsApp.
-- **Mon profil** (`/cockpit/profil`, menu du compte en haut à droite) : chacun modifie son nom, son téléphone, son adresse et son mot de passe, quels que soient ses onglets. L'e-mail (identifiant de connexion) reste géré dans Collaborateurs. Règles couvertes par `tests/cockpit/onglets.test.ts`.
+- **Mon profil** (`/cockpit/profil`, menu du compte en haut à droite) : chacun renseigne ses coordonnées nécessaires aux contrats (date et lieu de naissance, téléphone, adresse, ville, wilaya ; `coordonneesManquantes()` signale une fiche incomplète) et change son mot de passe, quels que soient ses onglets. L'e-mail (identifiant de connexion) reste géré dans Collaborateurs. Règles couvertes par `tests/cockpit/onglets.test.ts`.
 
 Le navigateur n'accède jamais directement à la base : toutes les données passent par l'API `/api/cockpit/*`, qui vérifie les droits à chaque requête.
 
