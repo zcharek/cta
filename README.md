@@ -40,6 +40,7 @@ Voir `.env.example`. Aucune clé ne doit être commitée : `.env` est ignoré pa
 | `AUTH_SECRET` | Secret de signature des sessions, 32 caractères minimum |
 | `APP_URL` | Adresse publique, utilisée dans les liens des e-mails. Obligatoire en production |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Envoi des e-mails d'invitation et de réinitialisation |
+| `EMAIL_REPLY_TO` | Facultatif : adresse qui reçoit les réponses (par exemple une boîte Gmail) |
 | `COCKPIT_SEED_EMAIL`, `COCKPIT_SEED_NOM`, `COCKPIT_SEED_MOT_DE_PASSE` | Premier compte Co-Founder (seed) |
 
 ## Base de données
@@ -92,7 +93,7 @@ Le test de référence (`tests/cockpit/import.test.ts`) attend `fixtures/Veterin
 1. Créez un compte sur resend.com et ajoutez votre domaine (par exemple `centraltestagency.com`).
 2. Ajoutez chez votre registrar les enregistrements DNS (SPF, DKIM) indiqués par Resend, puis attendez la vérification.
 3. Créez une clé d'API (« Sending access ») et renseignez `RESEND_API_KEY`.
-4. Renseignez `EMAIL_FROM` avec une adresse de ce domaine, par exemple `Cockpit CTA <cockpit@centraltestagency.com>`.
+4. Renseignez `EMAIL_FROM` avec une adresse de ce domaine, par exemple `Cockpit CTA <cockpit@centraltestagency.com>`. Une adresse Gmail ne peut pas être expéditrice : mettez-la plutôt dans `EMAIL_REPLY_TO` pour y recevoir les réponses.
 
 Les modèles d'e-mails (français, couleurs CTA) sont dans `api/_lib/cockpit/emails.ts`.
 

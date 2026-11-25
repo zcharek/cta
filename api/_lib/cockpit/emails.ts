@@ -5,7 +5,8 @@ export type Envoyeur = (e: Email) => Promise<void>;
 
 const enProduction = () => process.env.VERCEL_ENV === "production";
 
-async function envoyerParResend(e: Email) {
+/** Envoi par l'API Resend. EMAIL_REPLY_TO (facultatif) reçoit les réponses des destinataires. */
+export async function envoyerParResend(e: Email) {
   const cle = process.env.RESEND_API_KEY;
   if (!cle) {
     if (enProduction()) throw new HttpError(500, "L'envoi d'e-mails n'est pas configuré (RESEND_API_KEY).");
@@ -21,6 +22,7 @@ async function envoyerParResend(e: Email) {
       subject: e.sujet,
       html: e.html,
       text: e.texte,
+      ...(process.env.EMAIL_REPLY_TO?.trim() ? { reply_to: process.env.EMAIL_REPLY_TO.trim() } : {}),
     }),
   });
   if (!res.ok) {
