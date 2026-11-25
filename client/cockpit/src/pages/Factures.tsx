@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { aujourdhui, decalerMois, formatJours, libelleMois } from "../../../../shared/cockpit";
 import type { DonneesFacture } from "../../../../shared/facture";
+import type { DonneesTimesheet } from "../../../../shared/timesheet";
 import { api, type ClientAdmin } from "../api";
 import { Bouton, Carte, Champ, Chargement, EnTete, EnteteSection, Erreur, Info, classeChamp } from "../ui";
 
@@ -30,11 +31,24 @@ type Apercu = {
   fin: string;
   dejaFacture: string[];
   entrepriseIncomplete: boolean;
-  client: { raison_sociale: string; rc: string | null; nif: string | null; adresse: string | null };
+  client: { raison_sociale: string; rc: string | null; nif: string | null; adresse: string | null; raison_sociale_timesheet: string; numero_contrat: string | null };
+  donnees: DonneesFacture | null;
 };
 
 const dzd = (n: number) => `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[\u202f\u00a0]/g, " ")} DZD`;
 const dateFr = (iso: string) => iso.split("-").reverse().join("/");
+
+/** Timesheet PDF du client pour le mois (jours validés uniquement). */
+async function telechargerTimesheet(clientId: string, mois: string) {
+  const [donnees, pdf] = await Promise.all([api<DonneesTimesheet>(`timesheet?client=${clientId}&mois=${mois}`), import("../../../../shared/timesheet")]);
+  const octets = await pdf.genererTimesheet(donnees);
+  const url = URL.createObjectURL(new Blob([octets], { type: "application/pdf" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = pdf.nomFichier(donnees);
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 /** Génère le PDF (logo CTA en haut à gauche) et le télécharge. */
 async function telechargerFacture(donnees: DonneesFacture) {
@@ -127,6 +141,11 @@ function Emettre({ clients, onEmise }: { clients: ClientAdmin[]; onEmise: () => 
           <>
             <dl className="rounded-xl bg-ck-surface-2 px-4 py-3 text-sm">
               {ligne("Facturé à", apercu.client.raison_sociale)}
+              {ligne("Siège social", apercu.client.adresse ?? "Non renseigné")}
+              {ligne("RC", apercu.client.rc ?? "Non renseigné")}
+              {ligne("NIF", apercu.client.nif ?? "Non renseigné")}
+              {ligne("Timesheet au nom de", apercu.client.raison_sociale_timesheet)}
+              {ligne("Contrat N°", apercu.client.numero_contrat ?? "Non renseigné")}
               {ligne("Période", `${dateFr(apercu.debut)} au ${dateFr(apercu.fin)}`)}
               {ligne("Jours validés", formatJours(apercu.jours))}
               {ligne("Prix unitaire", dzd(apercu.pu))}
@@ -145,9 +164,20 @@ function Emettre({ clients, onEmise }: { clients: ClientAdmin[]; onEmise: () => 
                 {message}
               </p>
             )}
-            <Bouton type="submit" disabled={occupe || apercu.jours <= 0} className="justify-self-start">
-              {occupe ? "Émission…" : apercu.jours > 0 ? `Émettre la facture n° ${apercu.numero}` : "Aucun jour validé à facturer"}
-            </Bouton>
+            <div className="flex flex-wrap gap-3">
+              <Bouton type="submit" disabled={occupe || apercu.jours <= 0}>
+                {occupe ? "Émission…" : apercu.jours > 0 ? `Émettre la facture n° ${apercu.numero}` : "Aucun jour validé à facturer"}
+              </Bouton>
+              {apercu.donnees && (
+                <Bouton variante="contour" onClick={() => void telechargerFacture(apercu.donnees!).catch((e: Error) => setErreur(e.message))}>
+                  Aperçu de la facture (PDF)
+                </Bouton>
+              )}
+              <Bouton variante="contour" onClick={() => void telechargerTimesheet(clientId, mois).catch((e: Error) => setErreur(e.message))}>
+                Timesheet PDF
+              </Bouton>
+            </div>
+            <p className="text-xs text-ck-texte-2">L'aperçu et le timesheet ne consomment aucun numéro de facture.</p>
           </>
         )}
       </form>

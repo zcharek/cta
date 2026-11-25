@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { messageWhatsApp, numeroWhatsApp, type ContactsCabinet } from "../../../../shared/prospection";
 import { api } from "../api";
-import { Bouton, Carte, Chargement, EnTete, Erreur, ZoneTexte, classeChamp } from "../ui";
+import { Bouton, Chargement, Erreur, Modale, ZoneTexte, classeChamp } from "../ui";
 
 type Exemple = ContactsCabinet & { id: string };
 
 const EXEMPLE_FICTIF: Exemple = { id: "", nom: "Cabinet Vétérinaire d'Hydra", veterinaire: "Dr Benali", telephone: "0550 12 34 56", contact_canal1: null, contact_relance: null, message: null };
 
-export default function MessageWhatsApp() {
+/** Modèle de message WhatsApp, configuré dans une fenêtre ouverte depuis la page Cabinets. */
+export default function FenetreMessageWhatsApp({ onFermer, onEnregistre }: { onFermer: () => void; onEnregistre: (modele: string) => void }) {
   const [modele, setModele] = useState<string | null>(null);
   const [enregistre, setEnregistre] = useState("");
   const [exemples, setExemples] = useState<Exemple[]>([]);
@@ -35,13 +36,19 @@ export default function MessageWhatsApp() {
       setEnregistre(r.modele);
       setModele(r.modele);
       setEtat("Modèle enregistré.");
+      onEnregistre(r.modele);
     } catch (e) {
       setErreur((e as Error).message);
       setEtat("");
     }
   }
 
-  if (modele === null) return erreur ? <Erreur>{erreur}</Erreur> : <Chargement />;
+  if (modele === null)
+    return (
+      <Modale titre="Message WhatsApp" ouverte onFermer={onFermer} large>
+        {erreur ? <Erreur>{erreur}</Erreur> : <Chargement />}
+      </Modale>
+    );
 
   const exemple = exemples.find((e) => e.id === choix) ?? EXEMPLE_FICTIF;
   // L'aperçu montre le modèle : on ignore volontairement le message personnalisé éventuel du cabinet.
@@ -50,10 +57,33 @@ export default function MessageWhatsApp() {
   const heure = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <>
-      <EnTete titre="Message" accent="WhatsApp." sousTitre="Le modèle utilisé pour les cabinets qui n'ont pas de message personnalisé." />
-      <div className="grid items-start gap-6 lg:grid-cols-2">
-        <Carte>
+    <Modale
+      titre="Message WhatsApp"
+      ouverte
+      onFermer={onFermer}
+      large
+      pied={
+        <>
+          <span role="status" className="mr-auto text-sm text-ck-texte-2">
+            {etat}
+          </span>
+          {modele !== enregistre && (
+            <Bouton variante="discret" onClick={() => setModele(enregistre)}>
+              Annuler les modifications
+            </Bouton>
+          )}
+          <Bouton variante="contour" onClick={onFermer}>
+            Fermer
+          </Bouton>
+          <Bouton onClick={() => void enregistrer()} disabled={modele === enregistre || !modele.trim()}>
+            Enregistrer
+          </Bouton>
+        </>
+      }
+    >
+      <p className="mb-5 text-sm text-ck-texte-2">Le modèle utilisé pour les cabinets qui n'ont pas de message personnalisé.</p>
+      <div className="grid items-start gap-6 md:grid-cols-2">
+        <div>
           <ZoneTexte
             libelle="Modèle de message"
             value={modele}
@@ -77,22 +107,9 @@ export default function MessageWhatsApp() {
               <Erreur>{erreur}</Erreur>
             </div>
           )}
-          <div className="mt-5 flex items-center justify-end gap-3">
-            <span role="status" className="text-sm text-ck-texte-2">
-              {etat}
-            </span>
-            {modele !== enregistre && (
-              <Bouton variante="discret" onClick={() => setModele(enregistre)}>
-                Annuler
-              </Bouton>
-            )}
-            <Bouton onClick={() => void enregistrer()} disabled={modele === enregistre || !modele.trim()}>
-              Enregistrer
-            </Bouton>
-          </div>
-        </Carte>
+        </div>
 
-        <Carte>
+        <div>
           <div className="mb-4">
             <label htmlFor="exemple" className="mb-1.5 block text-sm font-semibold text-ck-titre">
               Aperçu pour
@@ -118,8 +135,8 @@ export default function MessageWhatsApp() {
             </div>
           </div>
           {exemple.message && <p className="mt-3 text-xs text-ck-texte-2">Ce cabinet a un message personnalisé : c'est lui qui sera envoyé, pas ce modèle.</p>}
-        </Carte>
+        </div>
       </div>
-    </>
+    </Modale>
   );
 }

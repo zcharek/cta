@@ -13,9 +13,11 @@ import {
   trierSemaines,
 } from "../../../../shared/prospection";
 import { api, type CabinetCarte } from "../api";
+import type { Moi } from "../api";
 import Fiche from "../prospection/Fiche";
 import ImportCabinets from "../prospection/Import";
 import { Bouton, Chargement, EnTete, Erreur, IconeWhatsApp, Icone, Info, Pastille, classeChamp } from "../ui";
+import FenetreMessageWhatsApp from "./MessageWhatsApp";
 
 const PAR_PAGE = 25;
 
@@ -146,7 +148,8 @@ function Filtre({ id, libelle, valeur, options, onChange }: { id: string; libell
   );
 }
 
-export default function Cabinets() {
+export default function Cabinets({ moi }: { moi: Moi }) {
+  const [whatsappOuvert, setWhatsappOuvert] = useState(() => new URLSearchParams(window.location.search).has("whatsapp"));
   const requete = new URLSearchParams(window.location.search);
   const [donnees, setDonnees] = useState<{ cabinets: CabinetCarte[]; modele: string; aujourdhui: string } | null>(null);
   const [erreur, setErreur] = useState("");
@@ -261,11 +264,24 @@ export default function Cabinets() {
         accent="VetCare."
         sousTitre={`${donnees.cabinets.length} cabinets en prospection${vue.dues ? ` · ${vue.dues} relance${vue.dues > 1 ? "s" : ""} due${vue.dues > 1 ? "s" : ""}` : ""}`}
         actions={
-          <Bouton variante="contour" onClick={() => setImportOuvert(true)}>
-            <Icone nom="plus" taille={18} /> Importer un fichier
-          </Bouton>
+          <>
+            {moi.onglets.includes("whatsapp") && (
+              <Bouton variante="contour" onClick={() => setWhatsappOuvert(true)}>
+                <IconeWhatsApp /> Message WhatsApp
+              </Bouton>
+            )}
+            <Bouton variante="contour" onClick={() => setImportOuvert(true)}>
+              <Icone nom="plus" taille={18} /> Importer un fichier
+            </Bouton>
+          </>
         }
       />
+      {whatsappOuvert && (
+        <FenetreMessageWhatsApp
+          onFermer={() => setWhatsappOuvert(false)}
+          onEnregistre={(modele) => setDonnees((d) => d && { ...d, modele })}
+        />
+      )}
 
       <div role="search" className="mb-5 flex flex-wrap items-center gap-2.5">
         <div className="w-full sm:w-72">

@@ -1,17 +1,33 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ONGLETS, ONGLET_LABEL, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
+import { surClicLien } from "../routeur";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
 
 type Donnees = { clients: ClientAdmin[]; collaborateurs: Collaborateur[] };
 
 const jours = (n: number) => `${n.toLocaleString("fr-FR")} j`;
 
-function Chiffre({ valeur, libelle }: { valeur: string | number; libelle: string }) {
+/** Chiffre clé : icône, valeur, libellé, et un raccourci facultatif (flèche). */
+function Chiffre({ valeur, libelle, icone, vers }: { valeur: string | number; libelle: string; icone?: string; vers?: string }) {
   return (
-    <Carte className="!py-4">
-      <p className="ck-titre text-3xl">{valeur}</p>
-      <p className="text-sm text-ck-texte-2">{libelle}</p>
+    <Carte className="!py-5">
+      <div className="flex items-center gap-4">
+        {icone && (
+          <span aria-hidden="true" className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#eef2fb] text-ck-titre">
+            <Icone nom={icone} taille={26} />
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="ck-titre text-3xl leading-none">{valeur}</p>
+          <p className="mt-1 text-sm text-ck-texte-2">{libelle}</p>
+        </div>
+        {vers && (
+          <a href={`/cockpit${vers}`} onClick={(e) => surClicLien(e, vers)} aria-label={`Voir : ${libelle}`} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#eef2fb] text-[#2f5bd3] transition hover:bg-[#dfe7fa]">
+            <Icone nom="droite" taille={18} />
+          </a>
+        )}
+      </div>
     </Carte>
   );
 }
@@ -125,7 +141,9 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
           )}
         </fieldset>
         <fieldset className="grid gap-4">
-          <legend className="mb-1 text-sm font-semibold text-ck-titre">Timesheet et facture</legend>
+          <legend className="mb-1 text-sm font-semibold text-ck-titre">
+            Timesheet et facture <span className="font-normal text-ck-texte-2">(facultatif, modifiable à tout moment)</span>
+          </legend>
           <Champ libelle="Raison sociale" name="raisonSociale" maxLength={200} defaultValue={existant?.raison_sociale ?? ""} placeholder={existant?.nom ?? "Nom légal du client"} aide="Nom affiché sur le timesheet. Vide : le nom du client." />
           <ZoneTexte libelle="Adresse" name="adresse" rows={2} maxLength={300} defaultValue={existant?.adresse ?? ""} />
           <div className="grid gap-4 sm:grid-cols-2">
@@ -365,6 +383,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         <EnTete
           titre="Nos"
           accent="clients."
+          sousTitre="Gérez et suivez vos clients en un coup d'œil."
           actions={
             <Bouton onClick={() => setFenetreClient("nouveau")}>
               <Icone nom="plus" taille={18} /> Nouveau client
@@ -386,9 +405,9 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {vue === "clients" ? (
           <>
-            <Chiffre valeur={clientsActifs.length} libelle={clientsActifs.length > 1 ? "clients" : "client"} />
-            <Chiffre valeur={assignes} libelle={assignes > 1 ? "personnes assignées" : "personne assignée"} />
-            <Chiffre valeur={jours(joursMois)} libelle="saisis ce mois" />
+            <Chiffre icone="batiment" valeur={clientsActifs.length} libelle={clientsActifs.length > 1 ? "clients" : "client"} />
+            <Chiffre icone="equipe" valeur={assignes} libelle={assignes > 1 ? "personnes assignées" : "personne assignée"} vers="/reglages/collaborateurs" />
+            <Chiffre icone="calendrier" valeur={jours(joursMois)} libelle="saisis ce mois" vers="/recap" />
           </>
         ) : (
           <>
@@ -420,45 +439,65 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
           {clientsActifs.length === 0 ? (
             <Carte className="text-sm text-ck-texte-2">Aucun client. Créez votre premier client avec « Nouveau client ».</Carte>
           ) : (
-            <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {clientsActifs.map((c) => (
-                <li key={c.id}>
-                  <Carte className="!p-5">
-                    <div className="flex items-start gap-3">
-                      <Avatar nom={c.nom} couleur="#071538" taille={42} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-lg font-bold text-ck-titre">{c.nom}</p>
-                        <p className="text-sm text-ck-texte-2">
-                          {c.forfait_mensuel_dzd ? (
-                            <>
-                              <span className="font-semibold text-ck-texte">{formatDzd(c.forfait_mensuel_dzd)}</span> / mois ({c.jours_forfait} j)
-                            </>
-                          ) : (
-                            <>
-                              <span className="font-semibold text-ck-texte">{formatDzd(c.tjm_dzd)}</span> / jour
-                            </>
-                          )}{" "}
-                          · {jours(c.jours_mois)} ce mois
-                        </p>
+            <ul className="grid gap-5 lg:grid-cols-2">
+              {clientsActifs.map((c) => {
+                const actif = c.profil_ids.length > 0;
+                return (
+                  <li key={c.id}>
+                    <Carte className="ck-halo h-full !p-6">
+                      <div className="relative z-10 flex items-start gap-4">
+                        <Avatar nom={c.nom} couleur="#071538" taille={64} />
+                        <div className="min-w-0 flex-1">
+                          <p className="ck-titre truncate text-xl">{c.nom}</p>
+                          <p className="mt-0.5 text-ck-texte-2">
+                            {c.forfait_mensuel_dzd ? (
+                              <>
+                                <span className="font-semibold text-ck-titre">{formatDzd(c.forfait_mensuel_dzd)}</span> / mois ({c.jours_forfait} j)
+                              </>
+                            ) : (
+                              <>
+                                <span className="font-semibold text-ck-titre">{formatDzd(c.tjm_dzd)}</span> / jour
+                              </>
+                            )}{" "}
+                            · {jours(c.jours_mois)} ce mois
+                          </p>
+                          {(c.raison_sociale || c.numero_contrat) && (
+                            <p className="mt-0.5 truncate text-xs text-ck-texte-2">{[c.raison_sociale, c.numero_contrat].filter(Boolean).join(" · ")}</p>
+                          )}
+                        </div>
+                        <span
+                          title={actif ? "Au moins une personne est assignée à ce client." : "Aucune personne assignée à ce client."}
+                          className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${actif ? "bg-emerald-50 text-emerald-700" : "bg-[var(--ck-champ)] text-ck-texte-2"}`}
+                        >
+                          <span className={`h-2 w-2 rounded-full ${actif ? "bg-emerald-500" : "bg-ck-texte-2"}`} />
+                          {actif ? "Actif" : "Inactif"}
+                        </span>
                       </div>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {c.profil_ids.length === 0 ? (
-                        <span className="text-xs text-ck-texte-2">Aucune personne assignée</span>
-                      ) : (
-                        c.profil_ids.map((id) => (
-                          <Pastille key={id} className="bg-ck-surface-2 text-ck-texte">
-                            {nomCollab.get(id)}
-                          </Pastille>
-                        ))
-                      )}
-                    </div>
-                    <button type="button" onClick={() => setFenetreClient(c)} className="mt-3 text-sm font-bold text-ck-orange-texte hover:underline">
-                      Gérer l'équipe
-                    </button>
-                  </Carte>
-                </li>
-              ))}
+                      <div className="relative z-10 mt-5 flex items-start gap-2.5 border-t border-ck-bordure pt-4 text-ck-texte">
+                        <Icone nom="profil" taille={20} className="mt-0.5 shrink-0 text-ck-texte-2" />
+                        <span className="min-w-0">{actif ? c.profil_ids.map((id) => nomCollab.get(id)).filter(Boolean).join(", ") : <span className="text-ck-texte-2">Aucune personne assignée</span>}</span>
+                      </div>
+                      <div className="relative z-10 mt-5 flex items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setFenetreClient(c)}
+                          className="inline-flex items-center gap-2 rounded-full border-2 border-[#2f5bd3]/70 px-4 py-2 text-sm font-bold text-[#1f3f9c] transition hover:bg-[#eef2fb]"
+                        >
+                          <Icone nom="graphique" taille={18} /> Gérer l'équipe
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFenetreClient(c)}
+                          aria-label={`Ouvrir la fiche de ${c.nom}`}
+                          className="grid h-10 w-10 place-items-center rounded-full bg-ck-surface text-[#2f5bd3] shadow-[var(--ck-ombre)] transition hover:bg-[#eef2fb]"
+                        >
+                          <Icone nom="droite" taille={18} />
+                        </button>
+                      </div>
+                    </Carte>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>

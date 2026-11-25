@@ -75,7 +75,7 @@ export function routesSuivi(r: Routeur) {
 
   // Timesheet mensuel d'un client (PDF généré dans le navigateur) : seuls les jours validés comptent.
   r.ajouter("GET", "timesheet", async ({ req, url }) => {
-    await exigerOnglet(req, "recap");
+    await exigerOnglet(req, "recap", "factures");
     const mois = url.searchParams.get("mois") ?? "";
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mois)) throw new HttpError(400, "Mois attendu au format aaaa-mm.");
     const clientId = uuid(url.searchParams.get("client"), "Client");

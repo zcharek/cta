@@ -242,8 +242,8 @@ export async function genererFacture(d: DonneesFacture, logo?: Uint8Array): Prom
   g.texte(`FACTURE N°   ${d.numero}`, 370, yIdentite - 26, 10.5, g.gras);
   g.texte(`${e.ville}, le ${dateFr(d.date_emission)}`, 370, yIdentite - 41, 10.5, g.gras);
 
-  // Client
-  y -= 22;
+  // Client : toujours sous le numéro et la date, même si l'identité de l'entreprise tient en peu de lignes
+  y = Math.min(y, yIdentite - 56) - 22;
   const xc = 300;
   g.texte(d.client.raison_sociale, xc + 4, y, 12.5, g.gras);
   y -= 17;

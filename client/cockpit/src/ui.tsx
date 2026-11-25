@@ -3,10 +3,11 @@ import { ROLE_LABEL, STATUT_ACCES_LABEL, type Role, type StatutAcces } from "../
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(" ");
 
-type Variante = "plein" | "contour" | "discret" | "danger";
+type Variante = "plein" | "contour" | "discret" | "danger" | "orange";
 
 const VARIANTES: Record<Variante, string> = {
   plein: "bg-ck-plein text-ck-plein-texte hover:opacity-90",
+  orange: "bg-ck-orange text-white shadow-[0_8px_20px_-8px_rgba(220,90,46,0.7)] hover:brightness-105",
   contour: "border-2 border-ck-plein text-ck-titre hover:bg-ck-surface-2",
   discret: "text-ck-texte-2 hover:bg-ck-surface-2 hover:text-ck-titre",
   danger: "border-2 border-red-600 text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950",
@@ -153,7 +154,7 @@ export function Avatar({ nom, couleur = "#071538", taille = 40 }: { nom: string;
 }
 
 /** Fenêtre modale sur <dialog> : piège du focus, Échap et fond gérés par le navigateur. */
-export function Modale({ titre, ouverte, onFermer, children, pied }: { titre: string; ouverte: boolean; onFermer: () => void; children: ReactNode; pied?: ReactNode }) {
+export function Modale({ titre, ouverte, onFermer, children, pied, large = false }: { titre: string; ouverte: boolean; onFermer: () => void; children: ReactNode; pied?: ReactNode; large?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
   useEffect(() => {
@@ -168,7 +169,7 @@ export function Modale({ titre, ouverte, onFermer, children, pied }: { titre: st
       aria-labelledby={id}
       onClose={onFermer}
       onClick={(e) => e.target === ref.current && onFermer()}
-      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-2xl bg-ck-surface p-0 text-ck-texte shadow-2xl backdrop:bg-[#071538]/50 backdrop:backdrop-blur-sm"
+      className={`m-auto w-[calc(100%-2rem)] ${large ? "max-w-4xl" : "max-w-lg"} rounded-2xl bg-ck-surface p-0 text-ck-texte shadow-2xl backdrop:bg-[#071538]/50 backdrop:backdrop-blur-sm`}
     >
       {ouverte && (
         <div className="flex max-h-[85vh] flex-col">
@@ -285,6 +286,22 @@ const ICONES: Record<string, ReactNode> = {
     </>
   ),
   banque: <path d="M3 9.5 12 4l9 5.5M5 10v7M9.5 10v7M14.5 10v7M19 10v7M3 20h18" />,
+  calendrier: (
+    <>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+      <path d="M8 3v4M16 3v4M3.5 10h17M8 14h2M14 14h2M8 17.5h2" />
+    </>
+  ),
+  envoyer: <path d="M21 3 10 14M21 3l-7 18-4-7-7-4Z" />,
+  gauche: <path d="m15 5-7 7 7 7" />,
+  droite: <path d="m9 5 7 7-7 7" />,
+  recharger: <path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" />,
+  plusRond: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v8M8 12h8" />
+    </>
+  ),
   batiment: <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4" />,
 };
 
@@ -308,16 +325,24 @@ export function Icone({ nom, taille = 20, className }: { nom: keyof typeof ICONE
 }
 
 /** Titre de page : pastille facultative au-dessus, partie en orange facultative. */
-export function EnTete({ titre, accent, pastille, sousTitre, actions }: { titre: string; accent?: string; pastille?: string; sousTitre?: string; actions?: ReactNode }) {
+export function EnTete({ titre, accent, pastille, sousTitre, actions, icone }: { titre: string; accent?: string; pastille?: string; sousTitre?: string; actions?: ReactNode; icone?: string }) {
   return (
     <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
+      <div className="flex items-center gap-5">
+        {icone && (
+          <span aria-hidden="true" className="hidden h-[72px] w-[72px] shrink-0 place-items-center rounded-full bg-[#fbe3d9] text-ck-orange sm:grid">
+            <Icone nom={icone} taille={34} />
+          </span>
+        )}
+        <div>
         {pastille && <Pastille className="mb-3 bg-ck-surface text-ck-titre shadow-sm ring-1 ring-ck-bordure">{pastille}</Pastille>}
         <h1 className="ck-titre text-3xl sm:text-4xl">
           {titre}
           {accent && <span className="text-ck-orange"> {accent}</span>}
         </h1>
         {sousTitre && <p className="mt-2 text-ck-texte-2">{sousTitre}</p>}
+        <span aria-hidden="true" className="mt-3 block h-[3px] w-16 rounded-full bg-ck-orange" />
+        </div>
       </div>
       {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
     </header>

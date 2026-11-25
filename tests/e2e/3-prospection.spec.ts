@@ -113,12 +113,21 @@ test("import CSV : prévisualisation puis import par lots", async ({ page }) => 
   await expect(colonne(page, "À contacter").getByText("Cabinet Neuf Zéralda")).toBeVisible();
 });
 
-test("le modèle de message WhatsApp s'enregistre avec un aperçu", async ({ page }) => {
-  await page.getByRole("link", { name: "Message WhatsApp" }).click();
-  const zone = page.getByLabel("Modèle de message");
+test("le modèle de message WhatsApp se configure dans une fenêtre ouverte depuis Cabinets", async ({ page }) => {
+  // Plus d'entrée dans la barre latérale
+  await expect(page.getByRole("navigation", { name: "Navigation principale" }).getByRole("link", { name: "Message WhatsApp" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Message WhatsApp" }).click();
+  const fenetre = page.getByRole("dialog", { name: "Message WhatsApp" });
+  const zone = fenetre.getByLabel("Modèle de message");
   await zone.fill("Salam {veterinaire}, VetCare pour {cabinet} ?");
-  await page.getByLabel("Aperçu pour").selectOption({ index: 0 });
-  await expect(page.getByLabel("Aperçu du message")).toContainText(/Salam Dr .+, VetCare pour .+ \?/);
-  await page.getByRole("button", { name: "Enregistrer" }).click();
-  await expect(page.getByText("Modèle enregistré.")).toBeVisible();
+  await fenetre.getByLabel("Aperçu pour").selectOption({ index: 0 });
+  await expect(fenetre.getByLabel("Aperçu du message")).toContainText(/Salam Dr .+, VetCare pour .+ \?/);
+  await fenetre.getByRole("button", { name: "Enregistrer" }).click();
+  await expect(fenetre.getByText("Modèle enregistré.")).toBeVisible();
+  await fenetre.screenshot({ path: "test-results/whatsapp.png" });
+  await fenetre.getByRole("button", { name: "Fermer", exact: true }).first().click();
+  await expect(fenetre).toBeHidden();
+  // L'ancienne adresse ouvre la fenêtre
+  await page.goto("/cockpit/reglages/whatsapp");
+  await expect(page.getByRole("dialog", { name: "Message WhatsApp" })).toBeVisible();
 });

@@ -13,7 +13,7 @@ import {
 } from "../../../../shared/cockpit";
 import { ErreurApi, api, type ClientAdmin, type Collaborateur, type Moi } from "../api";
 import { BadgeSemaine } from "../suivi";
-import { Bouton, Carte, Chargement, EnTete, Erreur, Info, classeChamp } from "../ui";
+import { Bouton, Carte, Chargement, EnTete, Erreur, Icone, Info, classeChamp } from "../ui";
 
 type Semaine = { id: string | null; lundi: string; statut: StatutSemaine; soumise_le: string | null; validee_le: string | null };
 type Donnees = { semaine: Semaine; lignes: { id: string; nom: string }[]; temps: Temps[] };
@@ -33,27 +33,32 @@ function dateCourte(iso: string | null) {
   return iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : "";
 }
 
-/** Case de la grille : vide, journée pleine (carré plein) ou demi-journée (carré coupé en diagonale). */
-function Case({ valeur, libelle, modifiable, onClic }: { valeur: number; libelle: string; modifiable: boolean; onClic: () => void }) {
+/** Case de la grille : vide, journée pleine (1) ou demi-journée (½). Un clic passe à l'état suivant. */
+function Case({ valeur, libelle, modifiable, aujourdhui, onClic }: { valeur: number; libelle: string; modifiable: boolean; aujourdhui: boolean; onClic: () => void }) {
   const etat = valeur === 1 ? "1 jour" : valeur === 0.5 ? "½ jour" : "vide";
+  const style =
+    valeur === 1
+      ? "border-ck-plein bg-ck-plein text-white"
+      : valeur === 0.5
+        ? "border-[#f2b79f] bg-[#fbe3d9] text-ck-orange-texte"
+        : "border-dashed border-ck-bordure bg-ck-surface text-[#b5bccb] hover:border-ck-texte-2";
   return (
     <button
       type="button"
       onClick={onClic}
       disabled={!modifiable}
       aria-label={`${libelle} : ${etat}${modifiable ? ". Cliquer pour changer." : ""}`}
-      className={`mx-auto flex h-12 w-full max-w-[3.5rem] items-center justify-center rounded-[10px] border-2 text-xs font-bold transition disabled:cursor-default ${
-        valeur ? "border-ck-plein" : "border-dashed border-ck-bordure hover:border-ck-texte-2 disabled:hover:border-ck-bordure"
+      className={`mx-auto flex h-11 w-full max-w-[5rem] items-center justify-center rounded-xl border-2 text-sm font-bold tabular-nums transition disabled:cursor-default ${style} ${
+        aujourdhui ? "ring-2 ring-ck-orange ring-offset-2 ring-offset-ck-surface" : ""
       } ${modifiable ? "active:scale-95" : "opacity-80"}`}
-      style={{
-        background: valeur === 1 ? "var(--ck-plein)" : valeur === 0.5 ? "linear-gradient(135deg, var(--ck-plein) 50%, transparent 50%)" : undefined,
-      }}
-    />
+    >
+      <span aria-hidden="true">{valeur === 1 ? "1" : valeur === 0.5 ? "½" : "–"}</span>
+    </button>
   );
 }
 
 /** Ligne de la grille : nom (et total sur mobile) puis 5 cases puis total sur grand écran. */
-const LIGNE = "grid grid-cols-5 items-center gap-x-2 gap-y-2 sm:grid-cols-[minmax(0,1fr)_repeat(5,3.5rem)_4.5rem]";
+const LIGNE = "grid grid-cols-5 items-center gap-x-2 gap-y-2 sm:grid-cols-[minmax(0,1fr)_repeat(5,minmax(3.5rem,5rem))_5rem] sm:gap-x-3";
 
 export default function Saisie({ moi }: { moi: Moi }) {
   // Avec l'onglet Validation : saisie de tout le monde, validation et réouverture.
@@ -115,15 +120,24 @@ export default function Saisie({ moi }: { moi: Moi }) {
   /** Enregistrement automatique : les clics sur une même case partent dans l'ordre. */
   function cliquer(clientId: string, jour: string) {
     if (!modifiable) return;
+    void enregistrer(clientId, jour, valeurSuivante(valeurs.get(cle(clientId, jour)) ?? 0));
+  }
+
+  /** Remet toutes les cases de la semaine à vide. */
+  async function vider() {
+    if (!window.confirm("Vider toutes les cases de cette semaine ?")) return;
+    for (const l of lignes) for (const j of jours) if (v(l.id, j)) await enregistrer(l.id, j, 0);
+  }
+
+  /** Enregistre une valeur précise (même file d'attente que les clics). */
+  function enregistrer(clientId: string, jour: string, valeur: number) {
     const k = cle(clientId, jour);
     const avant = valeurs.get(k) ?? 0;
-    const apres = valeurSuivante(avant);
-    setValeurs((m) => new Map(m).set(k, apres));
+    setValeurs((m) => new Map(m).set(k, valeur));
     setEnCours((n) => n + 1);
-    const precedent = files.current.get(k) ?? Promise.resolve();
-    const suivant = precedent
+    const suivant = (files.current.get(k) ?? Promise.resolve())
       .catch(() => {})
-      .then(() => api("temps", { methode: "PUT", corps: { profilId, lundi, clientId, jour, valeur: apres } }))
+      .then(() => api("temps", { methode: "PUT", corps: { profilId, lundi, clientId, jour, valeur } }))
       .catch((e: ErreurApi) => {
         setErreur(e.message);
         if (e.status === 409) charger();
@@ -131,6 +145,7 @@ export default function Saisie({ moi }: { moi: Moi }) {
       })
       .finally(() => setEnCours((n) => n - 1));
     files.current.set(k, suivant);
+    return suivant;
   }
 
   async function changerStatut(vers: StatutSemaine) {
@@ -151,21 +166,25 @@ export default function Saisie({ moi }: { moi: Moi }) {
   const ajoutables = clients.filter((c) => c.actif && !lignes.some((l) => l.id === c.id));
   const cetteSemaine = lundiDe(aujourdhui());
 
+  const auj = aujourdhui();
+  const totalJ = (n: number) => formatJours(n, false);
+
   return (
     <>
-      {valideur ? (
-        <EnTete titre="Saisie" accent="des temps." />
-      ) : (
-        <EnTete titre={`Bonjour ${prenom(moi.nom)},`} accent="voici votre semaine." />
-      )}
+      <EnTete
+        icone="horloge"
+        titre={valideur ? "Saisie" : `Bonjour ${prenom(moi.nom)},`}
+        accent={valideur ? "des temps." : "voici votre semaine."}
+        sousTitre="Une case = une journée sur un client : un clic pour 1 jour, deux pour ½, trois pour vider."
+      />
 
-      <div className="mb-5 flex flex-wrap items-end gap-3">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         {valideur && (
-          <div className="w-full sm:w-72">
-            <label htmlFor="choix-collab" className="mb-1.5 block text-sm font-semibold text-ck-titre">
+          <div className="w-full sm:w-64">
+            <label htmlFor="choix-collab" className="sr-only">
               Collaborateur
             </label>
-            <select id="choix-collab" value={profilId} onChange={(e) => setProfilId(e.target.value)} className={classeChamp}>
+            <select id="choix-collab" value={profilId} onChange={(e) => setProfilId(e.target.value)} className={`${classeChamp} !rounded-2xl !bg-ck-surface !py-3 shadow-[var(--ck-ombre)]`}>
               {collaborateurs.length === 0 && <option value={profilId}>{moi.nom}</option>}
               {collaborateurs
                 .filter((c) => c.actif || c.id === profilId)
@@ -178,19 +197,29 @@ export default function Saisie({ moi }: { moi: Moi }) {
             </select>
           </div>
         )}
-        <nav aria-label="Changer de semaine" className="flex flex-1 flex-wrap items-center gap-2">
-          <Bouton variante="contour" className="!px-3" onClick={() => setLundi(ajouterJours(lundi, -7))} aria-label="Semaine précédente">
-            ←
-          </Bouton>
-          <Bouton variante="contour" className="!px-3" onClick={() => setLundi(ajouterJours(lundi, 7))} aria-label="Semaine suivante">
-            →
-          </Bouton>
+        <nav aria-label="Changer de semaine" className="flex flex-wrap items-center gap-2">
+          <span className="flex items-center gap-2.5 rounded-2xl bg-ck-surface px-4 py-3 font-bold text-ck-titre shadow-[var(--ck-ombre)]">
+            <Icone nom="calendrier" taille={20} className="text-ck-texte-2" />
+            {libelleSemaine(lundi)}
+          </span>
+          <button type="button" onClick={() => setLundi(ajouterJours(lundi, -7))} aria-label="Semaine précédente" className="grid h-12 w-12 place-items-center rounded-2xl bg-ck-surface text-ck-titre shadow-[var(--ck-ombre)] hover:bg-ck-surface-2">
+            <Icone nom="gauche" />
+          </button>
+          <button type="button" onClick={() => setLundi(ajouterJours(lundi, 7))} aria-label="Semaine suivante" className="grid h-12 w-12 place-items-center rounded-2xl bg-ck-surface text-ck-titre shadow-[var(--ck-ombre)] hover:bg-ck-surface-2">
+            <Icone nom="droite" />
+          </button>
           {lundi !== cetteSemaine && (
             <Bouton variante="discret" onClick={() => setLundi(cetteSemaine)}>
               Cette semaine
             </Bouton>
           )}
         </nav>
+        {statut === "brouillon" && !valideur && (
+          <p className="flex items-center gap-3 rounded-2xl bg-[#eef2fb] px-4 py-3 text-sm text-ck-titre lg:ml-auto">
+            <Icone nom="info" className="shrink-0 text-[#2f5bd3]" />
+            N'oubliez pas de soumettre vos temps à la fin de la semaine.
+          </p>
+        )}
       </div>
 
       {erreur && (
@@ -202,14 +231,19 @@ export default function Saisie({ moi }: { moi: Moi }) {
       {!donnees ? (
         !erreur && <Chargement />
       ) : (
-        <Carte>
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="ck-titre text-xl">{libelleSemaine(lundi)}</h2>
-              <p className="text-sm text-ck-texte-2">
-                {cible && cible.id !== moi.id ? `${cible.nom} · ` : ""}
-                {enCours > 0 ? "Enregistrement…" : "Enregistrement automatique"}
-              </p>
+        <Carte className="sm:!p-7">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-4">
+              <span aria-hidden="true" className="grid h-14 w-14 place-items-center rounded-2xl bg-[#eef2fb] text-ck-titre">
+                <Icone nom="calendrier" taille={26} />
+              </span>
+              <div>
+                <h2 className="ck-titre text-xl">{libelleSemaine(lundi)}</h2>
+                <p className="text-sm text-ck-texte-2">
+                  {cible && cible.id !== moi.id ? `${cible.nom} · ` : ""}
+                  {enCours > 0 ? "Enregistrement…" : "Enregistrement automatique"}
+                </p>
+              </div>
             </div>
             <BadgeSemaine statut={statut} />
           </div>
@@ -221,62 +255,63 @@ export default function Saisie({ moi }: { moi: Moi }) {
                 : "Aucun client ne vous est assigné pour l'instant. Contactez un responsable de Central Test Agency."}
             </Info>
           ) : (
-            <div role="group" aria-label="Grille de la semaine">
+            <div role="group" aria-label="Grille de la semaine" className="overflow-hidden rounded-2xl border border-ck-bordure">
               {/* En-tête des jours */}
-              <div className={`${LIGNE} mb-2 text-center text-xs font-semibold uppercase tracking-wide text-ck-texte-2`}>
+              <div className={`${LIGNE} bg-[var(--ck-champ)] px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-ck-texte-2`}>
                 <span className="hidden text-left sm:block">Client</span>
                 {jours.map((j) => (
-                  <span key={j} className={j === aujourdhui() ? "text-ck-orange-texte" : undefined}>
+                  <span key={j} className={j === auj ? "text-ck-orange" : undefined}>
                     {jourCourt(j).nom}
-                    <span className="block text-base font-bold normal-case tracking-normal text-ck-titre">{jourCourt(j).numero}</span>
+                    <span className={`block text-lg font-extrabold normal-case tracking-normal ${j === auj ? "text-ck-orange" : "text-ck-titre"}`}>{jourCourt(j).numero}</span>
                   </span>
                 ))}
                 <span className="hidden text-right sm:block">Total</span>
               </div>
 
-              <ul className="divide-y divide-[color:var(--ck-bordure)] border-y border-ck-bordure">
+              <ul className="divide-y divide-[color:var(--ck-bordure)]">
                 {lignes.map((l) => (
-                  <li key={l.id} className={`${LIGNE} py-3`}>
+                  <li key={l.id} className={`${LIGNE} px-4 py-3.5`}>
                     <div className="col-span-5 flex items-baseline justify-between gap-2 sm:col-span-1">
-                      <span className="truncate font-semibold text-ck-titre">{l.nom}</span>
+                      <span className="truncate font-bold text-ck-titre">{l.nom}</span>
                       <span className="text-sm font-bold text-ck-texte-2 sm:hidden">{formatJours(totalLigne(l.id))}</span>
                     </div>
                     {jours.map((j) => (
-                      <Case key={j} valeur={v(l.id, j)} libelle={`${l.nom}, ${jourCourt(j).long}`} modifiable={modifiable} onClic={() => cliquer(l.id, j)} />
+                      <Case key={j} valeur={v(l.id, j)} aujourdhui={j === auj} libelle={`${l.nom}, ${jourCourt(j).long}`} modifiable={modifiable} onClic={() => cliquer(l.id, j)} />
                     ))}
-                    <span className="hidden text-right font-bold text-ck-titre sm:block">{formatJours(totalLigne(l.id))}</span>
+                    <span className="hidden text-right text-lg font-extrabold text-ck-titre sm:block">{formatJours(totalLigne(l.id))}</span>
                   </li>
                 ))}
               </ul>
 
               {/* Totaux par jour */}
-              <div className={`${LIGNE} pt-3 text-center text-sm font-bold`}>
-                <span className="col-span-5 text-left text-ck-texte-2 sm:col-span-1">Total par jour</span>
+              <div className={`${LIGNE} bg-[var(--ck-champ)] px-4 py-3 text-center text-sm font-bold`}>
+                <span className="col-span-5 text-left text-ck-titre sm:col-span-1">Total par jour</span>
                 {jours.map((j) => {
                   const t = totalJour(j);
                   return (
-                    <span key={j} className={t > 1 ? "rounded-md bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200" : "text-ck-titre"}>
-                      {t ? formatJours(t, false) : "–"}
+                    <span key={j} className={t > 1 ? "rounded-md bg-red-100 text-red-800" : "text-ck-titre"}>
+                      {t ? totalJ(t) : "–"}
                     </span>
                   );
                 })}
-                <span className="hidden text-right text-lg text-ck-titre sm:block">{formatJours(total)}</span>
+                <span className="hidden text-right text-xl font-extrabold text-ck-titre sm:block">{formatJours(total)}</span>
               </div>
-              <p className="mt-2 text-right text-lg font-bold text-ck-titre sm:hidden">Total : {formatJours(total)}</p>
+              <p className="px-4 pb-3 text-right text-lg font-bold text-ck-titre sm:hidden">Total : {formatJours(total)}</p>
+            </div>
+          )}
 
-              {joursDepasses.length > 0 && (
-                <div className="mt-4">
-                  <Erreur>
-                    {joursDepasses.map((j) => `${jourCourt(j).long} : ${formatJours(totalJour(j))}`).join(" · ")}. Une journée ne devrait pas dépasser 1 jour.
-                  </Erreur>
-                </div>
-              )}
+          {joursDepasses.length > 0 && (
+            <div className="mt-4">
+              <Erreur>
+                {joursDepasses.map((j) => `${jourCourt(j).long} : ${formatJours(totalJour(j))}`).join(" · ")}. Une journée ne devrait pas dépasser 1 jour.
+              </Erreur>
             </div>
           )}
 
           {valideur && modifiable && ajoutables.length > 0 && (
-            <div className="mt-5 sm:w-80">
-              <label htmlFor="ajout-client" className="mb-1.5 block text-sm font-semibold text-ck-titre">
+            <div className="mt-6 sm:w-96">
+              <label htmlFor="ajout-client" className="mb-2 flex items-center gap-2 text-sm font-bold text-ck-titre">
+                <Icone nom="plusRond" taille={20} className="text-[#2f5bd3]" />
                 Ajouter un client ponctuel à la semaine
               </label>
               <select
@@ -298,10 +333,13 @@ export default function Saisie({ moi }: { moi: Moi }) {
             </div>
           )}
 
-          <div className="mt-6 flex flex-wrap items-center justify-end gap-3 border-t border-ck-bordure pt-5">
-            {statut === "validee" && (
-              <p className="mr-auto text-sm text-ck-texte-2">Semaine validée le {dateCourte(donnees.semaine.validee_le)}.</p>
+          <div className="mt-7 flex flex-wrap items-center justify-end gap-3 border-t border-ck-bordure pt-6">
+            {modifiable && total > 0 && (
+              <Bouton variante="contour" className="mr-auto" disabled={occupe || enCours > 0} onClick={() => void vider()}>
+                <Icone nom="recharger" taille={18} /> Vider la semaine
+              </Bouton>
             )}
+            {statut === "validee" && <p className="mr-auto text-sm text-ck-texte-2">Semaine validée le {dateCourte(donnees.semaine.validee_le)}.</p>}
             {statut === "soumise" && (
               <p className="mr-auto text-sm text-ck-texte-2">
                 Soumise le {dateCourte(donnees.semaine.soumise_le)}
@@ -309,8 +347,8 @@ export default function Saisie({ moi }: { moi: Moi }) {
               </p>
             )}
             {statut === "brouillon" && (
-              <Bouton disabled={occupe || enCours > 0} onClick={() => void changerStatut("soumise")}>
-                Soumettre la semaine
+              <Bouton variante="orange" className="!px-6 !py-3" disabled={occupe || enCours > 0} onClick={() => void changerStatut("soumise")}>
+                <Icone nom="envoyer" taille={18} /> Soumettre la semaine
               </Bouton>
             )}
             {statut === "soumise" && (
@@ -319,8 +357,8 @@ export default function Saisie({ moi }: { moi: Moi }) {
               </Bouton>
             )}
             {statut === "soumise" && valideur && (
-              <Bouton disabled={occupe || enCours > 0} onClick={() => void changerStatut("validee")}>
-                Valider
+              <Bouton variante="orange" disabled={occupe || enCours > 0} onClick={() => void changerStatut("validee")}>
+                <Icone nom="coche" taille={18} /> Valider
               </Bouton>
             )}
             {statut === "validee" && valideur && (

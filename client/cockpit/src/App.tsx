@@ -9,7 +9,6 @@ import Connexion from "./pages/Connexion";
 import DefinirMotDePasse from "./pages/DefinirMotDePasse";
 import Equipe from "./pages/Equipe";
 import EspaceClient from "./pages/EspaceClient";
-import MessageWhatsApp from "./pages/MessageWhatsApp";
 import MonProfil from "./pages/MonProfil";
 import Factures from "./pages/Factures";
 import Paie from "./pages/Paie";
@@ -72,6 +71,8 @@ export default function App() {
   // Ancienne adresse de la page commune Clients et collaborateurs
   useEffect(() => {
     if (chemin === "/reglages/equipe") naviguer("/reglages/collaborateurs", { remplacer: true });
+    // Le message WhatsApp se configure maintenant dans une fenêtre de la page Cabinets
+    if (chemin === "/reglages/whatsapp") naviguer("/cabinets?whatsapp=1", { remplacer: true });
   }, [chemin]);
 
   useEffect(() => {
@@ -88,7 +89,6 @@ export default function App() {
       "/validation": "Validation",
       "/recap": "Récap mensuel",
       "/cabinets": "Cabinets",
-      "/reglages/whatsapp": "Message WhatsApp",
     };
     const t = titres[chemin] ?? (chemin.startsWith("/espace-client") ? "Espace client" : undefined);
     document.title = t ? `${t} – Cockpit` : "Cockpit – Central Test Agency";
@@ -121,9 +121,8 @@ export default function App() {
   else if (chemin === "/profil") page = <MonProfil moi={moi} onMisAJour={recharger} />;
   else if (chemin === "/validation") page = <Validation />;
   else if (chemin === "/recap") page = <RecapMensuel moi={moi} />;
-  else if (chemin === "/cabinets") page = <Cabinets />;
+  else if (chemin === "/cabinets") page = <Cabinets moi={moi} />;
   else if (chemin === "/espace-client" || chemin.startsWith("/espace-client/")) page = <EspaceClient key={chemin} chemin={chemin} />;
-  else if (chemin === "/reglages/whatsapp") page = <MessageWhatsApp />;
   else if (chemin === "/aucun-acces") page = <Bientot titre="Aucun onglet activé" description="Votre compte n'a accès à aucune page de Cockpit pour l'instant. Demandez au Founder, à un Co-Founder ou à un QA Manager d'activer vos onglets." />;
   else page = <Bientot titre="Page introuvable" description="Cette adresse ne correspond à aucune page de Cockpit." />;
 

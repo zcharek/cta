@@ -31,7 +31,6 @@ const NAVIGATION: Groupe[] = [
     liens: [
       { chemin: "/reglages/clients", libelle: "Clients", icone: "batiment", onglet: "clients" },
       { chemin: "/reglages/collaborateurs", libelle: "Collaborateurs", icone: "equipe", onglet: "collaborateurs" },
-      { chemin: "/reglages/whatsapp", libelle: "Message WhatsApp", icone: "message", onglet: "whatsapp" },
     ],
   },
 ];

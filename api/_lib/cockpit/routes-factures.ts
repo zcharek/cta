@@ -38,6 +38,7 @@ async function calculer(clientId: string, m: string, tauxTva: number) {
   const [[client], [jours]] = await Promise.all([
     sql`
       SELECT id, nom, COALESCE(raison_sociale_facture, raison_sociale, nom) AS raison_sociale, adresse, rc, nif,
+        COALESCE(raison_sociale, nom) AS raison_sociale_timesheet, numero_contrat,
         tjm_dzd, forfait_mensuel_dzd, jours_forfait
       FROM clients WHERE id = ${clientId}`,
     sql`
@@ -52,6 +53,23 @@ async function calculer(clientId: string, m: string, tauxTva: number) {
     WHERE t.client_id = ${clientId} AND s.statut <> 'validee' AND t.jour BETWEEN ${debut}::date AND ${fin}::date`;
   const montants = calculerFacture(client as never, jours!.valides, tauxTva);
   return { client, debut, fin, jours: jours!.valides as number, joursNonValides: nonValides!.jours as number, ...montants };
+}
+
+type Calcul = Awaited<ReturnType<typeof calculer>>;
+
+/** Tout ce qui est imprimé sur la facture (copie figée à l'émission ; aussi utilisé pour l'aperçu). */
+function donneesFacture(numero: string, dateEmission: string, entreprise: Entreprise, c: Calcul, tva: number): DonneesFacture {
+  return {
+    numero,
+    date_emission: dateEmission,
+    entreprise,
+    client: { raison_sociale: c.client.raison_sociale, adresse: c.client.adresse, rc: c.client.rc, nif: c.client.nif },
+    ligne: { designation: "Prestation de service", debut: c.debut, fin: c.fin, unite: "Jour", quantite: c.jours, pu: c.pu, montant: c.ht },
+    tva_taux: tva,
+    montant_ht: c.ht,
+    montant_tva: c.tva,
+    montant_ttc: c.ttc,
+  };
 }
 
 export function routesFactures(r: Routeur) {
@@ -83,10 +101,13 @@ export function routesFactures(r: Routeur) {
     const calcul = await calculer(clientId, m, facturation.tva);
     const annee = Number(dateEmission.slice(0, 4));
     const existantes = await sql`SELECT annee, numero FROM factures WHERE client_id = ${clientId} AND mois = ${m} ORDER BY numero`;
+    const numero = numeroFacture(await prochainNumero(annee, facturation), annee);
     return json({
       ...calcul,
+      // Aperçu PDF : rien n'est enregistré, aucun numéro n'est consommé
+      donnees: entreprise ? donneesFacture(`${numero} (aperçu)`, dateEmission, entreprise, calcul, facturation.tva) : null,
       tva_taux: facturation.tva,
-      numero: numeroFacture(await prochainNumero(annee, facturation), annee),
+      numero,
       dejaFacture: existantes.map((f) => numeroFacture(f.numero, f.annee)),
       entrepriseIncomplete: !entreprise?.nif || !entreprise?.rib,
     });
@@ -110,17 +131,7 @@ export function routesFactures(r: Routeur) {
     // Le numéro est attribué au moment de l'enregistrement ; en cas d'émission simultanée, on prend le suivant.
     for (let essai = 0; essai < 3; essai++) {
       const numero = await prochainNumero(annee, facturation);
-      const donnees: DonneesFacture = {
-        numero: numeroFacture(numero, annee),
-        date_emission: dateEmission,
-        entreprise,
-        client: { raison_sociale: c.client.raison_sociale, adresse: c.client.adresse, rc: c.client.rc, nif: c.client.nif },
-        ligne: { designation: "Prestation de service", debut: c.debut, fin: c.fin, unite: "Jour", quantite: c.jours, pu: c.pu, montant: c.ht },
-        tva_taux: facturation.tva,
-        montant_ht: c.ht,
-        montant_tva: c.tva,
-        montant_ttc: c.ttc,
-      };
+      const donnees = donneesFacture(numeroFacture(numero, annee), dateEmission, entreprise, c, facturation.tva);
       try {
         const [f] = await sql`
           INSERT INTO factures (annee, numero, client_id, mois, date_emission, jours, montant_ht, montant_tva, montant_ttc, donnees, cree_par)
