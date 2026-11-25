@@ -1,0 +1,211 @@
+import { bornesMois, aujourdhui } from "../../../shared/cockpit.js";
+import { calculerFacture, lireNumeroFacture, numeroFacture, type DonneesFacture, type Entreprise } from "../../../shared/facture.js";
+import { HttpError, json, readBody, uuid } from "../web.js";
+import { sql } from "./db.js";
+import type { Routeur } from "./router.js";
+import { exigerOnglet } from "./session.js";
+
+type Facturation = { tva: number; derniere: { numero: number; annee: number } | null };
+
+const MOIS_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+function mois(v: unknown): string {
+  if (typeof v !== "string" || !MOIS_RE.test(v)) throw new HttpError(400, "Mois attendu au format aaaa-mm.");
+  return v;
+}
+
+function dateIso(v: unknown, quoi: string): string {
+  if (typeof v !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(v) || new Date(`${v}T12:00:00Z`).toISOString().slice(0, 10) !== v) throw new HttpError(400, `${quoi} invalide.`);
+  return v;
+}
+
+async function parametres(): Promise<{ facturation: Facturation; entreprise: Entreprise }> {
+  const rows = await sql`SELECT cle, valeur FROM parametres WHERE cle IN ('facturation', 'entreprise')`;
+  const v = Object.fromEntries(rows.map((r) => [r.cle, r.valeur]));
+  return { facturation: v.facturation ?? { tva: 19, derniere: null }, entreprise: v.entreprise };
+}
+
+/** Prochain numéro de l'année : après la dernière facture de Cockpit et la dernière envoyée avant Cockpit. */
+async function prochainNumero(annee: number, f: Facturation): Promise<number> {
+  const [r] = await sql`SELECT COALESCE(max(numero), 0)::int AS max FROM factures WHERE annee = ${annee}`;
+  const avant = f.derniere?.annee === annee ? f.derniere.numero : 0;
+  return Math.max(r!.max, avant) + 1;
+}
+
+/** Client, jours validés du mois et montants : base de l'aperçu et de la facture émise. */
+async function calculer(clientId: string, m: string, tauxTva: number) {
+  const { debut, fin } = bornesMois(`${m}-01`);
+  const [[client], [jours]] = await Promise.all([
+    sql`
+      SELECT id, nom, COALESCE(raison_sociale_facture, raison_sociale, nom) AS raison_sociale, adresse, rc, nif,
+        tjm_dzd, forfait_mensuel_dzd, jours_forfait
+      FROM clients WHERE id = ${clientId}`,
+    sql`
+      SELECT COALESCE(sum(t.valeur), 0)::float8 AS valides
+      FROM temps t JOIN semaines s ON s.id = t.semaine_id
+      WHERE t.client_id = ${clientId} AND s.statut = 'validee' AND t.jour BETWEEN ${debut}::date AND ${fin}::date`,
+  ]);
+  if (!client) throw new HttpError(404, "Client introuvable.");
+  const [nonValides] = await sql`
+    SELECT COALESCE(sum(t.valeur), 0)::float8 AS jours
+    FROM temps t JOIN semaines s ON s.id = t.semaine_id
+    WHERE t.client_id = ${clientId} AND s.statut <> 'validee' AND t.jour BETWEEN ${debut}::date AND ${fin}::date`;
+  const montants = calculerFacture(client as never, jours!.valides, tauxTva);
+  return { client, debut, fin, jours: jours!.valides as number, joursNonValides: nonValides!.jours as number, ...montants };
+}
+
+export function routesFactures(r: Routeur) {
+  r.ajouter("GET", "factures", async ({ req }) => {
+    await exigerOnglet(req, "factures");
+    const { facturation } = await parametres();
+    const annee = Number(aujourdhui().slice(0, 4));
+    const factures = await sql`
+      SELECT f.id, f.annee, f.numero, f.mois, f.date_emission::text AS date_emission, f.jours::float8 AS jours,
+        f.montant_ht::float8 AS montant_ht, f.montant_tva::float8 AS montant_tva, f.montant_ttc::float8 AS montant_ttc,
+        f.donnees->'client'->>'raison_sociale' AS client, c.nom AS client_nom, f.client_id, p.nom AS cree_par, f.cree_le::text AS cree_le,
+        f.numero = (SELECT max(numero) FROM factures x WHERE x.annee = f.annee) AS derniere
+      FROM factures f JOIN clients c ON c.id = f.client_id LEFT JOIN profils p ON p.id = f.cree_par
+      ORDER BY f.annee DESC, f.numero DESC`;
+    return json({
+      factures: factures.map((f) => ({ ...f, numero_affiche: numeroFacture(f.numero, f.annee) })),
+      tva: facturation.tva,
+      derniereHorsCockpit: facturation.derniere ? numeroFacture(facturation.derniere.numero, facturation.derniere.annee) : null,
+      prochain: numeroFacture(await prochainNumero(annee, facturation), annee),
+    });
+  });
+
+  r.ajouter("GET", "factures/apercu", async ({ req, url }) => {
+    await exigerOnglet(req, "factures");
+    const clientId = uuid(url.searchParams.get("client"), "Client");
+    const m = mois(url.searchParams.get("mois"));
+    const dateEmission = url.searchParams.get("date") ? dateIso(url.searchParams.get("date"), "Date d'émission") : aujourdhui();
+    const { facturation, entreprise } = await parametres();
+    const calcul = await calculer(clientId, m, facturation.tva);
+    const annee = Number(dateEmission.slice(0, 4));
+    const existantes = await sql`SELECT annee, numero FROM factures WHERE client_id = ${clientId} AND mois = ${m} ORDER BY numero`;
+    return json({
+      ...calcul,
+      tva_taux: facturation.tva,
+      numero: numeroFacture(await prochainNumero(annee, facturation), annee),
+      dejaFacture: existantes.map((f) => numeroFacture(f.numero, f.annee)),
+      entrepriseIncomplete: !entreprise?.nif || !entreprise?.rib,
+    });
+  });
+
+  r.ajouter("POST", "factures", async ({ req }) => {
+    const moi = await exigerOnglet(req, "factures");
+    const b = await readBody<Record<string, unknown>>(req);
+    const clientId = uuid(b.clientId, "Client");
+    const m = mois(b.mois);
+    const dateEmission = dateIso(b.dateEmission, "Date d'émission");
+    const { facturation, entreprise } = await parametres();
+    if (!entreprise) throw new HttpError(500, "Identité de l'entreprise non configurée (paramètre « entreprise »).");
+    const c = await calculer(clientId, m, facturation.tva);
+    if (c.jours <= 0) throw new HttpError(409, "Aucun jour validé pour ce client sur ce mois : rien à facturer.");
+    const existantes = await sql`SELECT annee, numero FROM factures WHERE client_id = ${clientId} AND mois = ${m}`;
+    if (existantes.length && b.confirmerDoublon !== true)
+      throw new HttpError(409, `Ce mois est déjà facturé à ce client (facture ${existantes.map((f) => numeroFacture(f.numero, f.annee)).join(", ")}).`);
+
+    const annee = Number(dateEmission.slice(0, 4));
+    // Le numéro est attribué au moment de l'enregistrement ; en cas d'émission simultanée, on prend le suivant.
+    for (let essai = 0; essai < 3; essai++) {
+      const numero = await prochainNumero(annee, facturation);
+      const donnees: DonneesFacture = {
+        numero: numeroFacture(numero, annee),
+        date_emission: dateEmission,
+        entreprise,
+        client: { raison_sociale: c.client.raison_sociale, adresse: c.client.adresse, rc: c.client.rc, nif: c.client.nif },
+        ligne: { designation: "Prestation de service", debut: c.debut, fin: c.fin, unite: "Jour", quantite: c.jours, pu: c.pu, montant: c.ht },
+        tva_taux: facturation.tva,
+        montant_ht: c.ht,
+        montant_tva: c.tva,
+        montant_ttc: c.ttc,
+      };
+      try {
+        const [f] = await sql`
+          INSERT INTO factures (annee, numero, client_id, mois, date_emission, jours, montant_ht, montant_tva, montant_ttc, donnees, cree_par)
+          VALUES (${annee}, ${numero}, ${clientId}, ${m}, ${dateEmission}, ${c.jours}, ${c.ht}, ${c.tva}, ${c.ttc}, ${JSON.stringify(donnees)}::jsonb, ${moi.id})
+          RETURNING id`;
+        return json({ id: f!.id, donnees }, { status: 201 });
+      } catch (err) {
+        if ((err as { code?: string }).code !== "23505") throw err;
+      }
+    }
+    throw new HttpError(409, "Numéro de facture déjà pris : réessayez.");
+  });
+
+  r.ajouter("GET", "factures/:id", async ({ req, params }) => {
+    await exigerOnglet(req, "factures");
+    const [f] = await sql`SELECT donnees FROM factures WHERE id = ${uuid(params.id, "Facture")}`;
+    if (!f) throw new HttpError(404, "Facture introuvable.");
+    return json({ donnees: f.donnees });
+  });
+
+  // Seule la dernière facture de l'année peut être supprimée : la numérotation reste continue.
+  r.ajouter("DELETE", "factures/:id", async ({ req, params }) => {
+    await exigerOnglet(req, "factures");
+    const id = uuid(params.id, "Facture");
+    const [f] = await sql`SELECT annee, numero FROM factures WHERE id = ${id}`;
+    if (!f) throw new HttpError(404, "Facture introuvable.");
+    const [{ max }] = (await sql`SELECT max(numero)::int AS max FROM factures WHERE annee = ${f.annee}`) as [{ max: number }];
+    if (f.numero !== max) throw new HttpError(409, "Seule la dernière facture émise peut être supprimée, pour garder une numérotation continue.");
+    await sql`DELETE FROM factures WHERE id = ${id}`;
+    return json({ ok: true });
+  });
+
+  r.ajouter("PUT", "parametres/facturation", async ({ req }) => {
+    await exigerOnglet(req, "factures");
+    const b = await readBody<{ derniere?: unknown; tva?: unknown }>(req);
+    const { facturation } = await parametres();
+    let derniere = facturation.derniere;
+    if (b.derniere !== undefined) {
+      if (b.derniere === null || b.derniere === "") derniere = null;
+      else {
+        derniere = typeof b.derniere === "string" ? lireNumeroFacture(b.derniere) : null;
+        if (!derniere) throw new HttpError(400, "Numéro attendu au format 012-26.");
+      }
+    }
+    let tva = facturation.tva;
+    if (b.tva !== undefined) {
+      tva = typeof b.tva === "number" ? b.tva : Number(String(b.tva).replace(",", "."));
+      if (!Number.isFinite(tva) || tva < 0 || tva > 100) throw new HttpError(400, "Taux de TVA invalide.");
+    }
+    await sql`
+      INSERT INTO parametres (cle, valeur) VALUES ('facturation', ${JSON.stringify({ tva, derniere })}::jsonb)
+      ON CONFLICT (cle) DO UPDATE SET valeur = EXCLUDED.valeur`;
+    return json({ ok: true });
+  });
+
+  // Identité légale de l'entreprise (en-tête des factures et bulletins) : saisie dans Cockpit, jamais versionnée.
+  r.ajouter("GET", "parametres/entreprise", async ({ req }) => {
+    await exigerOnglet(req, "factures", "paie");
+    return json({ entreprise: (await parametres()).entreprise });
+  });
+
+  r.ajouter("PUT", "parametres/entreprise", async ({ req }) => {
+    await exigerOnglet(req, "factures");
+    const b = await readBody<Record<string, unknown>>(req);
+    const champ = (cle: string, max = 120) => {
+      const v = typeof b[cle] === "string" ? (b[cle] as string).trim() : "";
+      if (v.length > max) throw new HttpError(400, `${cle} : ${max} caractères maximum.`);
+      return v;
+    };
+    const maj = {
+      raison_sociale: champ("raison_sociale") || "SARL CENTRAL TEST APPLICATION",
+      siege: champ("siege", 200),
+      rc: champ("rc", 60),
+      nif: champ("nif", 60),
+      nis: champ("nis", 60),
+      ai: champ("ai", 60),
+      rib: champ("rib", 80),
+      banque: champ("banque"),
+      email: champ("email"),
+      ville: champ("ville", 60) || "Alger",
+    };
+    // On garde les autres clés (ex. N° adhérent, saisi depuis les bulletins de paie)
+    await sql`
+      INSERT INTO parametres (cle, valeur) VALUES ('entreprise', ${JSON.stringify(maj)}::jsonb)
+      ON CONFLICT (cle) DO UPDATE SET valeur = parametres.valeur || EXCLUDED.valeur`;
+    return json({ ok: true });
+  });
+}

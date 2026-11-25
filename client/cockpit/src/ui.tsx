@@ -35,21 +35,42 @@ export function Carte({ className, children, ...p }: { className?: string; child
 }
 
 export const classeChamp =
-  "w-full rounded-[10px] border border-ck-bordure bg-ck-surface px-3.5 py-2.5 text-ck-texte placeholder:text-ck-texte-2 focus:border-ck-orange focus:outline-none focus:ring-1 focus:ring-ck-orange";
+  "w-full rounded-xl border border-transparent bg-[var(--ck-champ)] px-3.5 py-2.5 text-ck-texte placeholder:text-[#9aa3b8] transition focus:border-ck-orange focus:bg-ck-surface focus:outline-none focus:ring-2 focus:ring-[#dc5a2e]/20 read-only:text-ck-texte-2";
 
-export function Champ({ libelle, aide, className, ...p }: InputHTMLAttributes<HTMLInputElement> & { libelle: string; aide?: string }) {
+export function Champ({ libelle, aide, className, icone, ...p }: InputHTMLAttributes<HTMLInputElement> & { libelle: string; aide?: string; icone?: string }) {
   const id = useId();
   return (
     <div className={className}>
       <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-ck-titre">
         {libelle}
       </label>
-      <input id={id} {...p} aria-describedby={aide ? `${id}-aide` : undefined} className={classeChamp} />
+      <div className="relative">
+        {icone && <Icone nom={icone} taille={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ck-texte-2" />}
+        <input id={id} {...p} aria-describedby={aide ? `${id}-aide` : undefined} className={cx(classeChamp, icone && "pl-11")} />
+      </div>
       {aide && (
         <p id={`${id}-aide`} className="mt-1 text-xs text-ck-texte-2">
           {aide}
         </p>
       )}
+    </div>
+  );
+}
+
+/** En-tête de carte : icône, titre, sous-titre et action facultative. */
+export function EnteteSection({ icone, titre, sousTitre, action, id, sombre = false }: { icone: string; titre: string; sousTitre?: string; action?: ReactNode; id?: string; sombre?: boolean }) {
+  return (
+    <div className="mb-5 flex items-start gap-3.5">
+      <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl", sombre ? "bg-white/10 text-ck-orange" : "bg-[#eef2fb] text-ck-titre")}>
+        <Icone nom={icone} taille={20} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h2 id={id} className={cx("ck-titre text-lg leading-tight", sombre && "!text-white")}>
+          {titre}
+        </h2>
+        {sousTitre && <p className={cx("mt-0.5 text-sm", sombre ? "text-white/70" : "text-ck-texte-2")}>{sousTitre}</p>}
+      </div>
+      {action}
     </div>
   );
 }
@@ -217,6 +238,53 @@ const ICONES: Record<string, ReactNode> = {
       <path d="M4 21a8 8 0 0 1 16 0" />
     </>
   ),
+  facture: (
+    <>
+      <path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z" />
+      <path d="M9 8h6M9 12h6M9 16h3" />
+    </>
+  ),
+  lieu: (
+    <>
+      <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <path d="m4 7 8 6 8-6" />
+    </>
+  ),
+  telephone: <path d="M5 3h3.5l1.7 4.3-2.2 1.5a11 11 0 0 0 6.2 6.2l1.5-2.2L20 14.5V18a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />,
+  cadenas: (
+    <>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
+      <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  bouclier: (
+    <>
+      <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z" />
+      <path d="m9 12 2.2 2.2L15.5 10" />
+    </>
+  ),
+  crayon: <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z" />,
+  coche: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5.5M12 7.6v.4" />
+    </>
+  ),
+  identite: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <circle cx="9" cy="11" r="2.2" />
+      <path d="M5.8 16a3.4 3.4 0 0 1 6.4 0M14.5 10h4M14.5 13.5h3" />
+    </>
+  ),
+  banque: <path d="M3 9.5 12 4l9 5.5M5 10v7M9.5 10v7M14.5 10v7M19 10v7M3 20h18" />,
   batiment: <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4" />,
 };
 

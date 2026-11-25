@@ -38,12 +38,24 @@ export type Collaborateur = {
   /** Onglets effectifs (ceux de son type, sauf choix particulier). */
   onglets: Onglet[];
   onglets_personnalises: boolean;
-} & Coordonnees;
+  nin_renseigne: boolean;
+  ss_renseigne: boolean;
+  compte_renseigne: boolean;
+} & Omit<Coordonnees, "nin" | "numero_ss" | "numero_compte">;
 
 export type ClientAdmin = {
   id: string;
   nom: string;
   tjm_dzd: number;
+  raison_sociale: string | null;
+  adresse: string | null;
+  numero_contrat: string | null;
+  mission: string | null;
+  forfait_mensuel_dzd: number | null;
+  jours_forfait: number;
+  raison_sociale_facture: string | null;
+  rc: string | null;
+  nif: string | null;
   actif: boolean;
   profil_ids: string[];
   jours_mois: number;

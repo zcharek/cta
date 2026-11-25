@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { MOT_DE_PASSE_MIN, aujourdhui } from "../../../shared/cockpit.js";
+import { MOT_DE_PASSE_MIN, aujourdhui, normaliserNin } from "../../../shared/cockpit.js";
 import { HttpError, json, readBody } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
@@ -34,13 +34,21 @@ function dateNaissance(v: unknown): string | null {
   return d;
 }
 
+function nin(v: unknown): string | null {
+  const t = facultatif(v, "NIN", 40);
+  if (!t) return null;
+  const n = normaliserNin(t);
+  if (!n) throw new HttpError(400, "NIN invalide : 18 chiffres attendus.");
+  return n;
+}
+
 // « Mon profil » : chacun consulte et modifie ses propres coordonnées et son mot de passe.
 // Le type, les onglets et l'e-mail (identifiant de connexion) restent gérés dans Collaborateurs.
 export function routesProfil(r: Routeur) {
   r.ajouter("GET", "profil", async ({ req }) => {
     const moi = await exigerProfil(req);
     const [p] = await sql`
-      SELECT nom, email, role, date_naissance::text AS date_naissance, lieu_naissance, telephone, adresse, ville, wilaya,
+      SELECT nom, email, role, date_naissance::text AS date_naissance, lieu_naissance, nationalite, nin, telephone, adresse, ville, wilaya, situation_familiale, numero_ss, numero_compte,
         mot_de_passe_le::text AS mot_de_passe_le
       FROM profils WHERE id = ${moi.id}`;
     return json({ profil: p });
@@ -55,10 +63,27 @@ export function routesProfil(r: Routeur) {
     const maj = {
       date_naissance: lire("date_naissance", dateNaissance),
       lieu_naissance: lire("lieu_naissance", (v) => facultatif(v, "Lieu de naissance", 120)),
+      nationalite: lire("nationalite", (v) => facultatif(v, "Nationalité", 60)),
+      nin: lire("nin", nin),
       telephone: lire("telephone", telephone),
       adresse: lire("adresse", (v) => facultatif(v, "Adresse", 300)),
       ville: lire("ville", (v) => facultatif(v, "Ville", 120)),
       wilaya: lire("wilaya", (v) => facultatif(v, "Wilaya", 60)),
+      situation_familiale: lire("situation_familiale", (v) => {
+        const s = facultatif(v, "Situation familiale", 1);
+        if (s && !["C", "M", "D", "V"].includes(s)) throw new HttpError(400, "Situation familiale invalide.");
+        return s;
+      }),
+      numero_ss: lire("numero_ss", (v) => {
+        const s = facultatif(v, "N° de sécurité sociale", 30);
+        if (s && !/^[0-9 ]{8,30}$/.test(s)) throw new HttpError(400, "N° de sécurité sociale invalide : chiffres uniquement.");
+        return s;
+      }),
+      numero_compte: lire("numero_compte", (v) => {
+        const s = facultatif(v, "N° de compte", 40);
+        if (s && !/^[0-9 ]{8,40}$/.test(s)) throw new HttpError(400, "N° de compte invalide : chiffres uniquement (RIP ou RIB).");
+        return s;
+      }),
     };
     const change = (k: keyof typeof maj) => maj[k] !== undefined;
     await sql`
@@ -66,10 +91,15 @@ export function routesProfil(r: Routeur) {
         nom = COALESCE(${nom}, nom),
         date_naissance = CASE WHEN ${change("date_naissance")}::boolean THEN ${maj.date_naissance ?? null}::date ELSE date_naissance END,
         lieu_naissance = CASE WHEN ${change("lieu_naissance")}::boolean THEN ${maj.lieu_naissance ?? null} ELSE lieu_naissance END,
+        nationalite = CASE WHEN ${change("nationalite")}::boolean THEN ${maj.nationalite ?? null} ELSE nationalite END,
+        nin = CASE WHEN ${change("nin")}::boolean THEN ${maj.nin ?? null} ELSE nin END,
         telephone = CASE WHEN ${change("telephone")}::boolean THEN ${maj.telephone ?? null} ELSE telephone END,
         adresse = CASE WHEN ${change("adresse")}::boolean THEN ${maj.adresse ?? null} ELSE adresse END,
         ville = CASE WHEN ${change("ville")}::boolean THEN ${maj.ville ?? null} ELSE ville END,
-        wilaya = CASE WHEN ${change("wilaya")}::boolean THEN ${maj.wilaya ?? null} ELSE wilaya END
+        wilaya = CASE WHEN ${change("wilaya")}::boolean THEN ${maj.wilaya ?? null} ELSE wilaya END,
+        situation_familiale = CASE WHEN ${change("situation_familiale")}::boolean THEN ${maj.situation_familiale ?? null} ELSE situation_familiale END,
+        numero_ss = CASE WHEN ${change("numero_ss")}::boolean THEN ${maj.numero_ss ?? null} ELSE numero_ss END,
+        numero_compte = CASE WHEN ${change("numero_compte")}::boolean THEN ${maj.numero_compte ?? null} ELSE numero_compte END
       WHERE id = ${moi.id}`;
     return json({ ok: true });
   });

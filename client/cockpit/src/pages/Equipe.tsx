@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ONGLETS, ONGLET_LABEL, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
-import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille } from "../ui";
+import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
 
 type Donnees = { clients: ClientAdmin[]; collaborateurs: Collaborateur[] };
 
@@ -45,6 +45,7 @@ function Cases({ legende, options, choisis, onChange, vide }: { legende: string;
 function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { client: ClientAdmin | "nouveau"; collaborateurs: Collaborateur[]; onFermer: () => void; onEnregistre: () => void }) {
   const existant = client === "nouveau" ? null : client;
   const [equipe, setEquipe] = useState<string[]>(existant?.profil_ids ?? []);
+  const [forfait, setForfait] = useState(!!existant?.forfait_mensuel_dzd);
   const [erreur, setErreur] = useState("");
   const [occupe, setOccupe] = useState(false);
 
@@ -64,7 +65,18 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
   function soumettre(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
-    void envoyer({ nom: f.nom, tjmDzd: f.tjm, profilIds: equipe });
+    void envoyer({
+      nom: f.nom,
+      ...(forfait ? { forfaitMensuelDzd: f.forfait, joursForfait: f.joursForfait } : { tjmDzd: f.tjm, forfaitMensuelDzd: null }),
+      raisonSociale: f.raisonSociale,
+      adresse: f.adresse,
+      numeroContrat: f.numeroContrat,
+      mission: f.mission,
+      raisonSocialeFacture: f.raisonSocialeFacture,
+      rc: f.rc,
+      nif: f.nif,
+      profilIds: equipe,
+    });
   }
 
   return (
@@ -90,7 +102,42 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
     >
       <form id="form-client" onSubmit={soumettre} className="grid gap-5">
         <Champ libelle="Nom du client" name="nom" required maxLength={120} defaultValue={existant?.nom} autoFocus />
-        <Champ libelle="TJM (DZD par jour)" name="tjm" required inputMode="numeric" pattern="[0-9 ]+" defaultValue={existant?.tjm_dzd ?? ""} aide="Montant hors taxes facturé pour une journée." />
+        <fieldset>
+          <legend className="mb-2 text-sm font-semibold text-ck-titre">Tarif</legend>
+          <div className="mb-3 flex gap-2">
+            {[
+              [false, "TJM"],
+              [true, "Forfait mensuel"],
+            ].map(([valeur, libelle]) => (
+              <label key={String(valeur)} className="flex cursor-pointer items-center gap-2 rounded-[10px] border border-ck-bordure px-3 py-2 text-sm has-[:checked]:border-ck-plein has-[:checked]:font-semibold">
+                <input type="radio" name="mode-tarif" checked={forfait === valeur} onChange={() => setForfait(valeur as boolean)} className="accent-[#071538]" />
+                {libelle}
+              </label>
+            ))}
+          </div>
+          {forfait ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Champ libelle="Forfait mensuel (DZD HT)" name="forfait" required inputMode="numeric" pattern="[0-9 ]+" defaultValue={existant?.forfait_mensuel_dzd ?? ""} />
+              <Champ libelle="Jours de référence" name="joursForfait" required inputMode="numeric" pattern="[0-9]+" defaultValue={existant?.jours_forfait ?? 22} aide="Tarif journalier = forfait ÷ ces jours." />
+            </div>
+          ) : (
+            <Champ libelle="TJM (DZD par jour)" name="tjm" required inputMode="numeric" pattern="[0-9 ]+" defaultValue={existant?.tjm_dzd ?? ""} aide="Montant hors taxes facturé pour une journée." />
+          )}
+        </fieldset>
+        <fieldset className="grid gap-4">
+          <legend className="mb-1 text-sm font-semibold text-ck-titre">Timesheet et facture</legend>
+          <Champ libelle="Raison sociale" name="raisonSociale" maxLength={200} defaultValue={existant?.raison_sociale ?? ""} placeholder={existant?.nom ?? "Nom légal du client"} aide="Nom affiché sur le timesheet. Vide : le nom du client." />
+          <ZoneTexte libelle="Adresse" name="adresse" rows={2} maxLength={300} defaultValue={existant?.adresse ?? ""} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Champ libelle="Contrat N°" name="numeroContrat" maxLength={80} defaultValue={existant?.numero_contrat ?? ""} placeholder="N°2025-09-XXXX" />
+            <Champ libelle="Projet / mission" name="mission" maxLength={200} defaultValue={existant?.mission ?? ""} aide="Facultatif." />
+          </div>
+          <Champ libelle="Raison sociale sur la facture" name="raisonSocialeFacture" maxLength={200} defaultValue={existant?.raison_sociale_facture ?? ""} placeholder="SARL …" aide="Vide : la raison sociale ci-dessus." />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Champ libelle="RC" name="rc" maxLength={60} defaultValue={existant?.rc ?? ""} placeholder="16/00-0000000 B 00" />
+            <Champ libelle="NIF" name="nif" maxLength={60} defaultValue={existant?.nif ?? ""} inputMode="numeric" />
+          </div>
+        </fieldset>
         <Cases legende="Collaborateurs assignés" options={collaborateurs.filter((c) => c.actif)} choisis={equipe} onChange={setEquipe} vide="Aucun collaborateur pour l'instant." />
         {erreur && <Erreur>{erreur}</Erreur>}
       </form>
@@ -382,7 +429,16 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-lg font-bold text-ck-titre">{c.nom}</p>
                         <p className="text-sm text-ck-texte-2">
-                          <span className="font-semibold text-ck-texte">{formatDzd(c.tjm_dzd)}</span> / jour · {jours(c.jours_mois)} ce mois
+                          {c.forfait_mensuel_dzd ? (
+                            <>
+                              <span className="font-semibold text-ck-texte">{formatDzd(c.forfait_mensuel_dzd)}</span> / mois ({c.jours_forfait} j)
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-semibold text-ck-texte">{formatDzd(c.tjm_dzd)}</span> / jour
+                            </>
+                          )}{" "}
+                          · {jours(c.jours_mois)} ce mois
                         </p>
                       </div>
                     </div>
@@ -423,9 +479,9 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                     </div>
                     <p className="truncate text-sm text-ck-texte-2">{[c.email, c.telephone].filter(Boolean).join(" · ")}</p>
                     {(c.adresse || c.ville || c.wilaya) && <p className="truncate text-sm text-ck-texte-2">{[c.adresse, c.ville, c.wilaya].filter(Boolean).join(", ")}</p>}
-                    {c.statut === "actif" && coordonneesManquantes(c).length > 0 && (
-                      <p className="mt-1 text-xs font-semibold text-ck-orange-texte" title={`Manque : ${coordonneesManquantes(c).join(", ")}`}>
-                        Coordonnées incomplètes ({coordonneesManquantes(c).length} {coordonneesManquantes(c).length > 1 ? "champs manquants" : "champ manquant"})
+                    {c.statut === "actif" && coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length > 0 && (
+                      <p className="mt-1 text-xs font-semibold text-ck-orange-texte" title={`Manque : ${coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).join(", ")}`}>
+                        Coordonnées incomplètes ({coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length} {coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length > 1 ? "champs manquants" : "champ manquant"})
                       </p>
                     )}
                     <p className="mt-1 text-sm text-ck-texte-2">

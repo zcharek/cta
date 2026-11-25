@@ -11,6 +11,8 @@ import Equipe from "./pages/Equipe";
 import EspaceClient from "./pages/EspaceClient";
 import MessageWhatsApp from "./pages/MessageWhatsApp";
 import MonProfil from "./pages/MonProfil";
+import Factures from "./pages/Factures";
+import Paie from "./pages/Paie";
 import RecapMensuel from "./pages/Recap";
 import Saisie from "./pages/Saisie";
 import Validation from "./pages/Validation";
@@ -81,6 +83,8 @@ export default function App() {
       "/reglages/clients": "Clients",
       "/reglages/collaborateurs": "Collaborateurs",
       "/profil": "Mon profil",
+      "/factures": "Factures",
+      "/paie": "Bulletins de paie",
       "/validation": "Validation",
       "/recap": "Récap mensuel",
       "/cabinets": "Cabinets",
@@ -112,9 +116,11 @@ export default function App() {
   else if (chemin === "/saisie") page = <Saisie moi={moi} />;
   else if (chemin === "/reglages/clients") page = <Equipe key="clients" moi={moi} vue="clients" />;
   else if (chemin === "/reglages/collaborateurs") page = <Equipe key="collaborateurs" moi={moi} vue="collaborateurs" />;
+  else if (chemin === "/factures") page = <Factures />;
+  else if (chemin === "/paie") page = <Paie />;
   else if (chemin === "/profil") page = <MonProfil moi={moi} onMisAJour={recharger} />;
   else if (chemin === "/validation") page = <Validation />;
-  else if (chemin === "/recap") page = <RecapMensuel />;
+  else if (chemin === "/recap") page = <RecapMensuel moi={moi} />;
   else if (chemin === "/cabinets") page = <Cabinets />;
   else if (chemin === "/espace-client" || chemin.startsWith("/espace-client/")) page = <EspaceClient key={chemin} chemin={chemin} />;
   else if (chemin === "/reglages/whatsapp") page = <MessageWhatsApp />;

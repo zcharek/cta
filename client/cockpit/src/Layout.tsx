@@ -18,6 +18,13 @@ const NAVIGATION: Groupe[] = [
       { chemin: "/recap", libelle: "Récap mensuel", icone: "graphique", onglet: "recap" },
     ],
   },
+  {
+    titre: "Facturation et paie",
+    liens: [
+      { chemin: "/factures", libelle: "Factures", icone: "facture", onglet: "factures" },
+      { chemin: "/paie", libelle: "Bulletins de paie", icone: "document", onglet: "paie" },
+    ],
+  },
   { titre: "Espace client", liens: [{ chemin: "/espace-client", libelle: "Clients et questionnaires", icone: "document", onglet: "espace_client" }] },
   {
     titre: "Réglages",

@@ -40,7 +40,7 @@ export function gereLesAcces(p: { role: Role; actif: boolean } | null | undefine
 }
 
 /** Onglets de Cockpit, activables utilisateur par utilisateur. */
-export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "espace_client", "clients", "collaborateurs", "whatsapp"] as const;
+export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "factures", "paie", "espace_client", "clients", "collaborateurs", "whatsapp"] as const;
 export type Onglet = (typeof ONGLETS)[number];
 
 export const ONGLET_LABEL: Record<Onglet, string> = {
@@ -49,6 +49,8 @@ export const ONGLET_LABEL: Record<Onglet, string> = {
   saisie: "Saisie des temps",
   validation: "Validation des temps",
   recap: "Récap mensuel",
+  factures: "Factures",
+  paie: "Bulletins de paie",
   espace_client: "Espace client",
   clients: "Clients",
   collaborateurs: "Collaborateurs",
@@ -56,7 +58,10 @@ export const ONGLET_LABEL: Record<Onglet, string> = {
 };
 
 export function ongletsParDefaut(role: Role): Onglet[] {
-  return role === "collaborateur" ? ["saisie"] : [...ONGLETS];
+  if (role === "collaborateur") return ["saisie"];
+  // Les salaires sont confidentiels : pas de bulletins de paie par défaut pour un Assistant.
+  if (role === "assistant") return ONGLETS.filter((o) => o !== "paie");
+  return [...ONGLETS];
 }
 
 /** Onglets effectifs : ceux choisis pour la personne, sinon ceux de son type. Le Founder les a toujours tous. */
@@ -118,24 +123,45 @@ export type Moi = {
 export type Coordonnees = {
   date_naissance: string | null;
   lieu_naissance: string | null;
+  nationalite: string | null;
+  /** Numéro d'identification nationale : 18 chiffres. */
+  nin: string | null;
   telephone: string | null;
   adresse: string | null;
   ville: string | null;
   wilaya: string | null;
+  /** Paie : C, M, D ou V. */
+  situation_familiale: string | null;
+  numero_ss: string | null;
+  numero_compte: string | null;
 };
 
 export const CHAMPS_COORDONNEES: Record<keyof Coordonnees, string> = {
   date_naissance: "date de naissance",
   lieu_naissance: "lieu de naissance",
+  nationalite: "nationalité",
+  nin: "NIN",
   telephone: "téléphone",
   adresse: "adresse",
   ville: "ville",
   wilaya: "wilaya",
+  situation_familiale: "situation familiale",
+  numero_ss: "N° de sécurité sociale",
+  numero_compte: "N° de compte bancaire",
 };
 
 /** Champs encore vides : la fiche doit être complète pour générer un contrat. */
 export function coordonneesManquantes(c: Partial<Coordonnees>): string[] {
   return (Object.keys(CHAMPS_COORDONNEES) as (keyof Coordonnees)[]).filter((k) => !c[k]).map((k) => CHAMPS_COORDONNEES[k]);
+}
+
+/** Situation familiale (bulletin de paie). */
+export const SITUATIONS: Record<string, string> = { C: "Célibataire", M: "Marié(e)", D: "Divorcé(e)", V: "Veuf / veuve" };
+
+/** NIN sans espaces, ou null s'il n'a pas 18 chiffres. */
+export function normaliserNin(v: string): string | null {
+  const n = v.replace(/[\s.-]/g, "");
+  return /^[0-9]{18}$/.test(n) ? n : null;
 }
 
 /** Les 58 wilayas, dans l'ordre de leur code (proposées à la saisie, sans être imposées). */

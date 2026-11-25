@@ -49,6 +49,30 @@ Voir `.env.example`. Aucune clé ne doit être commitée : `.env` est ignoré pa
 - `db/migrations/*.sql` : migrations versionnées de Cockpit. `npm run db:setup` applique, dans l'ordre et dans une transaction, celles qui ne figurent pas encore dans la table `schema_migrations`. **Un changement de schéma = un nouveau fichier**, jamais la modification d'une migration déjà appliquée.
 - **En production, tout est automatique** : le build Vercel lance `node scripts/db-setup.mjs --deploiement` avant `npm run build` (voir `vercel.json`). Les déploiements de preview n'appliquent pas les migrations. Si une migration échoue, le build échoue et la version précédente reste en ligne.
 
+## Timesheet mensuel client
+
+Dans le Récap mensuel (vue « Validées »), le bouton « Timesheet PDF » de chaque client génère dans le navigateur le timesheet au format du modèle AEBS (`shared/timesheet.ts`, pdf-lib chargé à la demande) : client (raison sociale, adresse), prestataire (paramètre `prestataire`), contrat N°, période, consultants avec leurs jours **validés** du mois, tarif journalier de référence et total des jours.
+
+Chaque client se facture au TJM ou au **forfait mensuel** (tarif journalier = forfait ÷ jours de référence, 22 par défaut) ; le récap et la page Aujourd'hui utilisent ce taux. Raison sociale, adresse, numéro de contrat et projet/mission se renseignent dans la fiche client.
+
+## Factures
+
+Page **Factures** (onglet `factures`) : choix du client, du mois et de la date d'émission, aperçu (jours validés, PU, HT, TVA, TTC), puis émission et téléchargement du PDF au format du modèle CTA, avec le logo en haut à gauche (`shared/facture.ts`, `client/public/images/logo-cta-facture.png`). Montant en toutes lettres, TVA réglable (19 % par défaut).
+
+- Numérotation `NNN-AA`, continue par année, après la dernière facture envoyée avant Cockpit (réglage « Numérotation », 012-26 au départ). Le numéro est attribué à l'émission ; seule la dernière facture de l'année peut être supprimée.
+- Chaque facture garde une copie de tout ce qui est imprimé (`factures.donnees`) : on la retélécharge à l'identique, même si la fiche client change.
+- Un deuxième passage sur le même client et le même mois demande confirmation.
+- Identité légale de CTA (RC, NIF, NIS, AI, RIB…) : carte « Identité de l'entreprise » de la page Factures, stockée en base uniquement (paramètre `entreprise`). **Le dépôt est public : aucun identifiant réel (entreprise, clients, salariés) ne doit être versionné**, ni dans les migrations ni dans les tests.
+- RC, NIF, raison sociale de facturation, contrat et forfait du client : fiche client.
+
+## Bulletins de paie
+
+Page **Bulletins de paie** (onglet `paie`, pas activé par défaut pour un Assistant) : on saisit le **net** convenu, Cockpit calcule le brut (`shared/paie.ts`) : sécurité sociale 9 %, IRG barème 2022 (imposable arrondi à la dizaine, abattement 40 % borné à 1 000–1 500 DA, exonération jusqu'à 30 000 DA et lissage jusqu'à 35 000 DA). Exemple vérifié : 80 000,00 net ← 109 730,77 brut.
+
+- À la première génération : N° adhérent CNAS de l'employeur, matricule, fonction, date d'entrée… sont demandés puis enregistrés et repris ensuite.
+- Le salarié renseigne sa situation familiale, son N° de sécurité sociale et son compte bancaire dans « Mon profil ».
+- PDF aux couleurs de CTA, avec le logo. Regénérer un mois remplace son bulletin ; chaque bulletin garde une copie de ce qui est imprimé.
+
 ## Cockpit : accès et sécurité
 
 Cinq types d'utilisateur : **Collaborateur** (par défaut, uniquement sa propre saisie des temps, sans TJM ni montant), **Assistant**, **QA Manager**, **Co-Founder** et **Founder** (accès complet).
@@ -56,7 +80,7 @@ Cinq types d'utilisateur : **Collaborateur** (par défaut, uniquement sa propre 
 - **Founder** : le compte `centraltestagency@gmail.com`, unique. Il a toujours tous les onglets et ne peut être ni archivé, ni changé de type, ni restreint (règle vérifiée par l'API et par la base). Le type Founder ne s'attribue pas depuis l'interface.
 - **Onglets** : chaque personne a les onglets de son type, ou une liste choisie (`profils.onglets`, `NULL` = défaut du type). Seuls le Founder, les Co-Founders et les QA Managers changent les types, les onglets, l'archivage et l'e-mail des autres. Un Assistant peut inviter des Collaborateurs ou Assistants, avec les onglets par défaut.
 - L'API vérifie l'onglet de chaque route (`exigerOnglet`) : Cabinets, Validation (saisie des autres, validation), Récap, Espace client, Clients, Collaborateurs, Message WhatsApp.
-- **Mon profil** (`/cockpit/profil`, menu du compte en haut à droite) : chacun renseigne ses coordonnées nécessaires aux contrats (date et lieu de naissance, téléphone, adresse, ville, wilaya ; `coordonneesManquantes()` signale une fiche incomplète) et change son mot de passe, quels que soient ses onglets. L'e-mail (identifiant de connexion) reste géré dans Collaborateurs. Règles couvertes par `tests/cockpit/onglets.test.ts`.
+- **Mon profil** (`/cockpit/profil`, menu du compte en haut à droite) : chacun renseigne ses coordonnées nécessaires aux contrats (date et lieu de naissance, nationalité, NIN à 18 chiffres, téléphone, adresse, ville, wilaya ; le NIN n'est pas renvoyé dans la liste des collaborateurs ; `coordonneesManquantes()` signale une fiche incomplète) et change son mot de passe, quels que soient ses onglets. L'e-mail (identifiant de connexion) reste géré dans Collaborateurs. Règles couvertes par `tests/cockpit/onglets.test.ts`.
 
 Le navigateur n'accède jamais directement à la base : toutes les données passent par l'API `/api/cockpit/*`, qui vérifie les droits à chaque requête.
 

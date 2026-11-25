@@ -28,6 +28,31 @@ function onglets(v: unknown): Onglet[] {
   return ONGLETS.filter((o) => v.includes(o));
 }
 
+/** Texte facultatif : undefined si absent (inchangé), null si vidé. */
+function optionnel(v: unknown, quoi: string, max: number): string | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null || (typeof v === "string" && !v.trim())) return null;
+  if (typeof v !== "string") throw new HttpError(400, `${quoi} invalide.`);
+  if (v.trim().length > max) throw new HttpError(400, `${quoi} : ${max} caractères maximum.`);
+  return v.trim();
+}
+
+/** Informations de facturation d'un client (timesheet) : undefined = inchangé. */
+function facturation(b: Record<string, unknown>) {
+  return {
+    raisonSociale: optionnel(b.raisonSociale, "Raison sociale", 200),
+    adresse: optionnel(b.adresse, "Adresse", 300),
+    numeroContrat: optionnel(b.numeroContrat, "Numéro de contrat", 80),
+    mission: optionnel(b.mission, "Projet / mission", 200),
+    raisonSocialeFacture: optionnel(b.raisonSocialeFacture, "Raison sociale (facture)", 200),
+    rc: optionnel(b.rc, "RC", 60),
+    nif: optionnel(b.nif, "NIF", 60),
+    // null = facturé au TJM
+    forfait: b.forfaitMensuelDzd === undefined ? undefined : b.forfaitMensuelDzd === null || b.forfaitMensuelDzd === "" ? null : entier(b.forfaitMensuelDzd, "Forfait mensuel", 1),
+    joursForfait: b.joursForfait === undefined ? undefined : entier(b.joursForfait, "Jours du forfait", 1, 31),
+  };
+}
+
 const RESERVE_GESTION = "Seuls le Founder, un Co-Founder ou un QA Manager peuvent changer le type, les onglets ou l'archivage d'un utilisateur.";
 
 /** Remplace la liste des clients d'un collaborateur (seuls les clients actifs sont retenus). */
@@ -67,7 +92,9 @@ export function routesEquipe(r: Routeur) {
     const { debut, fin } = bornesMois(aujourdhui());
     const rows = await sql`
       SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.telephone, p.adresse, p.ville, p.wilaya,
-        p.date_naissance::text AS date_naissance, p.lieu_naissance,
+        p.date_naissance::text AS date_naissance, p.lieu_naissance, p.nationalite,
+        p.nin IS NOT NULL AS nin_renseigne, -- NIN, N° SS et compte restent sur la fiche de la personne
+        p.situation_familiale, p.numero_ss IS NOT NULL AS ss_renseigne, p.numero_compte IS NOT NULL AS compte_renseigne,
         p.mot_de_passe_hash IS NOT NULL AS a_mot_de_passe,
         p.invite_le::text AS invite_le, p.active_le::text AS active_le,
         COALESCE((SELECT json_agg(a.client_id) FROM affectations a WHERE a.profil_id = p.id), '[]'::json) AS client_ids,
@@ -186,7 +213,8 @@ export function routesEquipe(r: Routeur) {
     }
     const { debut, fin } = bornesMois(aujourdhui());
     const clients = await sql`
-      SELECT c.id, c.nom, c.tjm_dzd, c.actif,
+      SELECT c.id, c.nom, c.tjm_dzd, c.actif, c.raison_sociale, c.adresse, c.numero_contrat, c.mission,
+        c.forfait_mensuel_dzd, c.jours_forfait, c.raison_sociale_facture, c.rc, c.nif,
         COALESCE((SELECT json_agg(a.profil_id) FROM affectations a WHERE a.client_id = c.id), '[]'::json) AS profil_ids,
         COALESCE((SELECT sum(t.valeur) FROM temps t
                   WHERE t.client_id = c.id AND t.jour BETWEEN ${debut}::date AND ${fin}::date), 0)::float8 AS jours_mois
@@ -198,8 +226,13 @@ export function routesEquipe(r: Routeur) {
     await exigerOnglet(req, "clients");
     const b = await readBody<Record<string, unknown>>(req);
     const nom = texte(b.nom, "Nom du client");
-    const tjm = entier(b.tjmDzd, "TJM");
-    const rows = await sql`INSERT INTO clients (nom, tjm_dzd) VALUES (${nom}, ${tjm}) RETURNING id`;
+    const f = facturation(b);
+    const tjm = f.forfait ? 0 : entier(b.tjmDzd, "TJM");
+    const rows = await sql`
+      INSERT INTO clients (nom, tjm_dzd, raison_sociale, adresse, numero_contrat, mission, forfait_mensuel_dzd, jours_forfait, raison_sociale_facture, rc, nif)
+      VALUES (${nom}, ${tjm}, ${f.raisonSociale ?? null}, ${f.adresse ?? null}, ${f.numeroContrat ?? null}, ${f.mission ?? null},
+        ${f.forfait ?? null}::int, ${f.joursForfait ?? 22}::int, ${f.raisonSocialeFacture ?? null}, ${f.rc ?? null}, ${f.nif ?? null})
+      RETURNING id`;
     await affecterEquipe(rows[0]!.id, idsListe(b.profilIds, "Collaborateur"));
     return json({ id: rows[0]!.id }, { status: 201 });
   });
@@ -209,11 +242,25 @@ export function routesEquipe(r: Routeur) {
     const id = uuid(params.id, "Client");
     const b = await readBody<Record<string, unknown>>(req);
     const nom = b.nom === undefined ? null : texte(b.nom, "Nom du client");
-    const tjm = b.tjmDzd === undefined ? null : entier(b.tjmDzd, "TJM");
+    const tjm = b.tjmDzd === undefined || b.tjmDzd === null || b.tjmDzd === "" ? null : entier(b.tjmDzd, "TJM");
+    const f = facturation(b);
+    const change = (v: unknown) => v !== undefined;
     if (b.actif !== undefined && typeof b.actif !== "boolean") throw new HttpError(400, "Valeur « actif » invalide.");
     const actif = b.actif === undefined ? null : b.actif;
     const rows = await sql`
-      UPDATE clients SET nom = COALESCE(${nom}, nom), tjm_dzd = COALESCE(${tjm}::int, tjm_dzd), actif = COALESCE(${actif}::boolean, actif)
+      UPDATE clients SET
+        nom = COALESCE(${nom}, nom),
+        tjm_dzd = COALESCE(${tjm}::int, tjm_dzd),
+        actif = COALESCE(${actif}::boolean, actif),
+        raison_sociale = CASE WHEN ${change(f.raisonSociale)}::boolean THEN ${f.raisonSociale ?? null} ELSE raison_sociale END,
+        adresse = CASE WHEN ${change(f.adresse)}::boolean THEN ${f.adresse ?? null} ELSE adresse END,
+        numero_contrat = CASE WHEN ${change(f.numeroContrat)}::boolean THEN ${f.numeroContrat ?? null} ELSE numero_contrat END,
+        mission = CASE WHEN ${change(f.mission)}::boolean THEN ${f.mission ?? null} ELSE mission END,
+        forfait_mensuel_dzd = CASE WHEN ${change(f.forfait)}::boolean THEN ${f.forfait ?? null}::int ELSE forfait_mensuel_dzd END,
+        jours_forfait = COALESCE(${f.joursForfait ?? null}::int, jours_forfait),
+        raison_sociale_facture = CASE WHEN ${change(f.raisonSocialeFacture)}::boolean THEN ${f.raisonSocialeFacture ?? null} ELSE raison_sociale_facture END,
+        rc = CASE WHEN ${change(f.rc)}::boolean THEN ${f.rc ?? null} ELSE rc END,
+        nif = CASE WHEN ${change(f.nif)}::boolean THEN ${f.nif ?? null} ELSE nif END
       WHERE id = ${id} RETURNING id`;
     if (!rows[0]) throw new HttpError(404, "Client introuvable.");
     if (b.profilIds !== undefined) await affecterEquipe(id, idsListe(b.profilIds, "Collaborateur"));

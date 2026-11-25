@@ -30,7 +30,7 @@ export function routesAccueil(r: Routeur) {
       sql`
         SELECT
           COALESCE(sum(t.valeur) FILTER (WHERE s.statut = 'validee'), 0)::float8 AS jours_valides,
-          COALESCE(sum(t.valeur * c.tjm_dzd) FILTER (WHERE s.statut = 'validee'), 0)::float8 AS montant_valide,
+          COALESCE(sum(t.valeur * COALESCE(c.forfait_mensuel_dzd::float8 / c.jours_forfait, c.tjm_dzd)) FILTER (WHERE s.statut = 'validee'), 0)::float8 AS montant_valide,
           COALESCE(sum(t.valeur) FILTER (WHERE s.statut <> 'validee'), 0)::float8 AS jours_non_valides
         FROM temps t JOIN semaines s ON s.id = t.semaine_id JOIN clients c ON c.id = t.client_id
         WHERE t.jour BETWEEN ${debut}::date AND ${fin}::date`,

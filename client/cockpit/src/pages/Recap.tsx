@@ -11,8 +11,9 @@ import {
   type RecapClient,
   type StatutSemaine,
 } from "../../../../shared/cockpit";
-import { api } from "../api";
-import { naviguer } from "../routeur";
+import type { DonneesTimesheet } from "../../../../shared/timesheet";
+import { api, type Moi } from "../api";
+import { naviguer, surClicLien } from "../routeur";
 import { Bouton, Carte, Chargement, EnTete, Erreur, Info } from "../ui";
 
 type Portee = "validees" | "toutes";
@@ -34,7 +35,53 @@ function telecharger(nom: string, contenu: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export default function RecapMensuel() {
+/** Timesheet PDF d'un client au format du modèle AEBS (jours validés uniquement). */
+function BoutonTimesheet({ clientId, mois }: { clientId: string; mois: string }) {
+  const [etat, setEtat] = useState<"" | "occupe" | string>("");
+  async function generer() {
+    setEtat("occupe");
+    try {
+      const [donnees, pdf] = await Promise.all([
+        api<DonneesTimesheet & { joursNonValides: number }>(`timesheet?client=${clientId}&mois=${mois}`),
+        import("../../../../shared/timesheet"),
+      ]);
+      const octets = await pdf.genererTimesheet(donnees);
+      const url = URL.createObjectURL(new Blob([octets], { type: "application/pdf" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = pdf.nomFichier(donnees);
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setEtat(donnees.joursNonValides > 0 ? `${formatJours(donnees.joursNonValides)} non validé${donnees.joursNonValides > 1 ? "s" : ""}, non inclus.` : "");
+    } catch (e) {
+      setEtat((e as Error).message);
+    }
+  }
+  return (
+    <span className="ml-3 inline-flex items-center gap-2 align-middle">
+      <button type="button" onClick={() => void generer()} disabled={etat === "occupe"} className="rounded-lg border border-ck-bordure bg-ck-surface px-2.5 py-1 text-xs font-bold text-ck-titre hover:border-ck-plein disabled:opacity-50">
+        {etat === "occupe" ? "Génération…" : "Timesheet PDF"}
+      </button>
+      {etat && etat !== "occupe" && (
+        <span role="status" className="text-xs font-normal text-ck-orange-texte">
+          {etat}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** Raccourci vers l'émission de la facture du client pour ce mois. */
+function LienFacture({ clientId, mois }: { clientId: string; mois: string }) {
+  const vers = `/factures?client=${clientId}&mois=${mois}`;
+  return (
+    <a href={`/cockpit${vers}`} onClick={(e) => surClicLien(e, vers)} className="ml-2 inline-block rounded-lg border border-ck-bordure bg-ck-surface px-2.5 py-1 align-middle text-xs font-bold text-ck-titre hover:border-ck-plein">
+      Facture
+    </a>
+  );
+}
+
+export default function RecapMensuel({ moi }: { moi: Moi }) {
   const [mois, setMois] = useState(() => aujourdhui().slice(0, 7));
   const [portee, setPortee] = useState<Portee>("validees");
   const [recap, setRecap] = useState<Recap | null>(null);
@@ -166,6 +213,8 @@ export default function RecapMensuel() {
                     <tr className="bg-ck-surface-2">
                       <th scope="row" className="px-5 py-3 text-left text-base font-bold text-ck-titre">
                         {c.nom}
+                        {portee === "validees" && <BoutonTimesheet clientId={c.client_id} mois={mois} />}
+                        {portee === "validees" && moi.onglets.includes("factures") && <LienFacture clientId={c.client_id} mois={mois} />}
                       </th>
                       <td className="px-3 py-3 text-right font-bold text-ck-titre">{formatJours(c.jours)}</td>
                       <td className="px-3 py-3 text-right text-ck-texte-2">{formatDzd(c.tjm_dzd)}</td>
@@ -196,7 +245,7 @@ export default function RecapMensuel() {
               </table>
             </Carte>
           )}
-          <p className="mt-3 text-xs text-ck-texte-2">Montants calculés avec le TJM actuel de chaque client.</p>
+          <p className="mt-3 text-xs text-ck-texte-2">Montants calculés avec le tarif actuel de chaque client (TJM, ou forfait mensuel divisé par ses jours de référence). Le timesheet PDF ne reprend que les jours validés.</p>
         </>
       )}
     </>

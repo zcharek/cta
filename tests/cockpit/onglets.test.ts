@@ -99,7 +99,7 @@ describe("gestion des accès", () => {
     expect((await modifier(qa.cookie, c.id, { role: "assistant" })).status).toBe(200);
     const [p] = await sql`SELECT role, onglets FROM profils WHERE id = ${c.id}`;
     expect(p).toMatchObject({ role: "assistant", onglets: null });
-    expect(ongletsDe({ role: "assistant", onglets: null })).toEqual([...ONGLETS]);
+    expect(ongletsDe({ role: "assistant", onglets: null })).toEqual(ONGLETS.filter((o) => o !== "paie"));
   });
 
   it("on ne peut pas se retirer soi-même la gestion des accès", async () => {

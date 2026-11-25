@@ -45,10 +45,13 @@ test("un admin valide la semaine, le récap et l'export CSV donnent les bons mon
 
   await page.getByRole("link", { name: "Récap mensuel" }).click();
   // 1,5 j × 45 000 DZD (VetCare) — la semaine peut chevaucher deux mois : on ne vérifie que le client VetCare s'il est dans ce mois
-  const vetcare = page.getByRole("rowheader", { name: "VetCare", exact: true });
-  if (await vetcare.count()) {
-    const ligne = page.getByRole("row", { name: /^VetCare/ });
+  const ligne = page.getByRole("row", { name: /^VetCare/ });
+  if (await ligne.count()) {
     await expect(ligne).toContainText("45 000 DZD");
+    // Timesheet PDF du client, avec les jours validés
+    const [pdf] = await Promise.all([page.waitForEvent("download"), ligne.getByRole("button", { name: "Timesheet PDF" }).click()]);
+    expect(pdf.suggestedFilename()).toMatch(/^Timesheet_VetCare_\d{4}-\d{2}\.pdf$/);
+    expect(readFileSync((await pdf.path())!).subarray(0, 5).toString()).toBe("%PDF-");
   }
   await page.getByRole("radio", { name: "Toutes les saisies" }).click();
   await expect(page.getByRole("radio", { name: "Toutes les saisies" })).toHaveAttribute("aria-checked", "true");

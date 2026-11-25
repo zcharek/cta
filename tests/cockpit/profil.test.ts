@@ -64,7 +64,7 @@ describe("mon profil", () => {
 describe("coordonnées pour les contrats", () => {
   it("enregistre naissance, ville et wilaya ; la fiche devient complète", async () => {
     const c = await creerProfil(sql, "collaborateur");
-    const corps = { telephone: "0550 11 22 33", adresse: "3 rue Hassiba Ben Bouali", ville: "Sidi M'Hamed", wilaya: "Alger", date_naissance: "1992-07-05", lieu_naissance: "Béjaïa" };
+    const corps = { telephone: "0550 11 22 33", adresse: "3 rue Hassiba Ben Bouali", ville: "Sidi M'Hamed", wilaya: "Alger", date_naissance: "1992-07-05", lieu_naissance: "Béjaïa", nationalite: "Algérienne", nin: "109920705012345678", situation_familiale: "M", numero_ss: "1234567890 12", numero_compte: "00799999001234567890" };
     expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps })).status).toBe(200);
     const p = (await appeler("GET", "profil", { cookie: c.cookie })).data.profil;
     expect(p).toMatchObject(corps);
@@ -77,8 +77,21 @@ describe("coordonnées pour les contrats", () => {
       expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps: { date_naissance: d } })).status).toBe(400);
   });
 
+  it("NIN : 18 chiffres, espaces tolérés à la saisie, jamais exposé dans la liste des collaborateurs", async () => {
+    const c = await creerProfil(sql, "collaborateur");
+    for (const n of ["12345", "1099207050123456789", "10992070501234567A"])
+      expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps: { nin: n } })).status).toBe(400);
+    expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps: { nin: "1099 2070 5012 3456 78" } })).status).toBe(200);
+    expect((await appeler("GET", "profil", { cookie: c.cookie })).data.profil.nin).toBe("109920705012345678");
+
+    const qa = await creerProfil(sql, "qa_manager");
+    const fiche = (await appeler("GET", "collaborateurs", { cookie: qa.cookie })).data.collaborateurs.find((x: { id: string }) => x.id === c.id);
+    expect(fiche.nin_renseigne).toBe(true);
+    expect(fiche).not.toHaveProperty("nin");
+  });
+
   it("liste les champs manquants", () => {
-    expect(coordonneesManquantes({ telephone: "0550", ville: "Oran" })).toEqual(["date de naissance", "lieu de naissance", "adresse", "wilaya"]);
+    expect(coordonneesManquantes({ telephone: "0550", ville: "Oran" })).toEqual(["date de naissance", "lieu de naissance", "nationalité", "NIN", "adresse", "wilaya", "situation familiale", "N° de sécurité sociale", "N° de compte bancaire"]);
   });
 });
 

@@ -48,24 +48,43 @@ test("un Collaborateur renseigne ses coordonnées dans Mon profil", async ({ pag
   await menuCompte(page, "Mon profil");
   await expect(page).toHaveURL(/\/cockpit\/profil/);
   await expect(page.getByLabel("Adresse e-mail")).toHaveAttribute("readonly", "");
+  await expect(page.getByText(/Fiche complète à \d+ %/)).toBeVisible();
+  await page.screenshot({ path: "test-results/mon-profil.png", fullPage: true });
+
   await page.getByLabel("Téléphone").fill("0550 98 76 54");
-  await expect(page.getByText("Fiche incomplète")).toBeVisible();
   await page.getByLabel("Date de naissance").fill("1994-03-12");
   await page.getByLabel("Lieu de naissance").fill("Tizi Ouzou");
+  await page.getByLabel("Nationalité").fill("Algérienne");
+  await page.getByLabel("NIN").fill("1099 4031 2012 3456 78");
+  await page.getByRole("tab", { name: /Adresse/ }).click();
   await page.getByLabel("Adresse", { exact: true }).fill("5 rue Larbi Ben M'hidi");
   await page.getByLabel("Ville").fill("Alger-Centre");
   await page.getByLabel("Wilaya").fill("Alger");
+  await page.getByRole("tab", { name: /Paie/ }).click();
+  await page.getByLabel("Situation familiale").selectOption("C");
+  await page.getByLabel("N° de sécurité sociale").fill("1234567890 12");
+  await page.getByLabel("N° de compte bancaire (RIP ou RIB)").fill("00799999001234567890");
   await page.getByRole("button", { name: "Enregistrer" }).click();
-  await expect(page.getByRole("status")).toHaveText("Coordonnées enregistrées.");
-  await page.screenshot({ path: "test-results/mon-profil.png" });
+  await expect(page.getByText("Informations enregistrées.")).toBeVisible();
+  await expect(page.getByText("Fiche complète : prête pour vos contrats et bulletins.")).toBeVisible();
   await page.getByRole("button", { name: /^Mon compte/ }).click();
   await page.screenshot({ path: "test-results/menu-compte.png" });
   await page.keyboard.press("Escape");
-  await expect(page.getByText("Fiche incomplète")).toHaveCount(0);
+
   await page.reload();
   await expect(page.getByLabel("Téléphone")).toHaveValue("0550 98 76 54");
   await expect(page.getByLabel("Date de naissance")).toHaveValue("1994-03-12");
+  await page.getByRole("tab", { name: /Adresse/ }).click();
   await expect(page.getByLabel("Wilaya")).toHaveValue("Alger");
+});
+
+test("Mon profil : un NIN invalide dans un onglet masqué fait revenir sur cet onglet", async ({ page }) => {
+  await connecter(page, "sofiane@cta.test");
+  await menuCompte(page, "Mon profil");
+  await page.getByLabel("NIN").fill("123");
+  await page.getByRole("tab", { name: /Paie/ }).click();
+  await page.getByRole("button", { name: "Enregistrer" }).click();
+  await expect(page.getByRole("tab", { name: /Informations personnelles/ })).toHaveAttribute("aria-selected", "true");
 });
 
 test("Clients et Collaborateurs sont deux pages séparées", async ({ page }) => {
