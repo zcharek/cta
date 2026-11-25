@@ -14,7 +14,7 @@ test("premier bulletin de paie : informations demandées une fois, brut calculé
   await page.getByLabel("Salaire net à payer (DA)").fill("80000");
   await expect(page.getByText("109 730,77 DA")).toBeVisible();
   await page.getByLabel("N° adhérent (CNAS)").fill("12345678 90");
-  await page.getByLabel("Fonction").fill("Ingénieur logiciel");
+  await page.getByLabel("Poste").fill("Ingénieur logiciel");
   await expect(page.getByLabel("Aperçu du bulletin")).toContainText("INGÉNIEUR LOGICIEL");
   await page.screenshot({ path: "test-results/paie.png", fullPage: true });
   const [pdf] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Générer le bulletin" }).click()]);

@@ -124,6 +124,8 @@ export type Moi = {
 
 /** Coordonnées modifiables dans « Mon profil » (nécessaires aux contrats). */
 export type Coordonnees = {
+  /** M ou Mme : accords des attestations (« né » ou « née »). */
+  civilite: string | null;
   date_naissance: string | null;
   lieu_naissance: string | null;
   nationalite: string | null;
@@ -140,6 +142,7 @@ export type Coordonnees = {
 };
 
 export const CHAMPS_COORDONNEES: Record<keyof Coordonnees, string> = {
+  civilite: "civilité",
   date_naissance: "date de naissance",
   lieu_naissance: "lieu de naissance",
   nationalite: "nationalité",
@@ -157,6 +160,9 @@ export const CHAMPS_COORDONNEES: Record<keyof Coordonnees, string> = {
 export function coordonneesManquantes(c: Partial<Coordonnees>): string[] {
   return (Object.keys(CHAMPS_COORDONNEES) as (keyof Coordonnees)[]).filter((k) => !c[k]).map((k) => CHAMPS_COORDONNEES[k]);
 }
+
+/** Civilité (attestation et certificat de travail). */
+export const CIVILITES: Record<string, string> = { M: "Monsieur", Mme: "Madame" };
 
 /** Situation familiale (bulletin de paie). */
 export const SITUATIONS: Record<string, string> = { C: "Célibataire", M: "Marié(e)", D: "Divorcé(e)", V: "Veuf / veuve" };

@@ -51,6 +51,7 @@ test("un Collaborateur renseigne ses coordonnées dans Mon profil", async ({ pag
   await expect(page.getByText(/Fiche complète à \d+ %/)).toBeVisible();
   await page.screenshot({ path: "test-results/mon-profil.png", fullPage: true });
 
+  await page.getByLabel("Civilité").selectOption("Mme");
   await page.getByLabel("Téléphone").fill("0550 98 76 54");
   await page.getByLabel("Date de naissance").fill("1994-03-12");
   await page.getByLabel("Lieu de naissance").fill("Tizi Ouzou");

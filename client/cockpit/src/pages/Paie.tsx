@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { SITUATIONS, aujourdhui, formatDzd, libelleMois } from "../../../../shared/cockpit";
 import type { DonneesBulletin, Paie as Calcul } from "../../../../shared/paie";
 import { api } from "../api";
+import { telechargerBulletin } from "../documents";
 import { naviguer } from "../routeur";
 import { Bouton, Carte, Champ, Chargement, ChiffreCle, EnTete, Erreur, Etape, Icone, Info, Verification, classeChamp } from "../ui";
 
@@ -38,23 +39,6 @@ type Infos = {
 const da = (n: number) => `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[  ]/g, " ")} DA`;
 const dateFr = (iso: string) => iso.slice(0, 10).split("-").reverse().join("/");
 const lireNet = (s: string) => Number(s.replace(/\s/g, "").replace(",", "."));
-
-/** Bulletin PDF, avec le logo CTA seul en haut à gauche. */
-async function telechargerBulletin(donnees: DonneesBulletin) {
-  const [pdf, logo] = await Promise.all([
-    import("../../../../shared/paie"),
-    fetch("/images/logo-cta-icone.png") // logo seul, sans « Central Test Agency »
-      .then((r) => (r.ok ? r.arrayBuffer() : null))
-      .catch(() => null),
-  ]);
-  const octets = await pdf.genererBulletin(donnees, logo ? new Uint8Array(logo) : undefined);
-  const url = URL.createObjectURL(new Blob([octets], { type: "application/pdf" }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = pdf.nomFichierBulletin(donnees);
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 // ——— Aperçu HTML du bulletin (miniature fidèle au PDF) ———
 
@@ -285,7 +269,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
                 titre={adherentOk ? "N° adhérent de l'employeur renseigné" : "N° adhérent de l'employeur à saisir"}
                 detail={donnees.adherentFige ? "Identité de l'entreprise : non modifiable." : adherentOk ? "Enregistré, repris sur tous les bulletins." : "Demandé une seule fois, puis repris sur tous les bulletins."}
               />
-              <Verification ok={ficheOk} titre={ficheOk ? "Fonction renseignée" : "Fonction obligatoire"} detail={ficheOk ? `Matricule ${salarie.matricule}, ${infos.fonction}.` : `Matricule ${salarie.matricule}. Complétez la fonction dans les informations ci-dessous.`} />
+              <Verification ok={ficheOk} titre={ficheOk ? "Poste renseigné" : "Poste obligatoire"} detail={ficheOk ? `Matricule ${salarie.matricule}, ${infos.fonction}.` : `Matricule ${salarie.matricule}. Complétez le poste ci-dessous ou dans la fiche collaborateur.`} />
               <Verification
                 ok={bancaireOk}
                 titre={bancaireOk ? "N° de sécurité sociale et compte renseignés" : "Informations du salarié incomplètes"}
@@ -312,7 +296,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
                 />
                 <div className="grid gap-4 sm:grid-cols-3">
                   <Champ libelle="Matricule" name="matricule" value={salarie.matricule} readOnly aide="Attribué à la création du compte." />
-                  <Champ libelle="Fonction" name="fonction" required maxLength={120} value={infos.fonction} onChange={maj("fonction")} placeholder="Ingénieur logiciel" className="sm:col-span-2" />
+                  <Champ libelle="Poste" name="fonction" required maxLength={120} value={infos.fonction} onChange={maj("fonction")} placeholder="Ingénieur logiciel" className="sm:col-span-2" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
                   <Champ libelle="Date d'entrée" name="dateEntree" type="date" value={infos.dateEntree} onChange={maj("dateEntree")} aide="Par défaut, le jour de création du compte." />

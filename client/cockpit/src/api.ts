@@ -30,6 +30,10 @@ export type Collaborateur = {
   /** Identifiant unique attribué à la création du compte (001, 002…). */
   matricule: string;
   date_entree: string | null;
+  date_sortie: string | null;
+  /** Poste occupé, repris sur les bulletins et documents RH. */
+  fonction: string | null;
+  civilite: string | null;
   email: string;
   role: Role;
   actif: boolean;

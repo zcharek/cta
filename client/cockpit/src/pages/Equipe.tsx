@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ONGLETS, ONGLET_LABEL, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
+import { ONGLETS, ONGLET_LABEL, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
+import type { DonneesDocumentRh, TypeDocumentRh } from "../../../../shared/documents-rh";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
+import { telechargerDocumentRh } from "../documents";
 import { surClicLien } from "../routeur";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
 
@@ -163,6 +165,75 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
   );
 }
 
+/** Attestation ou certificat de travail d'un collaborateur, avec son poste et sa date de sortie. */
+function FenetreDocuments({ collaborateur: c, onFermer, onEnregistre }: { collaborateur: Collaborateur; onFermer: () => void; onEnregistre: () => void }) {
+  const [type, setType] = useState<TypeDocumentRh>(c.actif ? "attestation" : "certificat");
+  const [erreur, setErreur] = useState("");
+  const [occupe, setOccupe] = useState(false);
+
+  async function generer(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+    setErreur("");
+    setOccupe(true);
+    try {
+      const r = await api<{ donnees: DonneesDocumentRh }>(`documents/${type}`, { corps: { profilId: c.id, fonction: f.fonction, ...(type === "certificat" ? { dateSortie: f.dateSortie } : {}) } });
+      await telechargerDocumentRh(r.donnees);
+      onEnregistre();
+    } catch (err) {
+      setErreur((err as Error).message);
+      setOccupe(false);
+    }
+  }
+
+  return (
+    <Modale
+      titre={`Documents de ${c.nom}`}
+      ouverte
+      onFermer={onFermer}
+      pied={
+        <>
+          <Bouton variante="discret" onClick={onFermer}>
+            Fermer
+          </Bouton>
+          <Bouton type="submit" form="form-documents" variante="orange" disabled={occupe}>
+            <Icone nom="document" taille={16} /> {occupe ? "Génération…" : type === "attestation" ? "Générer l'attestation" : "Générer le certificat"}
+          </Bouton>
+        </>
+      }
+    >
+      <form id="form-documents" onSubmit={generer} className="grid gap-5">
+        <fieldset>
+          <legend className="mb-2 text-sm font-semibold text-ck-titre">Document</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {(
+              [
+                ["attestation", "Attestation de travail", "Employé à ce jour, depuis sa date d'entrée."],
+                ["certificat", "Certificat de travail", "Fin de contrat : de la date d'entrée à la date de sortie."],
+              ] as const
+            ).map(([cle, titre, detail]) => (
+              <label key={cle} className={`flex cursor-pointer gap-3 rounded-xl border p-3 ${type === cle ? "border-ck-orange bg-orange-50/40" : "border-ck-bordure"}`}>
+                <input type="radio" name="type" value={cle} checked={type === cle} onChange={() => setType(cle)} className="mt-1 accent-[#dc5a2e]" />
+                <span>
+                  <span className="block text-sm font-bold text-ck-titre">{titre}</span>
+                  <span className="block text-xs text-ck-texte-2">{detail}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ libelle="Poste" name="fonction" required maxLength={120} defaultValue={c.fonction ?? ""} placeholder="Ingénieur QA" />
+          <Champ libelle="Date d'entrée" name="dateEntree" type="date" value={c.date_entree ?? ""} readOnly aide={`Matricule ${c.matricule}.`} />
+          {type === "certificat" && <Champ libelle="Date de sortie" name="dateSortie" type="date" required min={c.date_entree ?? undefined} defaultValue={c.date_sortie ?? aujourdhui()} />}
+        </div>
+        <p className="text-xs text-ck-texte-2">La date et le lieu de naissance viennent de « Mon profil » du collaborateur. Le poste et la date de sortie sont enregistrés sur sa fiche.</p>
+        {erreur && <Erreur>{erreur}</Erreur>}
+      </form>
+    </Modale>
+  );
+}
+
 const confirmationSuppression = (nom: string) =>
   `Supprimer définitivement ${nom} ?\n\nSon compte, ses affectations et tous ses temps saisis seront effacés. Les factures déjà émises ne changent pas. Cette action est irréversible : pour simplement couper l'accès, archivez-le.`;
 
@@ -241,6 +312,7 @@ function FenetreCollaborateur({
       ...(founder || (!soiMeme && existant && !moi.gereAcces) ? {} : { email: f.email }),
       ...(founder || (existant && !moi.gereAcces) ? {} : { role }),
       ...(gestion && ongletsTouches ? { onglets } : {}),
+      fonction: f.fonction ?? "",
       clientIds: choisis,
     });
   }
@@ -274,7 +346,10 @@ function FenetreCollaborateur({
       }
     >
       <form id="form-collaborateur" onSubmit={soumettre} className="grid gap-5">
-        <Champ libelle="Prénom et nom" name="nom" required maxLength={120} defaultValue={existant?.nom} autoComplete="off" autoFocus />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ libelle="Prénom et nom" name="nom" required maxLength={120} defaultValue={existant?.nom} autoComplete="off" autoFocus />
+          <Champ libelle="Poste" name="fonction" maxLength={120} defaultValue={existant?.fonction ?? ""} placeholder="Ingénieur QA" autoComplete="off" aide="Repris sur le bulletin de paie, l'attestation et le certificat de travail." />
+        </div>
         <Champ
           libelle="Adresse e-mail"
           name="email"
@@ -346,6 +421,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
   const [message, setMessage] = useState<{ texte: string; lien?: string } | null>(null);
   const [fenetreClient, setFenetreClient] = useState<ClientAdmin | "nouveau" | null>(null);
   const [fenetreCollab, setFenetreCollab] = useState<Collaborateur | "nouveau" | null>(null);
+  const [fenetreDocs, setFenetreDocs] = useState<Collaborateur | null>(null);
 
   const charger = useCallback(() => {
     Promise.all([api<{ clients: ClientAdmin[] }>("clients"), api<{ collaborateurs: Collaborateur[] }>("collaborateurs")])
@@ -553,6 +629,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                       <BadgeRole role={c.role} />
                       <BadgeAcces statut={c.statut} />
                     </div>
+                    {c.fonction && <p className="text-sm font-semibold text-ck-texte">{c.fonction}</p>}
                     <p className="truncate text-sm text-ck-texte-2">{[c.email, c.telephone].filter(Boolean).join(" · ")}</p>
                     {(c.adresse || c.ville || c.wilaya) && <p className="truncate text-sm text-ck-texte-2">{[c.adresse, c.ville, c.wilaya].filter(Boolean).join(", ")}</p>}
                     {c.statut === "actif" && coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length > 0 && (
@@ -571,6 +648,9 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                         Renvoyer l'invitation
                       </Bouton>
                     )}
+                    <Bouton variante="discret" className="!px-3 !py-2" onClick={() => setFenetreDocs(c)}>
+                      <Icone nom="document" taille={16} /> Documents
+                    </Bouton>
                     <Bouton variante="contour" className="!px-3 !py-2" onClick={() => setFenetreCollab(c)}>
                       Modifier
                     </Bouton>
@@ -599,6 +679,11 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                       Réactiver
                     </Bouton>
                   )}
+                  {a.type === "collaborateur" && (
+                    <Bouton variante="discret" className="!px-3 !py-1.5" onClick={() => setFenetreDocs(a)}>
+                      Documents
+                    </Bouton>
+                  )}
                   {a.type === "collaborateur" && moi.gereAcces && (
                     <Bouton variante="discret" className="!px-3 !py-1.5 !text-red-700" onClick={() => void supprimerArchive(a.id, a.nom)}>
                       Supprimer
@@ -611,6 +696,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         </section>
       )}
 
+      {fenetreDocs && <FenetreDocuments collaborateur={fenetreDocs} onFermer={() => setFenetreDocs(null)} onEnregistre={() => (setFenetreDocs(null), charger())} />}
       {fenetreClient && (
         <FenetreClient
           client={fenetreClient}

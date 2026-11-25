@@ -19,6 +19,27 @@ describe("calcul de la paie", () => {
     expect(irgMensuel(32000)).toBeLessThan(irgMensuel(36000));
   });
 
+  it("IRG : barème annuel de l'article 104 du CIDTA ramené au mois (÷ 12), calculé à la main à chaque seuil", () => {
+    // Tranches annuelles 240 000 / 480 000 / 960 000 / 1 920 000 / 3 840 000 → mensuelles 20 000 / 40 000 / 80 000 / 160 000 / 320 000
+    const cas: [number, number][] = [
+      [30000, 0], // exonéré jusqu'à 30 000
+      [32000, 957.85], // lissage : (2 760 - 1 104) × 137/51 - 27 925/8
+      [32009, 957.85], // arrondi à la dizaine inférieure
+      [35000, 2070], // fin du lissage : 3 450 - 40 %
+      [40000, 3100], // 4 600 - abattement plafonné à 1 500
+      [50000, 5800], // + 27 %
+      [80000, 13900], // 4 600 + 10 800 - 1 500
+      [100000, 19900], // + 30 %
+      [160000, 37900],
+      [200000, 51100], // + 33 %
+      [320000, 90700],
+      [400000, 118700], // + 35 %
+    ];
+    for (const [imposable, irg] of cas) expect([imposable, irgMensuel(imposable)]).toEqual([imposable, irg]);
+    // Continuité aux bornes du lissage
+    expect(Math.abs(irgMensuel(34990) - irgMensuel(35000))).toBeLessThan(30);
+  });
+
   it("le brut trouvé est le plus petit qui donne le net", () => {
     for (const net of [35000, 52000, 80000, 150000, 400000]) {
       const p = paieDepuisNet(net);

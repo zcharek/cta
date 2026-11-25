@@ -64,7 +64,7 @@ describe("mon profil", () => {
 describe("coordonnées pour les contrats", () => {
   it("enregistre naissance, ville et wilaya ; la fiche devient complète", async () => {
     const c = await creerProfil(sql, "collaborateur");
-    const corps = { telephone: "0550 11 22 33", adresse: "3 rue Hassiba Ben Bouali", ville: "Sidi M'Hamed", wilaya: "Alger", date_naissance: "1992-07-05", lieu_naissance: "Béjaïa", nationalite: "Algérienne", nin: "109920705012345678", situation_familiale: "M", numero_ss: "1234567890 12", numero_compte: "00799999001234567890" };
+    const corps = { civilite: "M", telephone: "0550 11 22 33", adresse: "3 rue Hassiba Ben Bouali", ville: "Sidi M'Hamed", wilaya: "Alger", date_naissance: "1992-07-05", lieu_naissance: "Béjaïa", nationalite: "Algérienne", nin: "109920705012345678", situation_familiale: "M", numero_ss: "1234567890 12", numero_compte: "00799999001234567890" };
     expect((await appeler("PATCH", "profil", { cookie: c.cookie, corps })).status).toBe(200);
     const p = (await appeler("GET", "profil", { cookie: c.cookie })).data.profil;
     expect(p).toMatchObject(corps);
@@ -91,7 +91,7 @@ describe("coordonnées pour les contrats", () => {
   });
 
   it("liste les champs manquants", () => {
-    expect(coordonneesManquantes({ telephone: "0550", ville: "Oran" })).toEqual(["date de naissance", "lieu de naissance", "nationalité", "NIN", "adresse", "wilaya", "situation familiale", "N° de sécurité sociale", "N° de compte bancaire"]);
+    expect(coordonneesManquantes({ telephone: "0550", ville: "Oran" })).toEqual(["civilité", "date de naissance", "lieu de naissance", "nationalité", "NIN", "adresse", "wilaya", "situation familiale", "N° de sécurité sociale", "N° de compte bancaire"]);
   });
 });
 

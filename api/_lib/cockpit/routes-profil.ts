@@ -48,7 +48,7 @@ export function routesProfil(r: Routeur) {
   r.ajouter("GET", "profil", async ({ req }) => {
     const moi = await exigerProfil(req);
     const [p] = await sql`
-      SELECT nom, email, role, matricule, date_entree::text AS date_entree, date_naissance::text AS date_naissance, lieu_naissance, nationalite, nin, telephone, adresse, ville, wilaya, situation_familiale, numero_ss, numero_compte,
+      SELECT nom, email, role, matricule, date_entree::text AS date_entree, fonction, civilite, date_naissance::text AS date_naissance, lieu_naissance, nationalite, nin, telephone, adresse, ville, wilaya, situation_familiale, numero_ss, numero_compte,
         mot_de_passe_le::text AS mot_de_passe_le
       FROM profils WHERE id = ${moi.id}`;
     return json({ profil: p });
@@ -61,6 +61,11 @@ export function routesProfil(r: Routeur) {
     // undefined = champ non envoyé (inchangé) ; null = champ vidé.
     const lire = <T,>(cle: string, f: (v: unknown) => T) => (b[cle] === undefined ? undefined : f(b[cle]));
     const maj = {
+      civilite: lire("civilite", (v) => {
+        const c = facultatif(v, "Civilité", 3);
+        if (c && !["M", "Mme"].includes(c)) throw new HttpError(400, "Civilité invalide.");
+        return c;
+      }),
       date_naissance: lire("date_naissance", dateNaissance),
       lieu_naissance: lire("lieu_naissance", (v) => facultatif(v, "Lieu de naissance", 120)),
       nationalite: lire("nationalite", (v) => facultatif(v, "Nationalité", 60)),
@@ -89,6 +94,7 @@ export function routesProfil(r: Routeur) {
     await sql`
       UPDATE profils SET
         nom = COALESCE(${nom}, nom),
+        civilite = CASE WHEN ${change("civilite")}::boolean THEN ${maj.civilite ?? null} ELSE civilite END,
         date_naissance = CASE WHEN ${change("date_naissance")}::boolean THEN ${maj.date_naissance ?? null}::date ELSE date_naissance END,
         lieu_naissance = CASE WHEN ${change("lieu_naissance")}::boolean THEN ${maj.lieu_naissance ?? null} ELSE lieu_naissance END,
         nationalite = CASE WHEN ${change("nationalite")}::boolean THEN ${maj.nationalite ?? null} ELSE nationalite END,

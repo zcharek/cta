@@ -23,6 +23,15 @@ function role(v: unknown): Role {
   return v as Role;
 }
 
+/** Poste occupé (repris sur le bulletin de paie, l'attestation et le certificat de travail). */
+function fonction(v: unknown): string | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null || (typeof v === "string" && !v.trim())) return null;
+  if (typeof v !== "string") throw new HttpError(400, "Poste invalide.");
+  if (v.trim().length > 120) throw new HttpError(400, "Poste : 120 caractères maximum.");
+  return v.trim();
+}
+
 function onglets(v: unknown): Onglet[] {
   if (!Array.isArray(v) || v.some((o) => !ONGLETS.includes(o))) throw new HttpError(400, "Liste d'onglets invalide.");
   return ONGLETS.filter((o) => v.includes(o));
@@ -91,7 +100,7 @@ export function routesEquipe(r: Routeur) {
     await exigerOnglet(req, "collaborateurs", "clients", "validation");
     const { debut, fin } = bornesMois(aujourdhui());
     const rows = await sql`
-      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.matricule, p.date_entree::text AS date_entree, p.telephone, p.adresse, p.ville, p.wilaya,
+      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.matricule, p.date_entree::text AS date_entree, p.date_sortie::text AS date_sortie, p.fonction, p.civilite, p.telephone, p.adresse, p.ville, p.wilaya,
         p.date_naissance::text AS date_naissance, p.lieu_naissance, p.nationalite,
         p.nin IS NOT NULL AS nin_renseigne, -- NIN, N° SS et compte restent sur la fiche de la personne
         p.situation_familiale, p.numero_ss IS NOT NULL AS ss_renseigne, p.numero_compte IS NOT NULL AS compte_renseigne,
@@ -115,13 +124,14 @@ export function routesEquipe(r: Routeur) {
     const auteur = await exigerOnglet(req, "collaborateurs");
     const b = await readBody<Record<string, unknown>>(req);
     const p = { nom: texte(b.nom, "Nom"), email: email(b.email), role: role(b.role) };
+    const poste = fonction(b.fonction);
     const choisis = b.onglets === undefined || b.onglets === null ? null : onglets(b.onglets);
     // Sans droit de gestion des accès : uniquement des Collaborateurs ou Assistants, avec les onglets par défaut.
     if (!gereLesAcces(auteur) && (choisis || !["collaborateur", "assistant"].includes(p.role))) throw new HttpError(403, RESERVE_GESTION);
     if (p.email === EMAIL_FOUNDER) throw new HttpError(409, "Cette adresse est celle du compte Founder.");
     const clientIds = idsListe(b.clientIds, "Client");
     const rows = await sql`
-      INSERT INTO profils (nom, email, role, onglets) VALUES (${p.nom}, ${p.email}, ${p.role}, ${choisis}::text[])
+      INSERT INTO profils (nom, email, role, onglets, fonction) VALUES (${p.nom}, ${p.email}, ${p.role}, ${choisis}::text[], ${poste ?? null})
       ON CONFLICT (email) DO NOTHING
       RETURNING id, nom, email`;
     if (!rows[0]) throw new HttpError(409, "Un collaborateur existe déjà avec cette adresse e-mail.");
@@ -143,6 +153,8 @@ export function routesEquipe(r: Routeur) {
     if (b.actif !== undefined && typeof b.actif !== "boolean") throw new HttpError(400, "Valeur « actif » invalide.");
     let actif = b.actif === undefined ? null : b.actif === true;
     let choisis = b.onglets === undefined || b.onglets === null ? null : onglets(b.onglets);
+    // Poste : undefined = inchangé ; vide = effacé.
+    const poste = fonction(b.fonction);
 
     // On ignore ce qui ne change pas (le formulaire renvoie tout) pour n'appliquer les règles qu'aux vrais changements.
     if (nom === existant.nom) nom = null;
@@ -177,6 +189,7 @@ export function routesEquipe(r: Routeur) {
           nom = COALESCE(${nom}, nom),
           email = COALESCE(${mail}, email),
           role = COALESCE(${nouveauRole}, role),
+          fonction = CASE WHEN ${poste !== undefined}::boolean THEN ${poste ?? null} ELSE fonction END,
           actif = COALESCE(${actif}::boolean, actif),
           onglets = CASE WHEN ${majOnglets}::boolean THEN ${choisis}::text[] ELSE onglets END
         WHERE id = ${id}`;

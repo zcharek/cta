@@ -1,18 +1,105 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { CHAMPS_COORDONNEES, MOT_DE_PASSE_MIN, ONGLET_LABEL, ROLE_LABEL, SITUATIONS, WILAYAS, coordonneesManquantes, type Coordonnees, type Role } from "../../../../shared/cockpit";
+import { CHAMPS_COORDONNEES, CIVILITES, MOT_DE_PASSE_MIN, libelleMois, ONGLET_LABEL, ROLE_LABEL, SITUATIONS, WILAYAS, coordonneesManquantes, type Coordonnees, type Role } from "../../../../shared/cockpit";
+import type { DonneesDocumentRh, TypeDocumentRh } from "../../../../shared/documents-rh";
+import type { DonneesBulletin } from "../../../../shared/paie";
 import { api, type Moi } from "../api";
+import { telechargerBulletin, telechargerDocumentRh } from "../documents";
 import { Avatar, Bouton, Carte, Champ, Chargement, EnTete, EnteteSection, Erreur, Icone, classeChamp } from "../ui";
 
-type Profil = { nom: string; email: string; role: Role; matricule: string | null; date_entree: string | null; mot_de_passe_le: string | null } & Coordonnees;
+type Profil = { nom: string; email: string; role: Role; matricule: string | null; date_entree: string | null; fonction: string | null; mot_de_passe_le: string | null } & Coordonnees;
 
 const CHAMPS = Object.keys(CHAMPS_COORDONNEES) as (keyof Coordonnees)[];
 
 type Rubrique = "identite" | "adresse" | "paie";
 const RUBRIQUES: { cle: Rubrique; libelle: string; icone: string; champs: (keyof Coordonnees)[] }[] = [
-  { cle: "identite", libelle: "Informations personnelles", icone: "profil", champs: ["date_naissance", "lieu_naissance", "nationalite", "nin", "telephone"] },
+  { cle: "identite", libelle: "Informations personnelles", icone: "profil", champs: ["civilite", "date_naissance", "lieu_naissance", "nationalite", "nin", "telephone"] },
   { cle: "adresse", libelle: "Adresse", icone: "lieu", champs: ["adresse", "ville", "wilaya"] },
   { cle: "paie", libelle: "Paie", icone: "banque", champs: ["situation_familiale", "numero_ss", "numero_compte"] },
 ];
+
+type MesDocs = { manquants: Record<TypeDocumentRh, string[]>; dateSortie: string | null; bulletins: { id: string; mois: string; net: number }[] };
+
+/** Attestation, certificat de travail et bulletins de paie de la personne connectée. */
+function MesDocuments() {
+  const [docs, setDocs] = useState<MesDocs | null>(null);
+  const [erreur, setErreur] = useState("");
+  const [occupe, setOccupe] = useState("");
+
+  useEffect(() => {
+    api<MesDocs>("mes-documents")
+      .then(setDocs)
+      .catch((e: Error) => setErreur(e.message));
+  }, []);
+
+  async function faire(cle: string, action: () => Promise<void>) {
+    setErreur("");
+    setOccupe(cle);
+    try {
+      await action();
+    } catch (e) {
+      setErreur((e as Error).message);
+    } finally {
+      setOccupe("");
+    }
+  }
+  const generer = (type: TypeDocumentRh) => faire(type, async () => telechargerDocumentRh((await api<{ donnees: DonneesDocumentRh }>(`documents/${type}`, { corps: {} })).donnees));
+  const bulletin = (id: string) => faire(id, async () => telechargerBulletin((await api<{ donnees: DonneesBulletin }>(`mes-documents/bulletins/${id}`)).donnees));
+
+  const ligneDocument = (type: TypeDocumentRh, titre: string, detail: string) => {
+    const manque = docs?.manquants[type] ?? [];
+    return (
+      <li className="flex items-center gap-3 py-3">
+        <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#eef2fb] text-ck-titre">
+          <Icone nom="document" taille={17} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-ck-titre">{titre}</p>
+          <p className="text-xs text-ck-texte-2">{manque.length ? `Manque : ${manque.join(", ")}.` : detail}</p>
+        </div>
+        <Bouton variante="contour" className="!px-3 !py-1.5 !text-xs" disabled={!docs || manque.length > 0 || occupe === type} onClick={() => void generer(type)} aria-label={`Télécharger : ${titre}`}>
+          PDF
+        </Bouton>
+      </li>
+    );
+  };
+
+  return (
+    <Carte aria-labelledby="titre-documents">
+      <EnteteSection id="titre-documents" icone="document" titre="Mes documents" sousTitre="À télécharger quand vous en avez besoin" />
+      {!docs ? (
+        erreur ? <Erreur>{erreur}</Erreur> : <Chargement />
+      ) : (
+        <>
+          <ul className="divide-y divide-[color:var(--ck-bordure)]">
+            {ligneDocument("attestation", "Attestation de travail", "Votre poste et votre date d'entrée, à ce jour.")}
+            {ligneDocument("certificat", "Certificat de travail", docs.dateSortie ? `Fin de contrat le ${docs.dateSortie.split("-").reverse().join("/")}.` : "Délivré en fin de contrat.")}
+          </ul>
+          <h3 className="mb-1 mt-4 text-xs font-bold uppercase tracking-[0.12em] text-ck-texte-2">Mes bulletins de paie</h3>
+          {docs.bulletins.length ? (
+            <ul className="divide-y divide-[color:var(--ck-bordure)]">
+              {docs.bulletins.map((b) => (
+                <li key={b.id} className="flex items-center gap-3 py-2.5 text-sm">
+                  <span className="flex-1 font-semibold capitalize text-ck-titre">{libelleMois(b.mois)}</span>
+                  <span className="tabular-nums text-ck-texte-2">{b.net.toLocaleString("fr-FR", { minimumFractionDigits: 2 }).replace(/[\u202f\u00a0]/g, " ")} DA</span>
+                  <button type="button" disabled={occupe === b.id} onClick={() => void bulletin(b.id)} className="font-bold text-ck-orange-texte hover:underline" aria-label={`Télécharger le bulletin de ${libelleMois(b.mois)}`}>
+                    PDF
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-ck-texte-2">Aucun bulletin pour l'instant.</p>
+          )}
+          {erreur && (
+            <div className="mt-3">
+              <Erreur>{erreur}</Erreur>
+            </div>
+          )}
+        </>
+      )}
+    </Carte>
+  );
+}
 
 function Succes({ children }: { children: string }) {
   return (
@@ -53,6 +140,7 @@ export default function MonProfil({ moi, onMisAJour }: { moi: Moi; onMisAJour: (
       <div className="mt-5 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <FicheCoordonnees profil={profil} rubrique={rubrique} onRubrique={setRubrique} onEnregistre={(p) => (setProfil(p), onMisAJour())} />
         <div className="grid gap-6">
+          <MesDocuments />
           <MotDePasse />
           <Carte aria-labelledby="titre-acces">
             <EnteteSection id="titre-acces" icone="bouclier" titre="Mes accès" sousTitre="Les pages de Cockpit ouvertes pour vous" />
@@ -106,7 +194,7 @@ function Entete({ profil, onModifier }: { profil: Profil; onModifier: () => void
           <div className="min-w-0">
             <p className="ck-titre truncate text-2xl">{profil.nom}</p>
             <p className="text-ck-texte-2">
-              {[ROLE_LABEL[profil.role], profil.matricule && `Matricule ${profil.matricule}`, profil.date_entree && `entré le ${profil.date_entree.split("-").reverse().join("/")}`, "Central Test Agency"].filter(Boolean).join(" · ")}
+              {[ROLE_LABEL[profil.role], profil.fonction, profil.matricule && `Matricule ${profil.matricule}`, profil.date_entree && `entré le ${profil.date_entree.split("-").reverse().join("/")}`, "Central Test Agency"].filter(Boolean).join(" · ")}
             </p>
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -216,6 +304,19 @@ function FicheCoordonnees({ profil, rubrique, onRubrique, onEnregistre }: { prof
           <>
             <EnteteSection icone="profil" titre="Mes informations personnelles" sousTitre="Telles qu'elles figurent sur votre pièce d'identité : elles servent à vos contrats." />
             <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="civilite" className="mb-1.5 block text-sm font-semibold text-ck-titre">
+                  Civilité
+                </label>
+                <select id="civilite" name="civilite" defaultValue={profil.civilite ?? ""} className={classeChamp}>
+                  <option value="">Choisir…</option>
+                  {Object.entries(CIVILITES).map(([code, libelle]) => (
+                    <option key={code} value={code}>
+                      {libelle}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <Champ libelle="Prénom et nom" name="nom" required maxLength={120} defaultValue={profil.nom} autoComplete="name" />
               <Champ libelle="Date de naissance" name="date_naissance" type="date" defaultValue={profil.date_naissance ?? ""} autoComplete="bday" max={new Date().toISOString().slice(0, 10)} />
               <Champ libelle="Lieu de naissance" name="lieu_naissance" maxLength={120} defaultValue={profil.lieu_naissance ?? ""} placeholder="Commune et wilaya" />
