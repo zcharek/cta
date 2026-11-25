@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { api, type Moi } from "./api";
-import { Layout } from "./Layout";
+import { Layout, ongletDuChemin, premierChemin } from "./Layout";
 import Aujourdhui from "./pages/Aujourdhui";
 import Bientot from "./pages/Bientot";
 import Cabinets from "./pages/Cabinets";
@@ -10,6 +10,7 @@ import DefinirMotDePasse from "./pages/DefinirMotDePasse";
 import Equipe from "./pages/Equipe";
 import EspaceClient from "./pages/EspaceClient";
 import MessageWhatsApp from "./pages/MessageWhatsApp";
+import MonProfil from "./pages/MonProfil";
 import RecapMensuel from "./pages/Recap";
 import Saisie from "./pages/Saisie";
 import Validation from "./pages/Validation";
@@ -18,13 +19,19 @@ import { Chargement } from "./ui";
 
 const PUBLIQUES = ["/connexion", "/definir-mot-de-passe"];
 
-/** Page d'arrivée selon le type : la saisie pour un Collaborateur, l'accueil pour les autres. */
-export const accueilDe = (moi: Moi) => (moi.admin ? "/" : "/saisie");
+/** Page d'arrivée : le premier onglet activé (Aujourd'hui, sinon Cabinets…, la saisie pour un Collaborateur). */
+export const accueilDe = (moi: Moi) => premierChemin(moi.onglets) ?? "/aucun-acces";
 
-/** Après connexion : la page demandée avant (?suite=), si ce type d'utilisateur y a accès. */
+/** La personne a-t-elle accès à cette page ? Les pages inconnues restent accessibles (elles affichent « introuvable »). */
+const autorise = (moi: Moi, chemin: string) => {
+  const onglet = ongletDuChemin(chemin.split("?")[0]!);
+  return chemin === "/aucun-acces" || !onglet || moi.onglets.includes(onglet);
+};
+
+/** Après connexion : la page demandée avant (?suite=), si la personne y a accès. */
 function destinationApresConnexion(moi: Moi) {
   const suite = new URLSearchParams(window.location.search).get("suite");
-  return suite?.startsWith("/") && !suite.startsWith("//") && (moi.admin || suite === "/saisie") ? suite : accueilDe(moi);
+  return suite?.startsWith("/") && !suite.startsWith("//") && autorise(moi, suite) ? suite : accueilDe(moi);
 }
 
 
@@ -49,7 +56,7 @@ export default function App() {
 
   const publique = PUBLIQUES.includes(chemin);
 
-  // Garde des routes : non connecté → /connexion ; Collaborateur hors de sa saisie → /saisie.
+  // Garde des routes : non connecté → /connexion ; page d'un onglet désactivé → page d'arrivée.
   // Ce n'est qu'un confort d'affichage : chaque appel à l'API vérifie lui-même les droits.
   useEffect(() => {
     if (moi === undefined) return;
@@ -57,8 +64,13 @@ export default function App() {
       const suite = chemin === "/" ? "" : `?suite=${encodeURIComponent(chemin)}`;
       naviguer(`/connexion${suite}`, { remplacer: true });
     } else if (moi && chemin === "/connexion") naviguer(destinationApresConnexion(moi), { remplacer: true });
-    else if (moi && !moi.admin && !publique && chemin !== "/saisie") naviguer("/saisie", { remplacer: true });
+    else if (moi && !publique && !autorise(moi, chemin)) naviguer(accueilDe(moi), { remplacer: true });
   }, [moi, chemin, publique]);
+
+  // Ancienne adresse de la page commune Clients et collaborateurs
+  useEffect(() => {
+    if (chemin === "/reglages/equipe") naviguer("/reglages/collaborateurs", { remplacer: true });
+  }, [chemin]);
 
   useEffect(() => {
     const titres: Record<string, string> = {
@@ -66,7 +78,9 @@ export default function App() {
       "/connexion": "Connexion",
       "/definir-mot-de-passe": "Mot de passe",
       "/saisie": "Saisie des temps",
-      "/reglages/equipe": "Clients et collaborateurs",
+      "/reglages/clients": "Clients",
+      "/reglages/collaborateurs": "Collaborateurs",
+      "/profil": "Mon profil",
       "/validation": "Validation",
       "/recap": "Récap mensuel",
       "/cabinets": "Cabinets",
@@ -91,17 +105,20 @@ export default function App() {
   if (chemin === "/definir-mot-de-passe") return <DefinirMotDePasse onConnecte={connecte} />;
   if (moi === undefined) return <Chargement />;
   if (!moi) return <Connexion onConnecte={connecte} />;
-  if (!moi.admin && chemin !== "/saisie") return <Chargement />;
+  if (!autorise(moi, chemin)) return <Chargement />;
 
   let page;
   if (chemin === "/") page = <Aujourdhui moi={moi} />;
   else if (chemin === "/saisie") page = <Saisie moi={moi} />;
-  else if (chemin === "/reglages/equipe") page = <Equipe moi={moi} />;
+  else if (chemin === "/reglages/clients") page = <Equipe key="clients" moi={moi} vue="clients" />;
+  else if (chemin === "/reglages/collaborateurs") page = <Equipe key="collaborateurs" moi={moi} vue="collaborateurs" />;
+  else if (chemin === "/profil") page = <MonProfil moi={moi} onMisAJour={recharger} />;
   else if (chemin === "/validation") page = <Validation />;
   else if (chemin === "/recap") page = <RecapMensuel />;
   else if (chemin === "/cabinets") page = <Cabinets />;
   else if (chemin === "/espace-client" || chemin.startsWith("/espace-client/")) page = <EspaceClient key={chemin} chemin={chemin} />;
   else if (chemin === "/reglages/whatsapp") page = <MessageWhatsApp />;
+  else if (chemin === "/aucun-acces") page = <Bientot titre="Aucun onglet activé" description="Votre compte n'a accès à aucune page de Cockpit pour l'instant. Demandez au Founder, à un Co-Founder ou à un QA Manager d'activer vos onglets." />;
   else page = <Bientot titre="Page introuvable" description="Cette adresse ne correspond à aucune page de Cockpit." />;
 
   return (

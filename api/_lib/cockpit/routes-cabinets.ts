@@ -5,7 +5,7 @@ import { HttpError, json, readBody, uuid } from "../web.js";
 import { ajouterHistorique, cabinetsParCles, insererCabinets, modifierCabinet, nettoyerImporte, nettoyerPatchFiche, statutValide } from "./cabinets-sql.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
-import { exigerAdmin } from "./session.js";
+import { exigerOnglet } from "./session.js";
 
 async function modeleWhatsApp(): Promise<string> {
   const [p] = await sql`SELECT valeur FROM parametres WHERE cle = 'modele_whatsapp'`;
@@ -22,7 +22,7 @@ async function etatCabinet(id: string): Promise<EtatProspection & { id: string }
 export function routesCabinets(r: Routeur) {
   // Liste pour le Kanban (Hors cible exclus), avec le modèle de message pour les liens WhatsApp.
   r.ajouter("GET", "cabinets", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "cabinets");
     const [cabinets, modele] = await Promise.all([
       sql`
         SELECT id, nom, veterinaire, commune, segment, semaine_plan, canal1, contact_canal1, contact_relance,
@@ -35,7 +35,7 @@ export function routesCabinets(r: Routeur) {
   });
 
   r.ajouter("GET", "cabinets/:id", async ({ req, params }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "cabinets");
     const id = uuid(params.id, "Cabinet");
     const [ligne] = await sql`SELECT to_jsonb(c) AS cabinet FROM cabinets c WHERE c.id = ${id}`;
     const cabinet = ligne?.cabinet;
@@ -48,7 +48,7 @@ export function routesCabinets(r: Routeur) {
   });
 
   r.ajouter("PATCH", "cabinets/:id", async ({ req, params }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "cabinets");
     const id = uuid(params.id, "Cabinet");
     const patch = nettoyerPatchFiche(await readBody<Record<string, unknown>>(req));
     if (!Object.keys(patch).length) return json({ ok: true });
@@ -59,7 +59,7 @@ export function routesCabinets(r: Routeur) {
 
   // Changement de statut (glisser-déposer, menu « Déplacer vers… » ou fiche) : relance programmée et historique.
   r.ajouter("POST", "cabinets/:id/statut", async ({ req, params }) => {
-    const moi = await exigerAdmin(req);
+    const moi = await exigerOnglet(req, "cabinets");
     const id = uuid(params.id, "Cabinet");
     const b = await readBody<{ statut?: unknown; note?: unknown }>(req);
     const statut = statutValide(b.statut);
@@ -79,7 +79,7 @@ export function routesCabinets(r: Routeur) {
 
   // Ouverture de WhatsApp : un cabinet « À contacter » passe en « Message WhatsApp envoyé ».
   r.ajouter("POST", "cabinets/:id/whatsapp", async ({ req, params }) => {
-    const moi = await exigerAdmin(req);
+    const moi = await exigerOnglet(req, "cabinets");
     const id = uuid(params.id, "Cabinet");
     const avant = await etatCabinet(id);
     if (avant.statut !== "a_contacter") {
@@ -93,7 +93,7 @@ export function routesCabinets(r: Routeur) {
   });
 
   r.ajouter("DELETE", "cabinets/:id", async ({ req, params }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "cabinets");
     const rows = await sql`DELETE FROM cabinets WHERE id = ${uuid(params.id, "Cabinet")} RETURNING id`;
     if (!rows.length) throw new HttpError(404, "Cabinet introuvable.");
     return json({ ok: true });
@@ -101,7 +101,7 @@ export function routesCabinets(r: Routeur) {
 
   // Modèle de message WhatsApp
   r.ajouter("GET", "parametres/whatsapp", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "cabinets", "whatsapp");
     const exemples = await sql`
       SELECT id, nom, veterinaire, telephone, contact_canal1, contact_relance, message FROM cabinets
       WHERE statut <> 'hors_cible' ORDER BY (veterinaire IS NULL), (message IS NOT NULL), nom LIMIT 30`;
@@ -109,7 +109,7 @@ export function routesCabinets(r: Routeur) {
   });
 
   r.ajouter("PUT", "parametres/whatsapp", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "whatsapp");
     const b = await readBody<{ modele?: unknown }>(req);
     const modele = typeof b.modele === "string" ? b.modele.trim() : "";
     if (!modele) throw new HttpError(400, "Le modèle ne peut pas être vide.");
@@ -122,7 +122,7 @@ export function routesCabinets(r: Routeur) {
 
   // Import : le navigateur lit le fichier, le serveur compare puis écrit par lots.
   r.ajouter("POST", "import/analyser", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "cabinets");
     const b = await readBody<{ cabinets?: unknown }>(req);
     if (!Array.isArray(b.cabinets) || b.cabinets.length > 5000) throw new HttpError(400, "Liste de cabinets invalide.");
     const cabinets = b.cabinets.map(nettoyerImporte);
@@ -146,7 +146,7 @@ export function routesCabinets(r: Routeur) {
   });
 
   r.ajouter("POST", "import/lot", async ({ req }) => {
-    const moi = await exigerAdmin(req);
+    const moi = await exigerOnglet(req, "cabinets");
     const b = await readBody<{ cabinets?: unknown; mettreAJour?: unknown }>(req);
     if (!Array.isArray(b.cabinets) || b.cabinets.length > 200) throw new HttpError(400, "Lot invalide (200 cabinets maximum).");
     const cabinets = b.cabinets.map(nettoyerImporte);

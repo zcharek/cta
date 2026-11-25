@@ -1,27 +1,69 @@
 // Vocabulaire commun à l'API et à l'interface Cockpit.
 
-export const ROLES = ["collaborateur", "assistant", "qa_manager", "cofounder"] as const;
+export const ROLES = ["collaborateur", "assistant", "qa_manager", "cofounder", "founder"] as const;
 export type Role = (typeof ROLES)[number];
+
+/** Types qu'on peut attribuer depuis Cockpit. Founder est réservé au compte EMAIL_FOUNDER. */
+export const ROLES_ATTRIBUABLES: readonly Role[] = ROLES.filter((r) => r !== "founder");
+
+/** Compte fondateur : toujours Founder, actif, avec tous les onglets. Ne peut être ni archivé ni modifié par un autre. */
+export const EMAIL_FOUNDER = "centraltestagency@gmail.com";
 
 export const ROLE_LABEL: Record<Role, string> = {
   collaborateur: "Collaborateur",
   assistant: "Assistant",
   qa_manager: "QA Manager",
   cofounder: "Co-Founder",
+  founder: "Founder",
 };
 
 export const ROLE_DESCRIPTION: Record<Role, string> = {
   collaborateur: "Saisit ses temps sur ses clients. Ne voit ni TJM ni montants.",
-  assistant: "Accès complet.",
-  qa_manager: "Accès complet.",
-  cofounder: "Accès complet.",
+  assistant: "Accès complet par défaut. Ne gère pas les accès.",
+  qa_manager: "Accès complet. Gère les accès et les onglets.",
+  cofounder: "Accès complet. Gère les accès et les onglets.",
+  founder: "Compte fondateur : accès complet, ne peut être ni archivé ni restreint.",
 };
 
-export const ROLES_ADMIN: readonly Role[] = ["assistant", "qa_manager", "cofounder"];
+export const ROLES_ADMIN: readonly Role[] = ["assistant", "qa_manager", "cofounder", "founder"];
+
+/** Types autorisés à changer le type, les onglets et l'archivage des utilisateurs. */
+export const ROLES_GESTION_ACCES: readonly Role[] = ["founder", "cofounder", "qa_manager"];
 
 /** Équivalent de est_admin() : profil actif et d'un type à accès complet. */
 export function estAdmin(p: { role: Role; actif: boolean } | null | undefined): boolean {
   return !!p && p.actif && ROLES_ADMIN.includes(p.role);
+}
+
+export function gereLesAcces(p: { role: Role; actif: boolean } | null | undefined): boolean {
+  return !!p && p.actif && ROLES_GESTION_ACCES.includes(p.role);
+}
+
+/** Onglets de Cockpit, activables utilisateur par utilisateur. */
+export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "espace_client", "clients", "collaborateurs", "whatsapp"] as const;
+export type Onglet = (typeof ONGLETS)[number];
+
+export const ONGLET_LABEL: Record<Onglet, string> = {
+  aujourdhui: "Aujourd'hui",
+  cabinets: "Cabinets (prospection VetCare)",
+  saisie: "Saisie des temps",
+  validation: "Validation des temps",
+  recap: "Récap mensuel",
+  espace_client: "Espace client",
+  clients: "Clients",
+  collaborateurs: "Collaborateurs",
+  whatsapp: "Message WhatsApp",
+};
+
+export function ongletsParDefaut(role: Role): Onglet[] {
+  return role === "collaborateur" ? ["saisie"] : [...ONGLETS];
+}
+
+/** Onglets effectifs : ceux choisis pour la personne, sinon ceux de son type. Le Founder les a toujours tous. */
+export function ongletsDe(p: { role: Role; onglets?: readonly string[] | null }): Onglet[] {
+  if (p.role === "founder") return [...ONGLETS];
+  if (!p.onglets) return ongletsParDefaut(p.role);
+  return ONGLETS.filter((o) => p.onglets!.includes(o));
 }
 
 export type StatutAcces = "invitation" | "actif" | "archive";
@@ -67,7 +109,13 @@ export type Moi = {
   email: string;
   role: Role;
   admin: boolean;
+  /** Peut changer les types, les onglets et archiver (Founder, Co-Founder, QA Manager). */
+  gereAcces: boolean;
+  onglets: Onglet[];
 };
+
+/** Coordonnées modifiables dans « Mon profil ». */
+export type Coordonnees = { telephone: string | null; adresse: string | null };
 
 /** Format « 12 000 DZD ». */
 export function formatDzd(montant: number): string {

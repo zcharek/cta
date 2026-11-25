@@ -3,12 +3,12 @@ import { trierSemaines } from "../../../shared/prospection.js";
 import { json } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
-import { exigerAdmin } from "./session.js";
+import { aOnglet, exigerOnglet } from "./session.js";
 
 // Page « Aujourd'hui » : tout ce qu'il faut traiter, en un seul appel.
 export function routesAccueil(r: Routeur) {
   r.ajouter("GET", "accueil", async ({ req }) => {
-    await exigerAdmin(req);
+    const moi = await exigerOnglet(req, "aujourdhui");
     const jour = aujourdhui();
     const { debut, fin } = bornesMois(jour);
     const lundiPrecedent = ajouterJours(lundiDe(jour), -7);
@@ -41,24 +41,31 @@ export function routesAccueil(r: Routeur) {
     const total = Object.values(parStatut).reduce((a, b) => a + b, 0);
     const prochaineSemaine = trierSemaines(aContacter.map((l) => l.semaine_plan))[0] ?? null;
 
+    // Chaque bloc n'est renvoyé qu'avec l'onglet correspondant (null sinon).
+    const cabinets = aOnglet(moi, "cabinets");
+    const validation = aOnglet(moi, "validation");
     return json({
       aujourdhui: jour,
-      relances: relances[0],
-      jamaisContactes: {
-        nombre: aContacter.reduce((s, l) => s + l.nombre, 0),
-        prochaineSemaine,
-        restantSemaine: prochaineSemaine ? aContacter.find((l) => l.semaine_plan === prochaineSemaine)!.nombre : 0,
-      },
-      semainesAValider: aValider[0]!.nombre,
-      semainePrecedente: { lundi: lundiPrecedent, manquants: retardataires },
-      prospection: {
-        parStatut,
-        total,
-        contactes: total - parStatut.a_contacter,
-        interesses: parStatut.en_discussion + parStatut.demo_planifiee,
-        signes: parStatut.client_signe,
-      },
-      temps: temps[0],
+      relances: cabinets ? relances[0] : null,
+      jamaisContactes: cabinets
+        ? {
+            nombre: aContacter.reduce((s, l) => s + l.nombre, 0),
+            prochaineSemaine,
+            restantSemaine: prochaineSemaine ? aContacter.find((l) => l.semaine_plan === prochaineSemaine)!.nombre : 0,
+          }
+        : null,
+      semainesAValider: validation ? aValider[0]!.nombre : null,
+      semainePrecedente: validation ? { lundi: lundiPrecedent, manquants: retardataires } : null,
+      prospection: cabinets
+        ? {
+            parStatut,
+            total,
+            contactes: total - parStatut.a_contacter,
+            interesses: parStatut.en_discussion + parStatut.demo_planifiee,
+            signes: parStatut.client_signe,
+          }
+        : null,
+      temps: aOnglet(moi, "recap") ? temps[0] : null,
     });
   });
 }

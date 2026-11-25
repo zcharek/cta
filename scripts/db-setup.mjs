@@ -86,13 +86,14 @@ async function seedCockpit() {
     process.exit(1);
   }
   const hash = motDePasse ? await bcrypt.hash(motDePasse, 10) : null;
+  const role = email === "centraltestagency@gmail.com" ? "founder" : "cofounder";
   const rows = await sql`
     INSERT INTO profils (nom, email, role, mot_de_passe_hash, mot_de_passe_le, active_le)
-    VALUES (${nom}, ${email}, 'cofounder', ${hash}, ${hash ? new Date().toISOString() : null}, ${hash ? new Date().toISOString() : null})
-    ON CONFLICT (email) DO UPDATE SET role = 'cofounder', actif = true
+    VALUES (${nom}, ${email}, ${role}, ${hash}, ${hash ? new Date().toISOString() : null}, ${hash ? new Date().toISOString() : null})
+    ON CONFLICT (email) DO UPDATE SET role = ${role}, actif = true
     RETURNING id, mot_de_passe_hash IS NOT NULL AS a_mot_de_passe`;
   const profil = rows[0];
-  console.log(`Compte Co-Founder prêt : ${email}.`);
+  console.log(`Compte ${role === "founder" ? "Founder" : "Co-Founder"} prêt : ${email}.`);
   if (profil.a_mot_de_passe) return;
 
   // Pas de mot de passe : on fabrique un lien pour le définir.

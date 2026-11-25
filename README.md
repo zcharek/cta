@@ -51,19 +51,23 @@ Voir `.env.example`. Aucune clé ne doit être commitée : `.env` est ignoré pa
 
 ## Cockpit : accès et sécurité
 
-Quatre types d'utilisateur : **Collaborateur** (uniquement sa propre saisie des temps, sur ses clients assignés, sans jamais voir de TJM ni de montant), **Assistant**, **QA Manager** et **Co-Founder** (accès complet).
+Cinq types d'utilisateur : **Collaborateur** (par défaut, uniquement sa propre saisie des temps, sans TJM ni montant), **Assistant**, **QA Manager**, **Co-Founder** et **Founder** (accès complet).
+
+- **Founder** : le compte `centraltestagency@gmail.com`, unique. Il a toujours tous les onglets et ne peut être ni archivé, ni changé de type, ni restreint (règle vérifiée par l'API et par la base). Le type Founder ne s'attribue pas depuis l'interface.
+- **Onglets** : chaque personne a les onglets de son type, ou une liste choisie (`profils.onglets`, `NULL` = défaut du type). Seuls le Founder, les Co-Founders et les QA Managers changent les types, les onglets, l'archivage et l'e-mail des autres. Un Assistant peut inviter des Collaborateurs ou Assistants, avec les onglets par défaut.
+- L'API vérifie l'onglet de chaque route (`exigerOnglet`) : Cabinets, Validation (saisie des autres, validation), Récap, Espace client, Clients, Collaborateurs, Message WhatsApp.
+- **Mon profil** (`/cockpit/profil`, menu du compte en haut à droite) : chacun modifie son nom, son téléphone, son adresse et son mot de passe, quels que soient ses onglets. L'e-mail (identifiant de connexion) reste géré dans Collaborateurs. Règles couvertes par `tests/cockpit/onglets.test.ts`.
 
 Le navigateur n'accède jamais directement à la base : toutes les données passent par l'API `/api/cockpit/*`, qui vérifie les droits à chaque requête.
 
 - Le profil est relu en base à chaque appel : archiver un compte ou changer son type prend effet immédiatement, même sur une session ouverte.
-- `estAdmin()` (`shared/cockpit.ts`) : profil actif et de type Assistant, QA Manager ou Co-Founder.
 - Les règles d'accès (cabinets, TJM, semaines des autres, validation) sont couvertes par `tests/cockpit/acces.test.ts`.
 - Les liens d'invitation (7 jours) et de réinitialisation (1 heure) sont à usage unique ; seule leur empreinte SHA-256 est stockée.
 - Changer de mot de passe ferme toutes les autres sessions.
 
 ### Comptes admin de l'espace client
 
-Un admin de l'espace client (table `users`, rôle `admin`) se connecte à Cockpit avec son e-mail et son mot de passe habituels : à sa première connexion, un profil Co-Founder est créé avec le même mot de passe. Ensuite, les deux comptes vivent séparément (changer le mot de passe de l'un ne change pas l'autre). Archiver ce profil dans Cockpit lui retire l'accès à Cockpit.
+Un admin de l'espace client (table `users`, rôle `admin`) se connecte à Cockpit avec son e-mail et son mot de passe habituels : à sa première connexion, un profil Co-Founder est créé (Founder pour `centraltestagency@gmail.com`) avec le même mot de passe. Ensuite, les deux comptes vivent séparément (changer le mot de passe de l'un ne change pas l'autre). Archiver ce profil dans Cockpit lui retire l'accès à Cockpit.
 
 ### Inviter un collaborateur
 

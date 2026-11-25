@@ -41,6 +41,7 @@ async function remplir(db) {
     [JSON.stringify(reponses)],
   );
   const profils = [
+    ["Central Test Agency", "centraltestagency@gmail.com", "founder"],
     ["Amina Cherif", "admin@cta.test", "cofounder"],
     ["Karim Ait Ali", "qa@cta.test", "qa_manager"],
     ["Yasmine Belkacem", "yasmine@cta.test", "collaborateur"],

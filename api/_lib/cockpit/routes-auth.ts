@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { MOT_DE_PASSE_MIN } from "../../../shared/cockpit.js";
+import { EMAIL_FOUNDER, MOT_DE_PASSE_MIN } from "../../../shared/cockpit.js";
 import { HttpError, json, readBody } from "../web.js";
 import { sql } from "./db.js";
 import { emailReinitialisation, envoyerEmail, urlApplication } from "./emails.js";
@@ -20,11 +20,11 @@ export function routesAuth(r: Routeur) {
     const b = await readBody<{ email?: string; motDePasse?: string }>(req);
     const email = typeof b.email === "string" ? b.email.trim().toLowerCase() : "";
     const motDePasse = typeof b.motDePasse === "string" ? b.motDePasse : "";
-    const rows = await sql`SELECT id, nom, email, role, actif, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`;
+    const rows = await sql`SELECT id, nom, email, role, actif, onglets, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`;
     let p = rows[0];
 
     // Un admin de l'espace client (table users) entre dans Cockpit avec ses identifiants habituels :
-    // à sa première connexion, son profil Co-Founder est créé avec le même mot de passe.
+    // à sa première connexion, son profil Co-Founder (Founder pour EMAIL_FOUNDER) est créé avec le même mot de passe.
     const admin = p ? undefined : (await sql`SELECT name, email, password_hash FROM users WHERE email = ${email} AND role = 'admin'`)[0];
 
     const ok = await bcrypt.compare(motDePasse, p?.mot_de_passe_hash ?? admin?.password_hash ?? HASH_FACTICE);
@@ -32,9 +32,9 @@ export function routesAuth(r: Routeur) {
     if (!p) {
       await sql`
         INSERT INTO profils (nom, email, role, mot_de_passe_hash, mot_de_passe_le, active_le)
-        VALUES (${admin!.name}, ${admin!.email}, 'cofounder', ${admin!.password_hash}, now(), now())
+        VALUES (${admin!.name}, ${admin!.email}, ${email === EMAIL_FOUNDER ? "founder" : "cofounder"}, ${admin!.password_hash}, now(), now())
         ON CONFLICT (email) DO NOTHING`;
-      p = (await sql`SELECT id, nom, email, role, actif, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`)[0];
+      p = (await sql`SELECT id, nom, email, role, actif, onglets, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`)[0];
       if (!p) throw new HttpError(401, "E-mail ou mot de passe incorrect.");
     }
     if (!p.actif) throw new HttpError(403, "Ce compte est archivé. Contactez un responsable de Central Test Agency.");
@@ -80,7 +80,7 @@ export function routesAuth(r: Routeur) {
       SET mot_de_passe_hash = ${hash}, mot_de_passe_le = now(), active_le = COALESCE(active_le, now()),
           version_session = version_session + 1
       WHERE id = ${j.profil_id} AND actif
-      RETURNING id, nom, email, role, actif, version_session`;
+      RETURNING id, nom, email, role, actif, onglets, version_session`;
     if (!rows[0]) throw new HttpError(410, "Ce lien n'est plus valable. Demandez-en un nouveau.");
     await sql`DELETE FROM jetons WHERE profil_id = ${j.profil_id} AND utilise_le IS NULL`;
     return json({ moi: versMoi(rows[0] as Profil) }, { headers: { "Set-Cookie": await cookieSession(rows[0].id, rows[0].version_session) } });

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { connecter } from "./outils";
+import { connecter, menuCompte } from "./outils";
 
 test("non connecté : toute page renvoie vers la connexion, puis vers la page demandée", async ({ page }) => {
   await page.goto("/cockpit/recap");
@@ -17,19 +17,19 @@ test("non connecté : toute page renvoie vers la connexion, puis vers la page de
 test("un Co-Founder invite un collaborateur, qui définit son mot de passe et arrive sur sa saisie", async ({ page }) => {
   const email = `nour${Date.now()}@cta.test`;
   await connecter(page, "admin@cta.test");
-  await page.getByRole("link", { name: "Clients et collaborateurs" }).click();
+  await page.getByRole("link", { name: "Collaborateurs", exact: true }).click();
   await page.getByRole("button", { name: "Inviter un collaborateur" }).click();
   const fenetre = page.getByRole("dialog");
   await fenetre.getByLabel("Prénom et nom").fill("Nour Hamidi");
   await fenetre.getByLabel("Adresse e-mail").fill(email);
-  await fenetre.getByText("VetCare").click();
+  await fenetre.getByText("VetCare", { exact: true }).click();
   await fenetre.getByRole("button", { name: "Envoyer l'invitation" }).click();
 
   // Sans Resend (démo), le lien s'affiche à l'écran
   const lien = await page.locator("a[href*='definir-mot-de-passe']").getAttribute("href");
   expect(lien).toBeTruthy();
   await expect(page.getByText("Invitation envoyée", { exact: false }).first()).toBeVisible();
-  await page.getByRole("button", { name: "Se déconnecter" }).click();
+  await menuCompte(page, "Se déconnecter");
 
   await page.goto(lien!);
   await expect(page.getByRole("heading", { name: "Bienvenue, Nour." })).toBeVisible();
@@ -49,7 +49,7 @@ test("un Collaborateur ne voit que « Ma saisie » et ne peut rien ouvrir d'autr
   await connecter(page, "yasmine@cta.test");
   await expect(page).toHaveURL(/\/cockpit\/saisie/);
   await expect(page.getByRole("navigation", { name: "Navigation principale" }).getByRole("link")).toHaveText(["Ma saisie"]);
-  for (const chemin of ["/cockpit/", "/cockpit/cabinets", "/cockpit/validation", "/cockpit/reglages/equipe"]) {
+  for (const chemin of ["/cockpit/", "/cockpit/cabinets", "/cockpit/validation", "/cockpit/reglages/collaborateurs"]) {
     await page.goto(chemin);
     await expect(page).toHaveURL(/\/cockpit\/saisie/);
   }

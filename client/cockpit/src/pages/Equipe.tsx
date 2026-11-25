@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ROLES, ROLE_DESCRIPTION, ROLE_LABEL, formatDzd, type Role } from "../../../../shared/cockpit";
+import { ONGLETS, ONGLET_LABEL, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille } from "../ui";
 
@@ -91,13 +91,7 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
       <form id="form-client" onSubmit={soumettre} className="grid gap-5">
         <Champ libelle="Nom du client" name="nom" required maxLength={120} defaultValue={existant?.nom} autoFocus />
         <Champ libelle="TJM (DZD par jour)" name="tjm" required inputMode="numeric" pattern="[0-9 ]+" defaultValue={existant?.tjm_dzd ?? ""} aide="Montant hors taxes facturé pour une journée." />
-        <Cases
-          legende="Collaborateurs assignés"
-          options={collaborateurs.filter((c) => c.actif)}
-          choisis={equipe}
-          onChange={setEquipe}
-          vide="Aucun collaborateur pour l'instant."
-        />
+        <Cases legende="Collaborateurs assignés" options={collaborateurs.filter((c) => c.actif)} choisis={equipe} onChange={setEquipe} vide="Aucun collaborateur pour l'instant." />
         {erreur && <Erreur>{erreur}</Erreur>}
       </form>
     </Modale>
@@ -120,9 +114,26 @@ function FenetreCollaborateur({
   const existant = collaborateur === "nouveau" ? null : collaborateur;
   const [role, setRole] = useState<Role>(existant?.role ?? "collaborateur");
   const [choisis, setChoisis] = useState<string[]>(existant?.client_ids ?? []);
+  // Onglets : ceux de la personne ; tant qu'on n'y touche pas, ils suivent le type choisi.
+  const [onglets, setOnglets] = useState<Onglet[]>(existant?.onglets ?? ongletsParDefaut("collaborateur"));
+  const [ongletsTouches, setOngletsTouches] = useState(false);
   const [erreur, setErreur] = useState("");
   const [occupe, setOccupe] = useState(false);
   const soiMeme = existant?.id === moi.id;
+  const founder = existant?.role === "founder";
+  // Type, onglets, archivage et e-mail d'un autre : Founder, Co-Founder et QA Manager uniquement.
+  const gestion = moi.gereAcces && !founder;
+  const rolesProposes = moi.gereAcces ? ROLES_ATTRIBUABLES : (["collaborateur", "assistant"] as Role[]);
+
+  function choisirRole(r: Role) {
+    setRole(r);
+    if (!ongletsTouches) setOnglets(ongletsParDefaut(r));
+  }
+
+  function basculerOnglet(o: Onglet, actif: boolean) {
+    setOngletsTouches(true);
+    setOnglets((liste) => ONGLETS.filter((x) => (x === o ? actif : liste.includes(x))));
+  }
 
   async function envoyer(corps: Record<string, unknown>) {
     setErreur("");
@@ -144,7 +155,13 @@ function FenetreCollaborateur({
   function soumettre(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
-    void envoyer({ nom: f.nom, email: f.email, role, clientIds: choisis });
+    void envoyer({
+      nom: f.nom,
+      ...(founder || (!soiMeme && existant && !moi.gereAcces) ? {} : { email: f.email }),
+      ...(founder || (existant && !moi.gereAcces) ? {} : { role }),
+      ...(gestion && ongletsTouches ? { onglets } : {}),
+      clientIds: choisis,
+    });
   }
 
   return (
@@ -154,7 +171,7 @@ function FenetreCollaborateur({
       onFermer={onFermer}
       pied={
         <>
-          {existant?.actif && !soiMeme && (
+          {existant?.actif && !soiMeme && gestion && (
             <Bouton variante="danger" className="mr-auto" disabled={occupe} onClick={() => void envoyer({ actif: false })}>
               Archiver
             </Bouton>
@@ -170,44 +187,72 @@ function FenetreCollaborateur({
     >
       <form id="form-collaborateur" onSubmit={soumettre} className="grid gap-5">
         <Champ libelle="Prénom et nom" name="nom" required maxLength={120} defaultValue={existant?.nom} autoComplete="off" autoFocus />
-        <Champ libelle="Adresse e-mail" name="email" type="email" required defaultValue={existant?.email} autoComplete="off" aide={existant ? undefined : "Le collaborateur y recevra le lien pour définir son mot de passe."} />
-        <fieldset>
-          <legend className="mb-2 text-sm font-semibold text-ck-titre">Type</legend>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {ROLES.map((r) => {
-              const bloque = soiMeme && r === "collaborateur";
-              return (
-                <label
-                  key={r}
-                  className={`relative flex cursor-pointer flex-col gap-1 rounded-xl border-2 p-3 transition has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-ck-orange ${
-                    role === r ? "border-ck-plein bg-ck-surface-2" : "border-ck-bordure hover:bg-ck-surface-2"
-                  } ${bloque ? "cursor-not-allowed opacity-50" : ""}`}
-                >
-                  <input type="radio" name="role" value={r} checked={role === r} disabled={bloque} onChange={() => setRole(r)} className="sr-only" />
-                  <span className="flex items-center gap-2 font-bold text-ck-titre">
-                    <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COULEUR_ROLE[r] }} />
-                    {ROLE_LABEL[r]}
-                  </span>
-                  <span className="text-xs text-ck-texte-2">{ROLE_DESCRIPTION[r]}</span>
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
-        <Cases
-          legende="Clients assignés"
-          options={clients.filter((c) => c.actif)}
-          choisis={choisis}
-          onChange={setChoisis}
-          vide="Aucun client pour l'instant : créez-en un pour pouvoir l'assigner."
+        <Champ
+          libelle="Adresse e-mail"
+          name="email"
+          type="email"
+          required
+          defaultValue={existant?.email}
+          autoComplete="off"
+          readOnly={founder || (!!existant && !soiMeme && !moi.gereAcces)}
+          aide={founder ? "L'adresse du compte Founder ne peut pas être modifiée." : existant ? undefined : "Le collaborateur y recevra le lien pour définir son mot de passe."}
         />
+        {founder ? (
+          <Info>Compte Founder : il a toujours accès à tous les onglets et ne peut être ni archivé ni changé de type.</Info>
+        ) : (
+          <fieldset disabled={!!existant && !moi.gereAcces}>
+            <legend className="mb-2 text-sm font-semibold text-ck-titre">Type</legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {rolesProposes.map((r) => {
+                const bloque = soiMeme && !gereLesAcces({ role: r, actif: true });
+                return (
+                  <label
+                    key={r}
+                    className={`relative flex cursor-pointer flex-col gap-1 rounded-xl border-2 p-3 transition has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-ck-orange ${
+                      role === r ? "border-ck-plein bg-ck-surface-2" : "border-ck-bordure hover:bg-ck-surface-2"
+                    } ${bloque ? "cursor-not-allowed opacity-50" : ""}`}
+                  >
+                    <input type="radio" name="role" value={r} checked={role === r} disabled={bloque} onChange={() => choisirRole(r)} className="sr-only" />
+                    <span className="flex items-center gap-2 font-bold text-ck-titre">
+                      <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COULEUR_ROLE[r] }} />
+                      {ROLE_LABEL[r]}
+                    </span>
+                    <span className="text-xs text-ck-texte-2">{ROLE_DESCRIPTION[r]}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+        {gestion && (
+          <fieldset>
+            <legend className="mb-1 text-sm font-semibold text-ck-titre">Onglets visibles</legend>
+            <p className="mb-2 text-xs text-ck-texte-2">Pages de Cockpit auxquelles cette personne a accès. Par défaut, celles de son type.</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {ONGLETS.map((o) => {
+                const bloque = soiMeme && o === "collaborateurs";
+                return (
+                  <label
+                    key={o}
+                    className={`flex items-center gap-2.5 rounded-[10px] border border-ck-bordure px-3 py-2 text-sm has-[:checked]:border-ck-plein ${bloque ? "opacity-60" : "cursor-pointer hover:bg-ck-surface-2"}`}
+                  >
+                    <input type="checkbox" checked={onglets.includes(o)} disabled={bloque} onChange={(e) => basculerOnglet(o, e.target.checked)} className="h-4 w-4 accent-[color:var(--ck-orange)]" />
+                    {ONGLET_LABEL[o]}
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+        <Cases legende="Clients assignés" options={clients.filter((c) => c.actif)} choisis={choisis} onChange={setChoisis} vide="Aucun client pour l'instant : créez-en un pour pouvoir l'assigner." />
         {erreur && <Erreur>{erreur}</Erreur>}
       </form>
     </Modale>
   );
 }
 
-export default function Equipe({ moi }: { moi: Moi }) {
+/** Deux pages distinctes : « Clients » (/reglages/clients) et « Collaborateurs » (/reglages/collaborateurs). */
+export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "collaborateurs" }) {
   const [donnees, setDonnees] = useState<Donnees | null>(null);
   const [erreur, setErreur] = useState("");
   const [message, setMessage] = useState<{ texte: string; lien?: string } | null>(null);
@@ -231,7 +276,9 @@ export default function Equipe({ moi }: { moi: Moi }) {
   async function renvoyer(c: Collaborateur) {
     setMessage(null);
     try {
-      const r = await api<{ invitation: Invitation }>(`collaborateurs/${c.id}/invitation`, { methode: "POST" });
+      const r = await api<{ invitation: Invitation }>(`collaborateurs/${c.id}/invitation`, {
+        methode: "POST",
+      });
       annoncerInvitation(c.nom, r.invitation);
       charger();
     } catch (e) {
@@ -258,29 +305,51 @@ export default function Equipe({ moi }: { moi: Moi }) {
   const nomClient = new Map(clients.map((c) => [c.id, c.nom]));
   const nomCollab = new Map(collaborateurs.map((c) => [c.id, c.nom]));
   const joursMois = collaborateurs.reduce((s, c) => s + c.jours_mois, 0);
-  const archives = [...clients.filter((c) => !c.actif).map((c) => ({ type: "client" as const, ...c })), ...collaborateurs.filter((c) => !c.actif).map((c) => ({ type: "collaborateur" as const, ...c }))];
+  const archives =
+    vue === "clients"
+      ? clients.filter((c) => !c.actif).map((c) => ({ type: "client" as const, ...c }))
+      : collaborateurs.filter((c) => !c.actif).map((c) => ({ type: "collaborateur" as const, ...c }));
+  const assignes = new Set(clientsActifs.flatMap((c) => c.profil_ids)).size;
+  const invitations = collabsActifs.filter((c) => c.statut === "invitation").length;
 
   return (
     <>
-      <EnTete
-        titre="Clients et"
-        accent="collaborateurs."
-        actions={
-          <>
-            <Bouton variante="contour" onClick={() => setFenetreClient("nouveau")}>
+      {vue === "clients" ? (
+        <EnTete
+          titre="Nos"
+          accent="clients."
+          actions={
+            <Bouton onClick={() => setFenetreClient("nouveau")}>
               <Icone nom="plus" taille={18} /> Nouveau client
             </Bouton>
+          }
+        />
+      ) : (
+        <EnTete
+          titre="L'équipe"
+          accent="CTA."
+          actions={
             <Bouton onClick={() => setFenetreCollab("nouveau")}>
               <Icone nom="plus" taille={18} /> Inviter un collaborateur
             </Bouton>
-          </>
-        }
-      />
+          }
+        />
+      )}
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Chiffre valeur={clientsActifs.length} libelle={clientsActifs.length > 1 ? "clients" : "client"} />
-        <Chiffre valeur={collabsActifs.length} libelle={collabsActifs.length > 1 ? "collaborateurs" : "collaborateur"} />
-        <Chiffre valeur={jours(joursMois)} libelle="saisis ce mois" />
+        {vue === "clients" ? (
+          <>
+            <Chiffre valeur={clientsActifs.length} libelle={clientsActifs.length > 1 ? "clients" : "client"} />
+            <Chiffre valeur={assignes} libelle={assignes > 1 ? "personnes assignées" : "personne assignée"} />
+            <Chiffre valeur={jours(joursMois)} libelle="saisis ce mois" />
+          </>
+        ) : (
+          <>
+            <Chiffre valeur={collabsActifs.length} libelle={collabsActifs.length > 1 ? "collaborateurs" : "collaborateur"} />
+            <Chiffre valeur={invitations} libelle={invitations > 1 ? "invitations en attente" : "invitation en attente"} />
+            <Chiffre valeur={jours(joursMois)} libelle="saisis ce mois" />
+          </>
+        )}
       </div>
 
       {message && (
@@ -289,22 +358,22 @@ export default function Equipe({ moi }: { moi: Moi }) {
             <p>{message.texte}</p>
             {message.lien && (
               <p className="mt-2 break-all text-xs text-ck-texte-2">
-                E-mail non configuré (RESEND_API_KEY absent en local) : lien à transmettre <a href={message.lien} className="font-semibold text-ck-orange-texte underline">{message.lien}</a>
+                E-mail non configuré (RESEND_API_KEY absent en local) : lien à transmettre{" "}
+                <a href={message.lien} className="font-semibold text-ck-orange-texte underline">
+                  {message.lien}
+                </a>
               </p>
             )}
           </Info>
         </div>
       )}
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <section aria-labelledby="titre-clients">
-          <h2 id="titre-clients" className="ck-titre mb-4 text-xl">
-            Clients
-          </h2>
+      {vue === "clients" && (
+        <section aria-label="Clients actifs">
           {clientsActifs.length === 0 ? (
             <Carte className="text-sm text-ck-texte-2">Aucun client. Créez votre premier client avec « Nouveau client ».</Carte>
           ) : (
-            <ul className="grid gap-4">
+            <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {clientsActifs.map((c) => (
                 <li key={c.id}>
                   <Carte className="!p-5">
@@ -337,11 +406,10 @@ export default function Equipe({ moi }: { moi: Moi }) {
             </ul>
           )}
         </section>
+      )}
 
-        <section aria-labelledby="titre-collabs">
-          <h2 id="titre-collabs" className="ck-titre mb-4 text-xl">
-            Collaborateurs
-          </h2>
+      {vue === "collaborateurs" && (
+        <section aria-label="Collaborateurs actifs">
           <Carte className="!p-0">
             <ul className="divide-y divide-[color:var(--ck-bordure)]">
               {collabsActifs.map((c) => (
@@ -353,10 +421,12 @@ export default function Equipe({ moi }: { moi: Moi }) {
                       <BadgeRole role={c.role} />
                       <BadgeAcces statut={c.statut} />
                     </div>
-                    <p className="truncate text-sm text-ck-texte-2">{c.email}</p>
+                    <p className="truncate text-sm text-ck-texte-2">{[c.email, c.telephone].filter(Boolean).join(" · ")}</p>
+                    {c.adresse && <p className="truncate text-sm text-ck-texte-2">{c.adresse}</p>}
                     <p className="mt-1 text-sm text-ck-texte-2">
                       {c.client_ids.length ? c.client_ids.map((id) => nomClient.get(id)).join(", ") : "Aucun client"} · {jours(c.jours_mois)} ce mois
                     </p>
+                    {c.onglets_personnalises && <p className="mt-1 text-xs text-ck-texte-2">Onglets : {c.onglets.length ? c.onglets.map((o) => ONGLET_LABEL[o]).join(", ") : "aucun"}</p>}
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
                     {c.statut === "invitation" && (
@@ -373,7 +443,7 @@ export default function Equipe({ moi }: { moi: Moi }) {
             </ul>
           </Carte>
         </section>
-      </div>
+      )}
 
       {archives.length > 0 && (
         <section aria-labelledby="titre-archives" className="mt-10">
@@ -387,9 +457,11 @@ export default function Equipe({ moi }: { moi: Moi }) {
                   <span className="min-w-0 flex-1 truncate">
                     <span className="font-semibold">{a.nom}</span> · {a.type === "client" ? "Client" : ROLE_LABEL[a.role]}
                   </span>
-                  <Bouton variante="discret" className="!px-3 !py-1.5" onClick={() => void reactiver(`${a.type === "client" ? "clients" : "collaborateurs"}/${a.id}`)}>
-                    Réactiver
-                  </Bouton>
+                  {(a.type === "client" || moi.gereAcces) && (
+                    <Bouton variante="discret" className="!px-3 !py-1.5" onClick={() => void reactiver(`${a.type === "client" ? "clients" : "collaborateurs"}/${a.id}`)}>
+                      Réactiver
+                    </Bouton>
+                  )}
                 </li>
               ))}
             </ul>

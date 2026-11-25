@@ -1,18 +1,23 @@
-import { STATUTS_SEMAINE, ajouterJours, estAdmin, estLundi, type StatutSemaine } from "../../../shared/cockpit.js";
+import { STATUTS_SEMAINE, ajouterJours, estLundi, type StatutSemaine } from "../../../shared/cockpit.js";
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
-import { exigerProfil, type Profil } from "./session.js";
+import { aOnglet, exigerProfil, type Profil } from "./session.js";
 
 function lundi(v: unknown): string {
   if (typeof v !== "string" || !estLundi(v)) throw new HttpError(400, "La semaine doit commencer un lundi (aaaa-mm-jj).");
   return v;
 }
 
-/** Un collaborateur n'accède qu'à ses propres semaines ; un admin à toutes. */
+/** Onglet « Validation » : voir et corriger la saisie de tout le monde. */
+const valideur = (moi: Profil) => aOnglet(moi, "validation");
+
+/** Sa propre saisie avec l'onglet « Saisie des temps » ; celle des autres avec l'onglet « Validation ». */
 function cibler(moi: Profil, profilId: unknown): string {
   const id = uuid(profilId, "Collaborateur");
-  if (id !== moi.id && !estAdmin(moi)) throw new HttpError(403, "Vous ne pouvez accéder qu'à votre propre saisie.");
+  if (valideur(moi)) return id;
+  if (id !== moi.id) throw new HttpError(403, "Vous ne pouvez accéder qu'à votre propre saisie.");
+  if (!aOnglet(moi, "saisie")) throw new HttpError(403, "Accès réservé.");
   return id;
 }
 
@@ -63,7 +68,7 @@ export function routesTemps(r: Routeur) {
 
   r.ajouter("PUT", "temps", async ({ req }) => {
     const moi = await exigerProfil(req);
-    const admin = estAdmin(moi);
+    const admin = valideur(moi);
     const b = await readBody<Record<string, unknown>>(req);
     const profilId = cibler(moi, b.profilId);
     const l = lundi(b.lundi);
@@ -103,7 +108,7 @@ export function routesTemps(r: Routeur) {
 
   r.ajouter("POST", "semaines/statut", async ({ req }) => {
     const moi = await exigerProfil(req);
-    const admin = estAdmin(moi);
+    const admin = valideur(moi);
     const b = await readBody<Record<string, unknown>>(req);
     const profilId = cibler(moi, b.profilId);
     const l = lundi(b.lundi);

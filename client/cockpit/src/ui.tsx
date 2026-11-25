@@ -92,6 +92,7 @@ export const COULEUR_ROLE: Record<Role, string> = {
   assistant: "#1E8A5A",
   qa_manager: "#7A5BC7",
   cofounder: "#DC5A2E",
+  founder: "#B7791F",
 };
 
 export function BadgeRole({ role }: { role: Role }) {
@@ -210,6 +211,13 @@ const ICONES: Record<string, ReactNode> = {
       <path d="M14 3v5h5M9 13h6M9 17h4" />
     </>
   ),
+  profil: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
+    </>
+  ),
+  batiment: <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4" />,
 };
 
 export function Icone({ nom, taille = 20, className }: { nom: keyof typeof ICONES | string; taille?: number; className?: string }) {

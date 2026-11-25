@@ -2,7 +2,7 @@ import { bornesMois, construireRecap, grouperParClient, type LigneRecapBrute, ty
 import { HttpError, json } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
-import { exigerAdmin } from "./session.js";
+import { exigerOnglet } from "./session.js";
 
 type SemaineBrute = {
   id: string;
@@ -20,7 +20,7 @@ const detailler = ({ temps, ...s }: SemaineBrute) => ({ ...s, ...grouperParClien
 // Validation et récap : réservés aux admins (ils exposent les temps de tous et les TJM).
 export function routesSuivi(r: Routeur) {
   r.ajouter("GET", "validation", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "validation");
     const [soumises, validees] = await Promise.all([
       sql`
         SELECT s.id, s.profil_id, p.nom, s.lundi::text AS lundi, s.soumise_le::text AS soumise_le,
@@ -44,7 +44,7 @@ export function routesSuivi(r: Routeur) {
   });
 
   r.ajouter("GET", "recap", async ({ req, url }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "recap");
     const mois = url.searchParams.get("mois") ?? "";
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mois)) throw new HttpError(400, "Mois attendu au format aaaa-mm.");
     const portee = url.searchParams.get("portee") === "toutes" ? "toutes" : "validees";

@@ -4,8 +4,8 @@ import { connecter } from "./outils";
 test("un admin de l'espace client se connecte à Cockpit avec ses identifiants habituels", async ({ page }) => {
   await connecter(page, "ancien-admin@cta.test");
   await expect(page).toHaveURL(/\/cockpit\/$/);
-  await expect(page.getByText("Admin Historique")).toBeVisible();
-  await expect(page.getByText("Co-Founder").first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Mon compte : Admin Historique" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Mon compte/ })).toContainText("Co-Founder");
 });
 
 test("l'espace client se pilote depuis Cockpit : comptes, envoi d'un questionnaire, réponses", async ({ page }) => {

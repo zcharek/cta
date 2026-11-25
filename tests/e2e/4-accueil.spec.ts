@@ -23,7 +23,7 @@ test("mode sombre : les couleurs suivent le réglage du système", async ({ brow
   const page = await contexte.newPage();
   await page.goto("/cockpit/connexion");
   const fond = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--ck-surface").trim());
-  expect(fond).toBe("#101c3d");
+  expect(fond).toBe("#22305a");
   await contexte.close();
 });
 

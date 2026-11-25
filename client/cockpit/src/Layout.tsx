@@ -1,34 +1,46 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { ROLE_LABEL } from "../../../shared/cockpit";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ROLE_LABEL, type Onglet } from "../../../shared/cockpit";
 import type { Moi } from "./api";
 import { surClicLien } from "./routeur";
 import { Avatar, Icone } from "./ui";
 
-type Lien = { chemin: string; libelle: string; icone: string };
+type Lien = { chemin: string; libelle: string; icone: string; onglet: Onglet };
 type Groupe = { titre?: string; liens: Lien[] };
 
-const NAVIGATION_ADMIN: Groupe[] = [
-  { liens: [{ chemin: "/", libelle: "Aujourd'hui", icone: "soleil" }] },
-  { titre: "Prospection VetCare", liens: [{ chemin: "/cabinets", libelle: "Cabinets", icone: "kanban" }] },
+const NAVIGATION: Groupe[] = [
+  { liens: [{ chemin: "/", libelle: "Aujourd'hui", icone: "soleil", onglet: "aujourdhui" }] },
+  { titre: "Prospection VetCare", liens: [{ chemin: "/cabinets", libelle: "Cabinets", icone: "kanban", onglet: "cabinets" }] },
   {
     titre: "Suivi des temps",
     liens: [
-      { chemin: "/saisie", libelle: "Saisie des temps", icone: "horloge" },
-      { chemin: "/validation", libelle: "Validation", icone: "valider" },
-      { chemin: "/recap", libelle: "Récap mensuel", icone: "graphique" },
+      { chemin: "/saisie", libelle: "Saisie des temps", icone: "horloge", onglet: "saisie" },
+      { chemin: "/validation", libelle: "Validation", icone: "valider", onglet: "validation" },
+      { chemin: "/recap", libelle: "Récap mensuel", icone: "graphique", onglet: "recap" },
     ],
   },
-  { titre: "Espace client", liens: [{ chemin: "/espace-client", libelle: "Clients et questionnaires", icone: "document" }] },
+  { titre: "Espace client", liens: [{ chemin: "/espace-client", libelle: "Clients et questionnaires", icone: "document", onglet: "espace_client" }] },
   {
     titre: "Réglages",
     liens: [
-      { chemin: "/reglages/equipe", libelle: "Clients et collaborateurs", icone: "equipe" },
-      { chemin: "/reglages/whatsapp", libelle: "Message WhatsApp", icone: "message" },
+      { chemin: "/reglages/clients", libelle: "Clients", icone: "batiment", onglet: "clients" },
+      { chemin: "/reglages/collaborateurs", libelle: "Collaborateurs", icone: "equipe", onglet: "collaborateurs" },
+      { chemin: "/reglages/whatsapp", libelle: "Message WhatsApp", icone: "message", onglet: "whatsapp" },
     ],
   },
 ];
 
-const NAVIGATION_COLLABORATEUR: Groupe[] = [{ liens: [{ chemin: "/saisie", libelle: "Ma saisie", icone: "horloge" }] }];
+/** Onglet dont dépend une page (null pour une page sans onglet). */
+export function ongletDuChemin(chemin: string): Onglet | null {
+  for (const g of NAVIGATION)
+    for (const l of g.liens) if (l.chemin === "/" ? chemin === "/" : chemin === l.chemin || chemin.startsWith(`${l.chemin}/`)) return l.onglet;
+  return null;
+}
+
+/** Première page accessible : sert de page d'arrivée. */
+export function premierChemin(onglets: readonly Onglet[]): string | null {
+  for (const g of NAVIGATION) for (const l of g.liens) if (onglets.includes(l.onglet)) return l.chemin;
+  return null;
+}
 
 export function PiedDePage() {
   return (
@@ -45,7 +57,13 @@ export function PiedDePage() {
 }
 
 function Navigation({ moi, chemin, onNaviguer }: { moi: Moi; chemin: string; onNaviguer: () => void }) {
-  const groupes = moi.admin ? NAVIGATION_ADMIN : NAVIGATION_COLLABORATEUR;
+  // Seuls les onglets activés pour la personne. Sans Validation, la saisie est la sienne : « Ma saisie ».
+  const groupes = NAVIGATION.map((g) => ({
+    ...g,
+    liens: g.liens
+      .filter((l) => moi.onglets.includes(l.onglet))
+      .map((l) => (l.onglet === "saisie" && !moi.onglets.includes("validation") ? { ...l, libelle: "Ma saisie" } : l)),
+  })).filter((g) => g.liens.length > 0);
   return (
     <nav aria-label="Navigation principale" className="flex-1 space-y-6 overflow-y-auto px-3 py-2">
       {groupes.map((g, i) => (
@@ -81,7 +99,7 @@ function Navigation({ moi, chemin, onNaviguer }: { moi: Moi; chemin: string; onN
   );
 }
 
-function Sidebar({ moi, chemin, onDeconnexion, onNaviguer }: { moi: Moi; chemin: string; onDeconnexion: () => void; onNaviguer: () => void }) {
+function Sidebar({ moi, chemin, onNaviguer }: { moi: Moi; chemin: string; onNaviguer: () => void }) {
   return (
     <div className="ck-sidebar flex h-full w-[272px] flex-col text-white">
       <div className="flex items-center gap-3 px-6 pb-6 pt-7">
@@ -92,18 +110,60 @@ function Sidebar({ moi, chemin, onDeconnexion, onNaviguer }: { moi: Moi; chemin:
         </div>
       </div>
       <Navigation moi={moi} chemin={chemin} onNaviguer={onNaviguer} />
-      <div className="border-t border-white/10 p-4">
-        <div className="flex items-center gap-3">
-          <Avatar nom={moi.nom} couleur="#DC5A2E" taille={38} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{moi.nom}</p>
-            <p className="truncate text-xs text-white/60">{ROLE_LABEL[moi.role]}</p>
-          </div>
-          <button type="button" onClick={onDeconnexion} title="Se déconnecter" aria-label="Se déconnecter" className="rounded-lg p-2 text-white/70 hover:bg-white/10 hover:text-white">
-            <Icone nom="sortie" />
+    </div>
+  );
+}
+
+/** Menu du compte, en haut à droite : Mon profil et déconnexion. */
+function MenuCompte({ moi, chemin, onDeconnexion, sombre = false }: { moi: Moi; chemin: string; onDeconnexion: () => void; sombre?: boolean }) {
+  const [ouvert, setOuvert] = useState(false);
+  const zone = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setOuvert(false), [chemin]);
+  useEffect(() => {
+    if (!ouvert) return;
+    const clic = (e: MouseEvent) => zone.current && !zone.current.contains(e.target as Node) && setOuvert(false);
+    const touche = (e: KeyboardEvent) => e.key === "Escape" && setOuvert(false);
+    document.addEventListener("mousedown", clic);
+    document.addEventListener("keydown", touche);
+    return () => {
+      document.removeEventListener("mousedown", clic);
+      document.removeEventListener("keydown", touche);
+    };
+  }, [ouvert]);
+
+  const element = "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-ck-titre hover:bg-ck-surface-2";
+  return (
+    <div ref={zone} className="relative">
+      <button
+        type="button"
+        onClick={() => setOuvert((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={ouvert}
+        aria-label={`Mon compte : ${moi.nom}`}
+        className={`flex items-center gap-3 rounded-full py-1 pl-1 pr-3 transition ${sombre ? "text-white hover:bg-white/10" : "text-ck-titre hover:bg-ck-surface"}`}
+      >
+        <Avatar nom={moi.nom} couleur="#DC5A2E" taille={sombre ? 32 : 40} />
+        <span className={`min-w-0 text-left ${sombre ? "hidden sm:block" : ""}`}>
+          <span className="block max-w-[200px] truncate text-sm font-bold">{moi.nom}</span>
+          <span className={`block truncate text-xs ${sombre ? "text-white/60" : "text-ck-texte-2"}`}>{ROLE_LABEL[moi.role]}</span>
+        </span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" className={`h-4 w-4 transition ${ouvert ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      {ouvert && (
+        <div role="menu" aria-label="Mon compte" className="ck-carte absolute right-0 top-full z-50 mt-2 w-56 p-1.5">
+          <a role="menuitem" href="/cockpit/profil" onClick={(e) => surClicLien(e, "/profil")} className={element}>
+            <Icone nom="profil" taille={18} className="text-ck-texte-2" />
+            Mon profil
+          </a>
+          <button role="menuitem" type="button" onClick={onDeconnexion} className={element}>
+            <Icone nom="sortie" taille={18} className="text-ck-texte-2" />
+            Se déconnecter
           </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -126,7 +186,7 @@ export function Layout({ moi, chemin, onDeconnexion, children }: { moi: Moi; che
 
       {/* Sidebar fixe sur grand écran */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden lg:block">
-        <Sidebar moi={moi} chemin={chemin} onDeconnexion={onDeconnexion} onNaviguer={() => {}} />
+        <Sidebar moi={moi} chemin={chemin} onNaviguer={() => {}} />
       </aside>
 
       {/* Barre du haut et tiroir sur mobile */}
@@ -143,17 +203,25 @@ export function Layout({ moi, chemin, onDeconnexion, children }: { moi: Moi; che
         </button>
         <img src="/images/logo-light-icon.svg" alt="" className="h-7 w-7" />
         <span className="ck-titre text-lg !text-white">Cockpit</span>
+        <div className="ml-auto">
+          <MenuCompte moi={moi} chemin={chemin} onDeconnexion={onDeconnexion} sombre />
+        </div>
       </div>
       {tiroir && (
         <div className="fixed inset-0 z-40 lg:hidden" id="tiroir-navigation" role="dialog" aria-modal="true" aria-label="Menu">
           <button type="button" aria-label="Fermer le menu" className="absolute inset-0 bg-[#071538]/60" onClick={() => setTiroir(false)} />
           <div className="relative h-full w-[272px] max-w-[85vw] shadow-2xl">
-            <Sidebar moi={moi} chemin={chemin} onDeconnexion={onDeconnexion} onNaviguer={() => setTiroir(false)} />
+            <Sidebar moi={moi} chemin={chemin} onNaviguer={() => setTiroir(false)} />
           </div>
         </div>
       )}
 
-      <main id="contenu" className="mx-auto w-full max-w-6xl px-4 pt-8 sm:px-8 sm:pt-12">
+      {/* En-tête : compte en haut à droite (grand écran) */}
+      <header className="mx-auto hidden w-full max-w-6xl justify-end px-8 pt-5 lg:flex">
+        <MenuCompte moi={moi} chemin={chemin} onDeconnexion={onDeconnexion} />
+      </header>
+
+      <main id="contenu" className="mx-auto w-full max-w-6xl px-4 pt-8 sm:px-8 sm:pt-12 lg:pt-4">
         {children}
       </main>
       <PiedDePage />

@@ -26,13 +26,14 @@
   :root {
     --ck-orange: #e8693e;
     --ck-orange-texte: #f28a63;
-    --ck-ciel-haut: #0d1a3d;
-    --ck-ciel-bas: #081029;
-    --ck-surface: #101c3d;
-    --ck-surface-2: #16244a;
+    /* Zone principale en bleu ardoise, nettement plus claire que la barre latérale marine. */
+    --ck-ciel-haut: #1c2847;
+    --ck-ciel-bas: #172139;
+    --ck-surface: #22305a;
+    --ck-surface-2: #2a3a68;
     --ck-texte: #e8eef9;
-    --ck-texte-2: #a3b0c9;
-    --ck-bordure: #253459;
+    --ck-texte-2: #b0bcd4;
+    --ck-bordure: #34467a;
     --ck-titre: #ffffff;
     --ck-plein: #e8eef9;
     --ck-plein-texte: #071538;
@@ -75,6 +76,7 @@ h3 {
 
 .ck-sidebar {
   background: var(--ck-sidebar);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {

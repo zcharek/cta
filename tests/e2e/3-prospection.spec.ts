@@ -25,6 +25,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("le Kanban affiche les colonnes dans l'ordre, sans les Hors cible", async ({ page }) => {
+  await expect(page.getByRole("region")).toHaveCount(7); // attend l'affichage du Kanban
   const titres = await page.getByRole("region").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")!.split(" :")[0]));
   expect(titres).toEqual(["À contacter", "Message WhatsApp envoyé", "Relancé", "En discussion", "Démo planifiée", "Client signé", "Pas intéressé"]);
   await expect(page.getByText("Clinique Fermée")).toHaveCount(0);

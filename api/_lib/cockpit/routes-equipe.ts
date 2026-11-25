@@ -1,16 +1,34 @@
-import { ROLES, aujourdhui, bornesMois, estAdmin, type Role, type StatutAcces } from "../../../shared/cockpit.js";
+import {
+  EMAIL_FOUNDER,
+  ONGLETS,
+  ROLES_ATTRIBUABLES,
+  aujourdhui,
+  bornesMois,
+  gereLesAcces,
+  ongletsDe,
+  type Onglet,
+  type Role,
+  type StatutAcces,
+} from "../../../shared/cockpit.js";
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
 import { emailInvitation, envoyerEmail, lienVisibleEnReponse, urlApplication } from "./emails.js";
 import { creerJeton, lienMotDePasse } from "./jetons.js";
 import type { Routeur } from "./router.js";
-import { exigerAdmin, exigerProfil, type Profil } from "./session.js";
+import { aOnglet, exigerOnglet, exigerProfil, type Profil } from "./session.js";
 import { email, entier, estDoublon, idsListe, texte } from "./valider.js";
 
 function role(v: unknown): Role {
-  if (!ROLES.includes(v as Role)) throw new HttpError(400, "Type d'utilisateur invalide.");
+  if (!ROLES_ATTRIBUABLES.includes(v as Role)) throw new HttpError(400, "Type d'utilisateur invalide.");
   return v as Role;
 }
+
+function onglets(v: unknown): Onglet[] {
+  if (!Array.isArray(v) || v.some((o) => !ONGLETS.includes(o))) throw new HttpError(400, "Liste d'onglets invalide.");
+  return ONGLETS.filter((o) => v.includes(o));
+}
+
+const RESERVE_GESTION = "Seuls le Founder, un Co-Founder ou un QA Manager peuvent changer le type, les onglets ou l'archivage d'un utilisateur.";
 
 /** Remplace la liste des clients d'un collaborateur (seuls les clients actifs sont retenus). */
 async function affecterClients(profilId: string, clientIds: string[]) {
@@ -45,10 +63,10 @@ async function inviter(req: Request, auteur: Profil, profil: { id: string; nom: 
 
 export function routesEquipe(r: Routeur) {
   r.ajouter("GET", "collaborateurs", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "collaborateurs", "clients", "validation");
     const { debut, fin } = bornesMois(aujourdhui());
     const rows = await sql`
-      SELECT p.id, p.nom, p.email, p.role, p.actif,
+      SELECT p.id, p.nom, p.email, p.role, p.actif, p.onglets, p.telephone, p.adresse,
         p.mot_de_passe_hash IS NOT NULL AS a_mot_de_passe,
         p.invite_le::text AS invite_le, p.active_le::text AS active_le,
         COALESCE((SELECT json_agg(a.client_id) FROM affectations a WHERE a.profil_id = p.id), '[]'::json) AS client_ids,
@@ -56,20 +74,26 @@ export function routesEquipe(r: Routeur) {
                   WHERE s.profil_id = p.id AND t.jour BETWEEN ${debut}::date AND ${fin}::date), 0)::float8 AS jours_mois
       FROM profils p
       ORDER BY p.actif DESC, p.nom`;
-    const collaborateurs = rows.map(({ a_mot_de_passe, ...p }) => ({
+    const collaborateurs = rows.map(({ a_mot_de_passe, onglets: choisis, ...p }) => ({
       ...p,
+      onglets: ongletsDe({ role: p.role, onglets: choisis }),
+      onglets_personnalises: p.role !== "founder" && choisis !== null,
       statut: (!p.actif ? "archive" : a_mot_de_passe ? "actif" : "invitation") satisfies StatutAcces,
     }));
     return json({ collaborateurs });
   });
 
   r.ajouter("POST", "collaborateurs", async ({ req }) => {
-    const auteur = await exigerAdmin(req);
+    const auteur = await exigerOnglet(req, "collaborateurs");
     const b = await readBody<Record<string, unknown>>(req);
     const p = { nom: texte(b.nom, "Nom"), email: email(b.email), role: role(b.role) };
+    const choisis = b.onglets === undefined || b.onglets === null ? null : onglets(b.onglets);
+    // Sans droit de gestion des accès : uniquement des Collaborateurs ou Assistants, avec les onglets par défaut.
+    if (!gereLesAcces(auteur) && (choisis || !["collaborateur", "assistant"].includes(p.role))) throw new HttpError(403, RESERVE_GESTION);
+    if (p.email === EMAIL_FOUNDER) throw new HttpError(409, "Cette adresse est celle du compte Founder.");
     const clientIds = idsListe(b.clientIds, "Client");
     const rows = await sql`
-      INSERT INTO profils (nom, email, role) VALUES (${p.nom}, ${p.email}, ${p.role})
+      INSERT INTO profils (nom, email, role, onglets) VALUES (${p.nom}, ${p.email}, ${p.role}, ${choisis}::text[])
       ON CONFLICT (email) DO NOTHING
       RETURNING id, nom, email`;
     if (!rows[0]) throw new HttpError(409, "Un collaborateur existe déjà avec cette adresse e-mail.");
@@ -79,29 +103,54 @@ export function routesEquipe(r: Routeur) {
   });
 
   r.ajouter("PATCH", "collaborateurs/:id", async ({ req, params }) => {
-    const auteur = await exigerAdmin(req);
+    const auteur = await exigerOnglet(req, "collaborateurs");
     const id = uuid(params.id, "Collaborateur");
     const b = await readBody<Record<string, unknown>>(req);
-    const existant = (await sql`SELECT id, role, actif FROM profils WHERE id = ${id}`)[0];
+    const existant = (await sql`SELECT id, nom, email, role, actif, onglets FROM profils WHERE id = ${id}`)[0];
     if (!existant) throw new HttpError(404, "Collaborateur introuvable.");
 
-    const nom = b.nom === undefined ? null : texte(b.nom, "Nom");
-    const mail = b.email === undefined ? null : email(b.email);
-    const nouveauRole = b.role === undefined ? null : role(b.role);
-    const actif = b.actif === undefined ? null : b.actif === true;
+    let nom = b.nom === undefined ? null : texte(b.nom, "Nom");
+    let mail = b.email === undefined ? null : email(b.email);
+    let nouveauRole = b.role === undefined ? null : role(b.role);
     if (b.actif !== undefined && typeof b.actif !== "boolean") throw new HttpError(400, "Valeur « actif » invalide.");
+    let actif = b.actif === undefined ? null : b.actif === true;
+    let choisis = b.onglets === undefined || b.onglets === null ? null : onglets(b.onglets);
 
-    // Évite de se retirer soi-même l'accès complet.
-    if (id === auteur.id && (actif === false || (nouveauRole && !estAdmin({ role: nouveauRole, actif: true }))))
-      throw new HttpError(400, "Vous ne pouvez pas archiver votre propre compte ni retirer votre accès complet.");
+    // On ignore ce qui ne change pas (le formulaire renvoie tout) pour n'appliquer les règles qu'aux vrais changements.
+    if (nom === existant.nom) nom = null;
+    if (mail === existant.email) mail = null;
+    if (nouveauRole === existant.role) nouveauRole = null;
+    if (actif === existant.actif) actif = null;
+    const ongletsActuels = ongletsDe(existant as { role: Role; onglets: string[] | null });
+    if (choisis && !nouveauRole && choisis.join() === ongletsActuels.join()) choisis = null;
 
+    if (existant.role === "founder") {
+      // Compte fondateur : toujours Founder, actif et avec tous les onglets ; seul lui-même change son nom.
+      if (nouveauRole || actif === false || choisis) throw new HttpError(403, "Le compte Founder ne peut être ni archivé, ni changé de type, ni restreint.");
+      if (mail) throw new HttpError(403, "L'adresse du compte Founder ne peut pas être modifiée.");
+      if (nom && auteur.id !== id) throw new HttpError(403, "Seul le Founder peut modifier son propre compte.");
+    }
+    // Type, onglets, archivage et adresse e-mail d'un autre (qui permettrait de prendre son compte) : gestion des accès.
+    if ((nouveauRole || actif !== null || choisis || (mail && id !== auteur.id)) && !gereLesAcces(auteur)) throw new HttpError(403, RESERVE_GESTION);
+
+    // Évite de se retirer soi-même l'accès.
+    if (id === auteur.id) {
+      if (actif === false) throw new HttpError(400, "Vous ne pouvez pas archiver votre propre compte.");
+      if (nouveauRole && !gereLesAcces({ role: nouveauRole, actif: true })) throw new HttpError(400, "Vous ne pouvez pas retirer votre propre droit de gestion des accès.");
+      const apres = choisis ?? (nouveauRole ? ongletsDe({ role: nouveauRole }) : ongletsActuels);
+      if (!apres.includes("collaborateurs")) throw new HttpError(400, "Vous ne pouvez pas retirer votre propre accès à « Collaborateurs ».");
+    }
+
+    // Changer de type sans préciser les onglets revient aux onglets par défaut du nouveau type.
+    const majOnglets = choisis !== null || nouveauRole !== null;
     try {
       await sql`
         UPDATE profils SET
           nom = COALESCE(${nom}, nom),
           email = COALESCE(${mail}, email),
           role = COALESCE(${nouveauRole}, role),
-          actif = COALESCE(${actif}::boolean, actif)
+          actif = COALESCE(${actif}::boolean, actif),
+          onglets = CASE WHEN ${majOnglets}::boolean THEN ${choisis}::text[] ELSE onglets END
         WHERE id = ${id}`;
     } catch (err) {
       if (estDoublon(err)) throw new HttpError(409, "Un autre collaborateur utilise déjà cette adresse e-mail.");
@@ -114,7 +163,7 @@ export function routesEquipe(r: Routeur) {
   });
 
   r.ajouter("POST", "collaborateurs/:id/invitation", async ({ req, params }) => {
-    const auteur = await exigerAdmin(req);
+    const auteur = await exigerOnglet(req, "collaborateurs");
     const id = uuid(params.id, "Collaborateur");
     const rows = await sql`SELECT id, nom, email, actif, mot_de_passe_hash IS NOT NULL AS a_mot_de_passe FROM profils WHERE id = ${id}`;
     const p = rows[0];
@@ -124,10 +173,11 @@ export function routesEquipe(r: Routeur) {
     return json({ invitation: await inviter(req, auteur, p as { id: string; nom: string; email: string }) });
   });
 
-  // Un admin voit tout (dont le TJM) ; un collaborateur ne voit que ses clients assignés, sans TJM (équivalent de la vue mes_clients).
+  // Avec l'onglet Clients, Collaborateurs, Validation ou Récap : tous les clients (dont le TJM).
+  // Sinon, seulement ses clients assignés, sans TJM (équivalent de la vue mes_clients).
   r.ajouter("GET", "clients", async ({ req }) => {
     const moi = await exigerProfil(req);
-    if (!estAdmin(moi)) {
+    if (!aOnglet(moi, "clients", "collaborateurs", "validation", "recap")) {
       const clients = await sql`
         SELECT c.id, c.nom FROM clients c JOIN affectations a ON a.client_id = c.id
         WHERE a.profil_id = ${moi.id} AND c.actif ORDER BY c.nom`;
@@ -144,7 +194,7 @@ export function routesEquipe(r: Routeur) {
   });
 
   r.ajouter("POST", "clients", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "clients");
     const b = await readBody<Record<string, unknown>>(req);
     const nom = texte(b.nom, "Nom du client");
     const tjm = entier(b.tjmDzd, "TJM");
@@ -154,7 +204,7 @@ export function routesEquipe(r: Routeur) {
   });
 
   r.ajouter("PATCH", "clients/:id", async ({ req, params }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "clients");
     const id = uuid(params.id, "Client");
     const b = await readBody<Record<string, unknown>>(req);
     const nom = b.nom === undefined ? null : texte(b.nom, "Nom du client");

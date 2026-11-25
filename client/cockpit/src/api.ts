@@ -1,4 +1,4 @@
-import type { Moi, Role, StatutAcces } from "../../../shared/cockpit";
+import type { Moi, Onglet, Role, StatutAcces } from "../../../shared/cockpit";
 
 export class ErreurApi extends Error {
   constructor(public status: number, message: string) {
@@ -35,6 +35,11 @@ export type Collaborateur = {
   active_le: string | null;
   client_ids: string[];
   jours_mois: number;
+  /** Onglets effectifs (ceux de son type, sauf choix particulier). */
+  onglets: Onglet[];
+  onglets_personnalises: boolean;
+  telephone: string | null;
+  adresse: string | null;
 };
 
 export type ClientAdmin = {

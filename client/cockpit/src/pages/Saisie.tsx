@@ -56,8 +56,10 @@ function Case({ valeur, libelle, modifiable, onClic }: { valeur: number; libelle
 const LIGNE = "grid grid-cols-5 items-center gap-x-2 gap-y-2 sm:grid-cols-[minmax(0,1fr)_repeat(5,3.5rem)_4.5rem]";
 
 export default function Saisie({ moi }: { moi: Moi }) {
+  // Avec l'onglet Validation : saisie de tout le monde, validation et réouverture.
+  const valideur = moi.onglets.includes("validation");
   const params = new URLSearchParams(window.location.search);
-  const [profilId, setProfilId] = useState(() => (moi.admin && params.get("profil")) || moi.id);
+  const [profilId, setProfilId] = useState(() => (valideur && params.get("profil")) || moi.id);
   const [lundi, setLundi] = useState(() => {
     const l = params.get("lundi");
     return l && /^\d{4}-\d{2}-\d{2}$/.test(l) ? lundiDe(l) : lundiDe(aujourdhui());
@@ -91,14 +93,14 @@ export default function Saisie({ moi }: { moi: Moi }) {
   }, [charger, lundi, profilId, moi.id]);
 
   useEffect(() => {
-    if (!moi.admin) return;
+    if (!valideur) return;
     api<{ collaborateurs: Collaborateur[] }>("collaborateurs").then((d) => setCollaborateurs(d.collaborateurs)).catch(() => {});
     api<{ clients: ClientAdmin[] }>("clients").then((d) => setClients(d.clients)).catch(() => {});
-  }, [moi.admin]);
+  }, [valideur]);
 
   const jours = useMemo(() => joursOuvres(lundi), [lundi]);
   const statut = donnees?.semaine.statut ?? "brouillon";
-  const modifiable = moi.admin ? statut !== "validee" : statut === "brouillon";
+  const modifiable = valideur ? statut !== "validee" : statut === "brouillon";
   const lignes = useMemo(() => {
     const vues = new Set(donnees?.lignes.map((l) => l.id));
     return [...(donnees?.lignes ?? []), ...ponctuels.filter((p) => !vues.has(p.id))];
@@ -145,20 +147,20 @@ export default function Saisie({ moi }: { moi: Moi }) {
     }
   }
 
-  const cible = moi.admin ? collaborateurs.find((c) => c.id === profilId) : undefined;
+  const cible = valideur ? collaborateurs.find((c) => c.id === profilId) : undefined;
   const ajoutables = clients.filter((c) => c.actif && !lignes.some((l) => l.id === c.id));
   const cetteSemaine = lundiDe(aujourdhui());
 
   return (
     <>
-      {moi.admin ? (
+      {valideur ? (
         <EnTete titre="Saisie" accent="des temps." />
       ) : (
         <EnTete titre={`Bonjour ${prenom(moi.nom)},`} accent="voici votre semaine." />
       )}
 
       <div className="mb-5 flex flex-wrap items-end gap-3">
-        {moi.admin && (
+        {valideur && (
           <div className="w-full sm:w-72">
             <label htmlFor="choix-collab" className="mb-1.5 block text-sm font-semibold text-ck-titre">
               Collaborateur
@@ -214,7 +216,7 @@ export default function Saisie({ moi }: { moi: Moi }) {
 
           {lignes.length === 0 ? (
             <Info>
-              {moi.admin
+              {valideur
                 ? "Aucun client assigné à ce collaborateur. Ajoutez un client ponctuel ci-dessous, ou assignez-lui des clients dans Réglages."
                 : "Aucun client ne vous est assigné pour l'instant. Contactez un responsable de Central Test Agency."}
             </Info>
@@ -272,7 +274,7 @@ export default function Saisie({ moi }: { moi: Moi }) {
             </div>
           )}
 
-          {moi.admin && modifiable && ajoutables.length > 0 && (
+          {valideur && modifiable && ajoutables.length > 0 && (
             <div className="mt-5 sm:w-80">
               <label htmlFor="ajout-client" className="mb-1.5 block text-sm font-semibold text-ck-titre">
                 Ajouter un client ponctuel à la semaine
@@ -303,7 +305,7 @@ export default function Saisie({ moi }: { moi: Moi }) {
             {statut === "soumise" && (
               <p className="mr-auto text-sm text-ck-texte-2">
                 Soumise le {dateCourte(donnees.semaine.soumise_le)}
-                {moi.admin ? "." : ", en attente de validation."}
+                {valideur ? "." : ", en attente de validation."}
               </p>
             )}
             {statut === "brouillon" && (
@@ -313,15 +315,15 @@ export default function Saisie({ moi }: { moi: Moi }) {
             )}
             {statut === "soumise" && (
               <Bouton variante="contour" disabled={occupe} onClick={() => void changerStatut("brouillon")}>
-                {moi.admin ? "Renvoyer en brouillon" : "Repasser en brouillon"}
+                {valideur ? "Renvoyer en brouillon" : "Repasser en brouillon"}
               </Bouton>
             )}
-            {statut === "soumise" && moi.admin && (
+            {statut === "soumise" && valideur && (
               <Bouton disabled={occupe || enCours > 0} onClick={() => void changerStatut("validee")}>
                 Valider
               </Bouton>
             )}
-            {statut === "validee" && moi.admin && (
+            {statut === "validee" && valideur && (
               <Bouton variante="contour" disabled={occupe} onClick={() => void changerStatut("brouillon")}>
                 Rouvrir la semaine
               </Bouton>

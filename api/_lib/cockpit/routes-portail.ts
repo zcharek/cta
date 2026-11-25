@@ -1,13 +1,13 @@
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
-import { exigerAdmin } from "./session.js";
+import { exigerOnglet } from "./session.js";
 
 // Espace client (portail public des prospects et clients) piloté depuis Cockpit : comptes, questionnaires envoyés, réponses.
 // Mêmes tables que l'espace client (users, questionnaires, assignments) ; réservé aux admins de Cockpit.
 export function routesPortail(r: Routeur) {
   r.ajouter("GET", "portail", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "espace_client");
     const [comptes, questionnaires] = await Promise.all([
       sql`
         SELECT u.id, u.name AS nom, u.email, u.company AS societe, u.phone AS telephone, u.created_at::text AS inscrit_le,
@@ -22,7 +22,7 @@ export function routesPortail(r: Routeur) {
   });
 
   r.ajouter("POST", "portail/envois", async ({ req }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "espace_client");
     const b = await readBody<{ compteId?: unknown; questionnaireId?: unknown; message?: unknown }>(req);
     const compteId = uuid(b.compteId, "Compte client");
     const questionnaireId = uuid(b.questionnaireId, "Questionnaire");
@@ -38,7 +38,7 @@ export function routesPortail(r: Routeur) {
   });
 
   r.ajouter("GET", "portail/envois/:id", async ({ req, params }) => {
-    await exigerAdmin(req);
+    await exigerOnglet(req, "espace_client");
     const id = uuid(params.id, "Questionnaire");
     const [envoi] = await sql`
       SELECT a.id, a.title AS titre, a.message, a.status AS statut, a.sent_at::text AS envoye_le, a.submitted_at::text AS repondu_le,
