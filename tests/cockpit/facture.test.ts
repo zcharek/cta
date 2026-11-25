@@ -1,7 +1,7 @@
 // Factures : montants, montant en lettres, numérotation continue après 012-26, PDF.
 import { readFileSync } from "node:fs";
 import { PDFDocument } from "pdf-lib";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Sql } from "../../api/_lib/cockpit/db";
 import { calculerFacture, enLettres, genererFacture, lireNumeroFacture, montantEnLettres, montantFacture, nomFichierFacture, numeroFacture } from "../../shared/facture";
 import { appeler, creerProfil, preparerBase } from "./outils";
@@ -37,6 +37,9 @@ describe("règles de la facture", () => {
 });
 
 describe("émission des factures", () => {
+  afterAll(() => {
+    delete process.env.ENTREPRISE_CTA;
+  });
   let sql: Sql;
   let admin: string;
   let clientId: string;
@@ -50,12 +53,8 @@ describe("émission des factures", () => {
     numero_contrat = 'N°2025-01-TEST', forfait_mensuel_dzd = 160000, jours_forfait = 22,
     raison_sociale_facture = 'SARL Algeria E-Banking Services', rc = '16/00-0000000 B 00', nif = '000000000000001'
     WHERE id = ${clientId}`;
-    // Identité de l'entreprise fictive (la vraie se saisit dans Cockpit)
-    const entreprise = await appeler("PUT", "parametres/entreprise", {
-      cookie: admin,
-      corps: { raison_sociale: "SARL CENTRAL TEST APPLICATION", siege: "Draria, Alger", rc: "16/00-1111111 B 25", nif: "000000000000002", nis: "000000000000003", ai: "00000000000", rib: "000 00000 0000000000-00", banque: "Banque Test", email: "facturation@cta.test", ville: "Alger" },
-    });
-    expect(entreprise.status).toBe(200);
+    // Identité de l'entreprise fictive : en production, elle vient de la variable ENTREPRISE_CTA (hors dépôt)
+    process.env.ENTREPRISE_CTA = JSON.stringify({ raison_sociale: "SARL CENTRAL TEST APPLICATION", siege: "Draria, Alger", rc: "16/00-1111111 B 25", nif: "000000000000002", nis: "000000000000003", ai: "00000000000", rib: "000 00000 0000000000-00", banque: "Banque Test", email: "facturation@cta.test", ville: "Alger" });
     // Avril 2026 : 22 jours ouvrés validés
     const lundis = ["2026-03-30", "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27"];
     for (const l of lundis) {
@@ -101,10 +100,13 @@ describe("émission des factures", () => {
     expect((await appeler("POST", "factures", { cookie: admin, corps: { clientId, mois: "2026-06", dateEmission: "2026-07-01" } })).status).toBe(409);
   });
 
-  it("le numéro de départ et la TVA se règlent ; réservé à l'onglet Factures", async () => {
-    expect((await appeler("PUT", "parametres/facturation", { cookie: admin, corps: { derniere: "pas un numéro" } })).status).toBe(400);
-    expect((await appeler("PUT", "parametres/facturation", { cookie: admin, corps: { derniere: "040-26", tva: "19" } })).status).toBe(200);
-    expect((await appeler("GET", "factures", { cookie: admin })).data.prochain).toBe("041-26");
+  it("numérotation, TVA et identité de l'entreprise ne sont pas modifiables ; réservé à l'onglet Factures", async () => {
+    // Aucune route d'écriture : 404 ou 405 (méthode non autorisée)
+    expect([404, 405]).toContain((await appeler("PUT", "parametres/facturation", { cookie: admin, corps: { derniere: "040-26", tva: "10" } })).status);
+    expect([404, 405]).toContain((await appeler("PUT", "parametres/entreprise", { cookie: admin, corps: { rib: "999" } })).status);
+    const liste = await appeler("GET", "factures", { cookie: admin });
+    expect(liste.data).toMatchObject({ prochain: "014-26", tva: 19, derniereHorsCockpit: "012-26" });
+    expect((await appeler("GET", "parametres/entreprise", { cookie: admin })).data).toMatchObject({ verrouillee: true, entreprise: { rib: "000 00000 0000000000-00" } });
     const collab = await creerProfil(sql, "collaborateur");
     expect((await appeler("GET", "factures", { cookie: collab.cookie })).status).toBe(403);
   });
@@ -115,7 +117,7 @@ describe("émission des factures", () => {
     const octets = await genererFacture(r.data.donnees, logo);
     const pdf = await PDFDocument.load(octets);
     expect(pdf.getPageCount()).toBe(1);
-    expect(nomFichierFacture(r.data.donnees)).toBe("Facture_041-26_Algeria-E-Banking-Services.pdf");
+    expect(nomFichierFacture(r.data.donnees)).toBe("Facture_014-26_Algeria-E-Banking-Services.pdf");
     if (process.env.FACTURE_SORTIE) (await import("node:fs")).writeFileSync(process.env.FACTURE_SORTIE, octets);
   });
 });

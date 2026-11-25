@@ -62,7 +62,7 @@ Page **Factures** (onglet `factures`) : choix du client, du mois et de la date d
 - Numérotation `NNN-AA`, continue par année, après la dernière facture envoyée avant Cockpit (réglage « Numérotation », 012-26 au départ). Le numéro est attribué à l'émission ; seule la dernière facture de l'année peut être supprimée.
 - Chaque facture garde une copie de tout ce qui est imprimé (`factures.donnees`) : on la retélécharge à l'identique, même si la fiche client change.
 - Un deuxième passage sur le même client et le même mois demande confirmation.
-- Identité légale de CTA (RC, NIF, NIS, AI, RIB…) : carte « Identité de l'entreprise » de la page Factures, stockée en base uniquement (paramètre `entreprise`). **Le dépôt est public : aucun identifiant réel (entreprise, clients, salariés) ne doit être versionné**, ni dans les migrations ni dans les tests.
+- Identité légale de CTA (raison sociale, siège, RC, NIF, NIS, AI, RIB, banque, e-mail, ville, N° adhérent CNAS) : variable d'environnement Vercel `ENTREPRISE_CTA` (JSON), affichée en lecture seule. Numérotation (après 012-26) et TVA (19 %) : fixées par la migration 0006, sans route de modification. **Le dépôt est public : aucun identifiant réel (entreprise, clients, salariés) ne doit être versionné**, ni dans les migrations ni dans les tests.
 - RC, NIF, raison sociale de facturation, contrat et forfait du client : fiche client.
 
 ## Bulletins de paie

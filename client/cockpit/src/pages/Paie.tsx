@@ -17,7 +17,7 @@ type Salarie = {
   numero_compte: string | null;
 };
 type Bulletin = { id: string; mois: string; profil_id: string; nom: string; brut: number; net: number };
-type Donnees = { numeroAdherent: string | null; salaries: Salarie[]; bulletins: Bulletin[]; prochainMatricule: string };
+type Donnees = { numeroAdherent: string | null; adherentFige: boolean; salaries: Salarie[]; bulletins: Bulletin[]; prochainMatricule: string };
 
 const da = (n: number) => `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[  ]/g, " ")} DA`;
 
@@ -108,9 +108,10 @@ function Formulaire({ salarie, donnees, onGenere }: { salarie: Salarie; donnees:
         libelle="N° adhérent (CNAS)"
         name="numeroAdherent"
         defaultValue={donnees.numeroAdherent ?? ""}
+        readOnly={donnees.adherentFige}
         required
         placeholder="12345678 90"
-        aide={donnees.numeroAdherent ? "Enregistré : modifiable si besoin." : "Demandé une seule fois, puis repris sur tous les bulletins."}
+        aide={donnees.adherentFige ? "Identité de l'entreprise : non modifiable." : donnees.numeroAdherent ? "Enregistré, repris sur tous les bulletins." : "Demandé une seule fois, puis repris sur tous les bulletins."}
       />
 
       {titre("Salarié")}

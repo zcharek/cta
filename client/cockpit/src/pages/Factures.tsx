@@ -137,7 +137,7 @@ function Emettre({ clients, onEmise }: { clients: ClientAdmin[]; onEmise: () => 
             {(!apercu.client.rc || !apercu.client.nif || !apercu.client.adresse) && (
               <Info>La fiche du client n'a pas d'adresse, de RC ou de NIF : complétez-la dans Clients pour qu'ils figurent sur la facture.</Info>
             )}
-            {apercu.entrepriseIncomplete && <Info>L'identité de l'entreprise (NIF, RIB…) n'est pas encore renseignée : complétez la carte « Identité de l'entreprise » avant d'émettre.</Info>}
+            {apercu.entrepriseIncomplete && <Info>L'identité de l'entreprise (NIF, RIB…) n'est pas configurée : prévenez l'administrateur technique avant d'émettre.</Info>}
             {apercu.joursNonValides > 0 && <Info>{formatJours(apercu.joursNonValides)} saisis mais pas encore validés ne sont pas facturés.</Info>}
             {apercu.dejaFacture.length > 0 && <Info>Ce mois est déjà facturé à ce client : facture {apercu.dejaFacture.join(", ")}.</Info>}
             {message && (
@@ -155,8 +155,8 @@ function Emettre({ clients, onEmise }: { clients: ClientAdmin[]; onEmise: () => 
   );
 }
 
-const CHAMPS_ENTREPRISE: [string, string, string?][] = [
-  ["raison_sociale", "Raison sociale", "SARL CENTRAL TEST APPLICATION"],
+const CHAMPS_ENTREPRISE: [string, string][] = [
+  ["raison_sociale", "Raison sociale"],
   ["siege", "Siège social"],
   ["rc", "RC"],
   ["nif", "NIF"],
@@ -165,105 +165,51 @@ const CHAMPS_ENTREPRISE: [string, string, string?][] = [
   ["rib", "RIB"],
   ["banque", "Domiciliation bancaire"],
   ["email", "E-mail"],
-  ["ville", "Ville d'émission", "Alger"],
 ];
 
-/** Identité légale imprimée sur les factures : stockée en base uniquement (le code est public). */
+function Ligne({ libelle, valeur }: { libelle: string; valeur: string | null | undefined }) {
+  return (
+    <div className="flex justify-between gap-4 border-b border-ck-bordure py-2 text-sm last:border-0">
+      <dt className="text-ck-texte-2">{libelle}</dt>
+      <dd className={`text-right font-semibold ${valeur ? "text-ck-titre" : "italic text-ck-texte-2"}`}>{valeur || "Non renseigné"}</dd>
+    </div>
+  );
+}
+
+/** Identité légale imprimée sur les factures : figée (variable ENTREPRISE_CTA), affichée en lecture seule. */
 function Entreprise() {
-  const [valeurs, setValeurs] = useState<Record<string, string> | null>(null);
-  const [ouvert, setOuvert] = useState(false);
+  const [entreprise, setEntreprise] = useState<Record<string, string> | null>(null);
   const [erreur, setErreur] = useState("");
-  const [ok, setOk] = useState(false);
   useEffect(() => {
     api<{ entreprise: Record<string, string> | null }>("parametres/entreprise")
-      .then((d) => {
-        setValeurs(d.entreprise ?? {});
-        if (!d.entreprise?.nif || !d.entreprise?.rib) setOuvert(true);
-      })
+      .then((d) => setEntreprise(d.entreprise ?? {}))
       .catch((e: Error) => setErreur(e.message));
   }, []);
-  async function envoyer(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
-    setErreur("");
-    setOk(false);
-    try {
-      await api("parametres/entreprise", { methode: "PUT", corps: f });
-      setValeurs(f);
-      setOk(true);
-    } catch (err) {
-      setErreur((err as Error).message);
-    }
-  }
-  const incomplet = valeurs && (!valeurs.nif || !valeurs.rib);
   return (
     <Carte aria-labelledby="titre-entreprise">
-      <EnteteSection
-        id="titre-entreprise"
-        icone="identite"
-        titre="Identité de l'entreprise"
-        sousTitre={incomplet ? "À compléter : imprimée en tête des factures." : "Imprimée en tête des factures."}
-        action={
-          <Bouton variante="discret" className="!px-3 !py-1.5" onClick={() => setOuvert((o) => !o)} aria-expanded={ouvert}>
-            {ouvert ? "Masquer" : "Modifier"}
-          </Bouton>
-        }
-      />
+      <EnteteSection id="titre-entreprise" icone="cadenas" titre="Identité de l'entreprise" sousTitre="Imprimée en tête des factures. Non modifiable." />
       {erreur && <Erreur>{erreur}</Erreur>}
-      {ouvert && valeurs && (
-        <form onSubmit={envoyer} className="grid gap-3">
-          {CHAMPS_ENTREPRISE.map(([cle, libelle, defaut]) => (
-            <Champ key={cle} libelle={libelle} name={cle} defaultValue={valeurs[cle] || defaut || ""} />
+      {entreprise && (
+        <dl>
+          {CHAMPS_ENTREPRISE.map(([cle, libelle]) => (
+            <Ligne key={cle} libelle={libelle} valeur={entreprise[cle]} />
           ))}
-          {ok && (
-            <p role="status" className="text-sm font-semibold text-emerald-700">
-              Enregistré.
-            </p>
-          )}
-          <Bouton type="submit" variante="contour" className="justify-self-start">
-            Enregistrer
-          </Bouton>
-        </form>
+        </dl>
       )}
     </Carte>
   );
 }
 
-function Reglages({ liste, onEnregistre }: { liste: Liste; onEnregistre: () => void }) {
-  const [erreur, setErreur] = useState("");
-  const [ok, setOk] = useState(false);
-  async function envoyer(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
-    setErreur("");
-    setOk(false);
-    try {
-      await api("parametres/facturation", { methode: "PUT", corps: { derniere: f.derniere, tva: f.tva } });
-      setOk(true);
-      onEnregistre();
-    } catch (err) {
-      setErreur((err as Error).message);
-    }
-  }
+function Reglages({ liste }: { liste: Liste }) {
   return (
     <Carte aria-labelledby="titre-numerotation">
-      <EnteteSection id="titre-numerotation" icone="document" titre="Numérotation" sousTitre="Suite de vos factures et taux de TVA." />
-      <p className="mb-4 text-sm text-ck-texte-2">
-        Prochaine facture : <strong className="text-ck-titre">{liste.prochain}</strong>. La numérotation repart à 001 chaque année.
-      </p>
-      <form onSubmit={envoyer} className="grid gap-4">
-        <Champ libelle="Dernière facture envoyée avant Cockpit" name="derniere" defaultValue={liste.derniereHorsCockpit ?? ""} placeholder="012-26" aide="Cockpit continue après ce numéro." />
-        <Champ libelle="TVA (%)" name="tva" inputMode="decimal" defaultValue={String(liste.tva)} required />
-        {erreur && <Erreur>{erreur}</Erreur>}
-        {ok && (
-          <p role="status" className="text-sm font-semibold text-emerald-700">
-            Enregistré.
-          </p>
-        )}
-        <Bouton type="submit" variante="contour" className="justify-self-start">
-          Enregistrer
-        </Bouton>
-      </form>
+      <EnteteSection id="titre-numerotation" icone="cadenas" titre="Numérotation" sousTitre="Suite de vos factures et taux de TVA. Non modifiable." />
+      <dl>
+        <Ligne libelle="Prochaine facture" valeur={liste.prochain} />
+        <Ligne libelle="Dernière facture envoyée avant Cockpit" valeur={liste.derniereHorsCockpit} />
+        <Ligne libelle="TVA" valeur={`${String(liste.tva).replace(".", ",")} %`} />
+      </dl>
+      <p className="mt-3 text-xs text-ck-texte-2">La numérotation repart à 001 chaque année.</p>
     </Carte>
   );
 }
@@ -317,7 +263,7 @@ export default function Factures() {
       <div className="grid items-start gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">{clients.length ? <Emettre clients={clients} onEmise={charger} /> : <Info>Créez d'abord un client.</Info>}</div>
         <div className="grid gap-6 lg:col-span-2">
-          <Reglages liste={liste} onEnregistre={charger} />
+          <Reglages liste={liste} />
           <Entreprise />
         </div>
       </div>

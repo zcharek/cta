@@ -2,6 +2,7 @@ import { paieDepuisNet, type DonneesBulletin } from "../../../shared/paie.js";
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
+import { identiteEntreprise } from "./entreprise.js";
 import { exigerOnglet } from "./session.js";
 
 // Bulletins de paie (onglet « paie », données sensibles) : le brut est calculé à partir du net convenu.
@@ -33,9 +34,9 @@ function dateIso(v: unknown, quoi: string): string | null {
 }
 
 async function entreprise() {
-  const [r] = await sql`SELECT valeur FROM parametres WHERE cle = 'entreprise'`;
-  if (!r) throw new HttpError(500, "Identité de l'entreprise non configurée.");
-  return r.valeur as { raison_sociale: string; siege: string; numero_adherent?: string | null };
+  const { entreprise: e } = await identiteEntreprise();
+  if (!e) throw new HttpError(500, "Identité de l'entreprise non configurée.");
+  return e;
 }
 
 async function prochainMatricule(): Promise<string> {
@@ -58,7 +59,8 @@ export function routesPaie(r: Routeur) {
         ORDER BY b.mois DESC, p.nom`,
       prochainMatricule(),
     ]);
-    return json({ numeroAdherent: e.numero_adherent ?? null, salaries, bulletins, prochainMatricule: matricule });
+    const adherentFige = !!process.env.ENTREPRISE_CTA && !!(JSON.parse(process.env.ENTREPRISE_CTA) as { numero_adherent?: string }).numero_adherent;
+    return json({ numeroAdherent: e.numero_adherent ?? null, adherentFige, salaries, bulletins, prochainMatricule: matricule });
   });
 
   r.ajouter("GET", "paie/apercu", async ({ req, url }) => {
@@ -76,9 +78,12 @@ export function routesPaie(r: Routeur) {
     const e = await entreprise();
 
     // N° adhérent : demandé une fois, puis conservé
-    const adherent = texte(b.numeroAdherent, "N° adhérent", 40) ?? e.numero_adherent ?? null;
+    // N° adhérent figé dans ENTREPRISE_CTA : la valeur envoyée est ignorée.
+    const fige = !!process.env.ENTREPRISE_CTA && !!(JSON.parse(process.env.ENTREPRISE_CTA) as { numero_adherent?: string }).numero_adherent;
+    const adherent = (fige ? e.numero_adherent : texte(b.numeroAdherent, "N° adhérent", 40)) ?? e.numero_adherent ?? null;
     if (!adherent) throw new HttpError(400, "N° adhérent de l'employeur : champ obligatoire.");
-    if (adherent !== e.numero_adherent) await sql`UPDATE parametres SET valeur = valeur || ${JSON.stringify({ numero_adherent: adherent })}::jsonb WHERE cle = 'entreprise'`;
+    // (sauvegardé en base ; s'il est figé dans ENTREPRISE_CTA, c'est celui-là qui est repris)
+    if (!fige && adherent !== e.numero_adherent) await sql`UPDATE parametres SET valeur = valeur || ${JSON.stringify({ numero_adherent: adherent })}::jsonb WHERE cle = 'entreprise'`;
 
     const situation = texte(b.situationFamiliale, "Situation familiale", 1);
     if (situation && !["C", "M", "D", "V"].includes(situation)) throw new HttpError(400, "Situation familiale invalide.");

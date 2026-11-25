@@ -1,8 +1,9 @@
 import { bornesMois, aujourdhui } from "../../../shared/cockpit.js";
-import { calculerFacture, lireNumeroFacture, numeroFacture, type DonneesFacture, type Entreprise } from "../../../shared/facture.js";
+import { calculerFacture, numeroFacture, type DonneesFacture, type Entreprise } from "../../../shared/facture.js";
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
+import { identiteEntreprise } from "./entreprise.js";
 import { exigerOnglet } from "./session.js";
 
 type Facturation = { tva: number; derniere: { numero: number; annee: number } | null };
@@ -19,10 +20,9 @@ function dateIso(v: unknown, quoi: string): string {
   return v;
 }
 
-async function parametres(): Promise<{ facturation: Facturation; entreprise: Entreprise }> {
-  const rows = await sql`SELECT cle, valeur FROM parametres WHERE cle IN ('facturation', 'entreprise')`;
-  const v = Object.fromEntries(rows.map((r) => [r.cle, r.valeur]));
-  return { facturation: v.facturation ?? { tva: 19, derniere: null }, entreprise: v.entreprise };
+async function parametres(): Promise<{ facturation: Facturation; entreprise: Entreprise | null }> {
+  const [[f], { entreprise }] = await Promise.all([sql`SELECT valeur FROM parametres WHERE cle = 'facturation'`, identiteEntreprise()]);
+  return { facturation: f?.valeur ?? { tva: 19, derniere: null }, entreprise };
 }
 
 /** Prochain numéro de l'année : après la dernière facture de Cockpit et la dernière envoyée avant Cockpit. */
@@ -153,59 +153,11 @@ export function routesFactures(r: Routeur) {
     return json({ ok: true });
   });
 
-  r.ajouter("PUT", "parametres/facturation", async ({ req }) => {
-    await exigerOnglet(req, "factures");
-    const b = await readBody<{ derniere?: unknown; tva?: unknown }>(req);
-    const { facturation } = await parametres();
-    let derniere = facturation.derniere;
-    if (b.derniere !== undefined) {
-      if (b.derniere === null || b.derniere === "") derniere = null;
-      else {
-        derniere = typeof b.derniere === "string" ? lireNumeroFacture(b.derniere) : null;
-        if (!derniere) throw new HttpError(400, "Numéro attendu au format 012-26.");
-      }
-    }
-    let tva = facturation.tva;
-    if (b.tva !== undefined) {
-      tva = typeof b.tva === "number" ? b.tva : Number(String(b.tva).replace(",", "."));
-      if (!Number.isFinite(tva) || tva < 0 || tva > 100) throw new HttpError(400, "Taux de TVA invalide.");
-    }
-    await sql`
-      INSERT INTO parametres (cle, valeur) VALUES ('facturation', ${JSON.stringify({ tva, derniere })}::jsonb)
-      ON CONFLICT (cle) DO UPDATE SET valeur = EXCLUDED.valeur`;
-    return json({ ok: true });
-  });
-
-  // Identité légale de l'entreprise (en-tête des factures et bulletins) : saisie dans Cockpit, jamais versionnée.
+  // Identité légale de l'entreprise (en-tête des factures et bulletins) : lecture seule.
+  // La numérotation (dernière facture avant Cockpit : 012-26) et la TVA (19 %) sont fixées par la migration 0006 :
+  // aucune route ne permet de les modifier.
   r.ajouter("GET", "parametres/entreprise", async ({ req }) => {
     await exigerOnglet(req, "factures", "paie");
-    return json({ entreprise: (await parametres()).entreprise });
-  });
-
-  r.ajouter("PUT", "parametres/entreprise", async ({ req }) => {
-    await exigerOnglet(req, "factures");
-    const b = await readBody<Record<string, unknown>>(req);
-    const champ = (cle: string, max = 120) => {
-      const v = typeof b[cle] === "string" ? (b[cle] as string).trim() : "";
-      if (v.length > max) throw new HttpError(400, `${cle} : ${max} caractères maximum.`);
-      return v;
-    };
-    const maj = {
-      raison_sociale: champ("raison_sociale") || "SARL CENTRAL TEST APPLICATION",
-      siege: champ("siege", 200),
-      rc: champ("rc", 60),
-      nif: champ("nif", 60),
-      nis: champ("nis", 60),
-      ai: champ("ai", 60),
-      rib: champ("rib", 80),
-      banque: champ("banque"),
-      email: champ("email"),
-      ville: champ("ville", 60) || "Alger",
-    };
-    // On garde les autres clés (ex. N° adhérent, saisi depuis les bulletins de paie)
-    await sql`
-      INSERT INTO parametres (cle, valeur) VALUES ('entreprise', ${JSON.stringify(maj)}::jsonb)
-      ON CONFLICT (cle) DO UPDATE SET valeur = parametres.valeur || EXCLUDED.valeur`;
-    return json({ ok: true });
+    return json(await identiteEntreprise());
   });
 }
