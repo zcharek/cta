@@ -193,8 +193,11 @@ class Dessin {
   }
 }
 
-/** Génère la facture. `logo` : PNG du logo CTA seul (sans texte, facultatif), placé en haut à gauche. */
-export async function genererFacture(d: DonneesFacture, logo?: Uint8Array): Promise<Uint8Array> {
+/**
+ * Génère la facture. `logo` : PNG du logo CTA seul (sans texte, facultatif), placé en haut à gauche.
+ * `cachet` : PNG du tampon et de la signature (facultatif), sous « L'Entreprise ».
+ */
+export async function genererFacture(d: DonneesFacture, logo?: Uint8Array, cachet?: Uint8Array): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`Facture ${d.numero} - ${d.client.raison_sociale}`);
   doc.setAuthor(d.entreprise.raison_sociale);
@@ -324,6 +327,12 @@ export async function genererFacture(d: DonneesFacture, logo?: Uint8Array): Prom
   const titre = "L'Entreprise";
   g.texte(titre, 420, y, 11, g.gras);
   g.souligne(420, y, g.largeur(titre, 11, g.gras));
+  if (cachet) {
+    const img = await doc.embedPng(cachet);
+    const w = 150;
+    const h = (img.height / img.width) * w;
+    page.drawImage(img, { x: 420 + g.largeur(titre, 11, g.gras) / 2 - w / 2, y: Math.max(76, y - 10 - h), width: w, height: h });
+  }
 
   // Filet de pied de page
   page.drawLine({ start: { x: M, y: 70 }, end: { x: A4.l - M, y: 70 }, thickness: 1.2, color: NOIR });

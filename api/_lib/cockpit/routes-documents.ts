@@ -53,6 +53,13 @@ export function manquants(f: Fiche, type: TypeDocumentRh): string[] {
 }
 
 export function routesDocuments(r: Routeur) {
+  // Tampon et signature de CTA (PNG, base64), apposés sur les documents émis. Stockés en base, jamais dans le dépôt public.
+  r.ajouter("GET", "cachet", async ({ req }) => {
+    await exigerProfil(req);
+    const [c] = await sql`SELECT valeur->>'png' AS png FROM parametres WHERE cle = 'cachet'`;
+    return json({ png: c?.png ?? null });
+  });
+
   // Ce que la personne connectée peut télécharger : ses documents et ses bulletins.
   r.ajouter("GET", "mes-documents", async ({ req }) => {
     const moi = await exigerProfil(req);

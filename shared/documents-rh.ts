@@ -95,8 +95,8 @@ function couper(texte: string, police: PDFFont, taille: number, largeur: number)
   return lignes;
 }
 
-/** Génère le document. `logo` : PNG du logo CTA seul (facultatif), en haut à gauche. */
-export async function genererDocumentRh(d: DonneesDocumentRh, logo?: Uint8Array): Promise<Uint8Array> {
+/** Génère le document. `logo` : PNG du logo CTA seul (facultatif), en haut à gauche ; `cachet` : tampon et signature. */
+export async function genererDocumentRh(d: DonneesDocumentRh, logo?: Uint8Array, cachet?: Uint8Array): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`${TITRE_DOCUMENT[d.type]} - ${d.salarie.nom}`);
   doc.setAuthor(d.entreprise.raison_sociale);
@@ -153,8 +153,15 @@ export async function genererDocumentRh(d: DonneesDocumentRh, logo?: Uint8Array)
   y -= 40;
   const direction = "La Direction";
   texte(direction, M + L - 150 + (150 - largeur(direction, 11, true)) / 2, y, 11, { gras: true });
-  const cachet = "Cachet et signature";
-  texte(cachet, M + L - 150 + (150 - largeur(cachet, 9)) / 2, y - 15, 9, { couleur: GRIS });
+  if (cachet) {
+    const img = await doc.embedPng(cachet);
+    const w = 160;
+    const h = (img.height / img.width) * w;
+    page.drawImage(img, { x: M + L - 75 - w / 2, y: y - 12 - h, width: w, height: h });
+  } else {
+    const mention = "Cachet et signature";
+    texte(mention, M + L - 150 + (150 - largeur(mention, 9)) / 2, y - 15, 9, { couleur: GRIS });
+  }
 
   // Pied de page
   page.drawLine({ start: { x: M, y: 50 }, end: { x: M + L, y: 50 }, thickness: 0.6, color: FILET });

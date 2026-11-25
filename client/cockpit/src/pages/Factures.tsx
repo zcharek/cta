@@ -3,6 +3,7 @@ import { aujourdhui, decalerMois, formatDzd, formatJours, libelleMois } from "..
 import type { DonneesFacture } from "../../../../shared/facture";
 import type { DonneesTimesheet } from "../../../../shared/timesheet";
 import { api, type ClientAdmin } from "../api";
+import { telechargerFacture } from "../documents";
 import { naviguer } from "../routeur";
 import { Bouton, Carte, Chargement, ChiffreCle, EnTete, Erreur, Etape, Icone, Verification, classeChamp } from "../ui";
 
@@ -59,16 +60,6 @@ async function telechargerTimesheet(clientId: string, mois: string) {
   telecharger(await pdf.genererTimesheet(donnees), pdf.nomFichier(donnees));
 }
 
-/** Facture PDF, avec le logo CTA seul en haut à gauche. */
-async function telechargerFacture(donnees: DonneesFacture) {
-  const [pdf, logo] = await Promise.all([
-    import("../../../../shared/facture"),
-    fetch("/images/logo-cta-icone.png") // logo seul, sans « Central Test Agency »
-      .then((r) => (r.ok ? r.arrayBuffer() : null))
-      .catch(() => null),
-  ]);
-  telecharger(await pdf.genererFacture(donnees, logo ? new Uint8Array(logo) : undefined), pdf.nomFichierFacture(donnees));
-}
 
 const STATUT: Record<Statut, { libelle: string; style: string }> = {
   envoyee: { libelle: "Envoyée", style: "bg-[#eef2fb] text-[#1f3f9c]" },
@@ -334,7 +325,7 @@ function Emettre({ clients, onEmise }: { clients: ClientAdmin[]; onEmise: () => 
             <p className="text-sm text-ck-texte-2">La facture telle qu'elle sera envoyée.</p>
           </div>
           {apercu?.donnees && (
-            <Bouton variante="contour" className="!px-3 !py-1.5 !text-xs" onClick={() => void telechargerFacture(apercu.donnees!).catch((e: Error) => setErreur(e.message))}>
+            <Bouton variante="contour" className="!px-3 !py-1.5 !text-xs" onClick={() => void telechargerFacture(apercu.donnees!, true).catch((e: Error) => setErreur(e.message))}>
               Ouvrir en PDF
             </Bouton>
           )}

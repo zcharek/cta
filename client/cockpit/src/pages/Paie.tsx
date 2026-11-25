@@ -366,7 +366,7 @@ function Generer({ donnees, onGenere }: { donnees: Donnees; onGenere: () => void
             <p className="text-sm text-ck-texte-2">Le bulletin tel qu'il sera généré.</p>
           </div>
           {apercu && (
-            <Bouton variante="contour" className="!px-3 !py-1.5 !text-xs" onClick={() => void telechargerBulletin(apercu).catch((e: Error) => setErreur(e.message))}>
+            <Bouton variante="contour" className="!px-3 !py-1.5 !text-xs" onClick={() => void telechargerBulletin(apercu, true).catch((e: Error) => setErreur(e.message))}>
               Ouvrir en PDF
             </Bouton>
           )}

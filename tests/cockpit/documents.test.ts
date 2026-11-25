@@ -100,3 +100,20 @@ describe("bulletins de paie du salarié", () => {
     expect((await appeler("GET", `mes-documents/bulletins/${b!.id}`, { cookie: rh.cookie })).status).toBe(404);
   });
 });
+
+describe("tampon et signature", () => {
+  it("lus en base (jamais dans le dépôt), réservés aux utilisateurs connectés, apposés sur les documents", async () => {
+    expect((await appeler("GET", "cachet")).status).toBe(401);
+    expect((await appeler("GET", "cachet", { cookie: karim.cookie })).data).toEqual({ png: null });
+    // Image de test : le logo tient lieu de tampon
+    const { readFileSync } = await import("node:fs");
+    const image = readFileSync(new URL("../../client/public/images/logo-cta-icone.png", import.meta.url));
+    await sql`INSERT INTO parametres (cle, valeur) VALUES ('cachet', ${JSON.stringify({ png: image.toString("base64") })}::jsonb)`;
+    const r = await appeler("GET", "cachet", { cookie: karim.cookie });
+    expect(r.data.png).toBe(image.toString("base64"));
+    const d = (await appeler("POST", "documents/attestation", { cookie: karim.cookie, corps: {} })).data.donnees;
+    const sans = await genererDocumentRh(d);
+    const avec = await genererDocumentRh(d, undefined, new Uint8Array(image));
+    expect(avec.length).toBeGreaterThan(sans.length + image.length / 2);
+  });
+});

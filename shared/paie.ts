@@ -151,8 +151,8 @@ class Dessin {
   }
 }
 
-/** Génère le bulletin. `logo` : PNG du logo CTA seul (sans texte, facultatif), en haut à gauche. */
-export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array): Promise<Uint8Array> {
+/** Génère le bulletin. `logo` : PNG du logo CTA seul (sans texte, facultatif), en haut à gauche ; `cachet` : tampon et signature. */
+export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array, cachet?: Uint8Array): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`Bulletin de paie ${moisBulletin(d.mois)} - ${d.salarie.nom}`);
   doc.setAuthor(d.entreprise.raison_sociale);
@@ -219,7 +219,7 @@ export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array): Pr
     ["R510", "RETENUE SÉCU. SOCIALE", montantPaie(p.brut), montantPaie(TAUX_SS), "", montantPaie(p.retenueSs)],
     ["R660", "RETENUE IRG", montantPaie(Math.floor(p.imposable / 10) * 10), "Barème", "", montantPaie(p.irg)],
   ];
-  const hCorps = 300;
+  const hCorps = 200; // trois lignes de paie ; laisse la place au cachet
   g.rect(M, y, L, hCorps, { bord: FILET });
   x = M;
   for (const w of cols.slice(0, -1)) {
@@ -254,6 +254,12 @@ export async function genererBulletin(d: DonneesBulletin, logo?: Uint8Array): Pr
 
   // Signature
   g.texte("Cachet et signature de l'employeur", M + L / 2 - 90, y, 9, { gras: true, couleur: GRIS });
+  if (cachet) {
+    const img = await doc.embedPng(cachet);
+    const w = 150;
+    const h = (img.height / img.width) * w;
+    page.drawImage(img, { x: M + L / 2 - w / 2, y: Math.max(52, y - 8 - h), width: w, height: h });
+  }
 
   // Pied de page
   page.drawLine({ start: { x: M, y: 46 }, end: { x: M + L, y: 46 }, thickness: 0.6, color: FILET });
