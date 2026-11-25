@@ -1,0 +1,217 @@
+// Vocabulaire commun à l'API et à l'interface Cockpit.
+
+export const ROLES = ["collaborateur", "assistant", "qa_manager", "cofounder"] as const;
+export type Role = (typeof ROLES)[number];
+
+export const ROLE_LABEL: Record<Role, string> = {
+  collaborateur: "Collaborateur",
+  assistant: "Assistant",
+  qa_manager: "QA Manager",
+  cofounder: "Co-Founder",
+};
+
+export const ROLE_DESCRIPTION: Record<Role, string> = {
+  collaborateur: "Saisit ses temps sur ses clients. Ne voit ni TJM ni montants.",
+  assistant: "Accès complet.",
+  qa_manager: "Accès complet.",
+  cofounder: "Accès complet.",
+};
+
+export const ROLES_ADMIN: readonly Role[] = ["assistant", "qa_manager", "cofounder"];
+
+/** Équivalent de est_admin() : profil actif et d'un type à accès complet. */
+export function estAdmin(p: { role: Role; actif: boolean } | null | undefined): boolean {
+  return !!p && p.actif && ROLES_ADMIN.includes(p.role);
+}
+
+export type StatutAcces = "invitation" | "actif" | "archive";
+
+export const STATUT_ACCES_LABEL: Record<StatutAcces, string> = {
+  invitation: "Invitation envoyée",
+  actif: "Actif",
+  archive: "Archivé",
+};
+
+export const STATUTS_SEMAINE = ["brouillon", "soumise", "validee"] as const;
+export type StatutSemaine = (typeof STATUTS_SEMAINE)[number];
+
+export const STATUTS_CABINET = [
+  "a_contacter",
+  "message_envoye",
+  "relance",
+  "en_discussion",
+  "demo_planifiee",
+  "client_signe",
+  "pas_interesse",
+  "hors_cible",
+] as const;
+export type StatutCabinet = (typeof STATUTS_CABINET)[number];
+
+export const STATUT_CABINET_LABEL: Record<StatutCabinet, string> = {
+  a_contacter: "À contacter",
+  message_envoye: "Message WhatsApp envoyé",
+  relance: "Relancé",
+  en_discussion: "En discussion",
+  demo_planifiee: "Démo planifiée",
+  client_signe: "Client signé",
+  pas_interesse: "Pas intéressé",
+  hors_cible: "Hors cible",
+};
+
+export const MOT_DE_PASSE_MIN = 8;
+
+/** Profil tel que renvoyé par /auth/moi. */
+export type Moi = {
+  id: string;
+  nom: string;
+  email: string;
+  role: Role;
+  admin: boolean;
+};
+
+/** Format « 12 000 DZD ». */
+export function formatDzd(montant: number): string {
+  return `${new Intl.NumberFormat("fr-FR").format(Math.round(montant)).replace(/ | /g, " ")} DZD`;
+}
+
+/** Le prénom est le premier mot du nom. */
+export function prenom(nom: string): string {
+  return nom.trim().split(/\s+/)[0] ?? "";
+}
+
+/** Vrai si la date ISO (aaaa-mm-jj) est un lundi. */
+export function estLundi(iso: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return false;
+  const d = new Date(`${iso}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === iso && d.getUTCDay() === 1;
+}
+
+/** Ajoute n jours à une date ISO. */
+export function ajouterJours(iso: string, n: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Lundi de la semaine contenant la date ISO. */
+export function lundiDe(iso: string): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  const decalage = (d.getUTCDay() + 6) % 7;
+  return ajouterJours(iso, -decalage);
+}
+
+/** Date du jour à Alger, au format aaaa-mm-jj. */
+export function aujourdhui(maintenant: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Algiers" }).format(maintenant);
+}
+
+/** Premier et dernier jour du mois d'une date ISO. */
+export function bornesMois(iso: string): { debut: string; fin: string } {
+  const debut = `${iso.slice(0, 7)}-01`;
+  const d = new Date(`${debut}T00:00:00Z`);
+  d.setUTCMonth(d.getUTCMonth() + 1);
+  d.setUTCDate(0);
+  return { debut, fin: d.toISOString().slice(0, 10) };
+}
+
+// --- Suivi des temps ---
+
+export type ValeurJour = 0.5 | 1;
+export type Temps = { client_id: string; jour: string; valeur: number };
+
+export const STATUT_SEMAINE_LABEL: Record<StatutSemaine, string> = {
+  brouillon: "Brouillon",
+  soumise: "Soumise",
+  validee: "Validée",
+};
+
+/** Cycle d'une case de la grille : vide → 1 jour → ½ jour → vide. */
+export function valeurSuivante(v: number): number {
+  return v === 0 ? 1 : v === 1 ? 0.5 : 0;
+}
+
+/** « 2,5 j ». */
+export function formatJours(n: number, unite = true): string {
+  const s = n.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+  return unite ? `${s} j` : s;
+}
+
+/** Les cinq jours ouvrés (lundi → vendredi) d'une semaine. */
+export function joursOuvres(lundi: string): string[] {
+  return [0, 1, 2, 3, 4].map((n) => ajouterJours(lundi, n));
+}
+
+/** « Semaine du 23 nov. 2026 ». */
+export function libelleSemaine(lundi: string): string {
+  const d = new Date(`${lundi}T12:00:00Z`);
+  return `Semaine du ${d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}`;
+}
+
+/** Regroupe les temps d'une semaine par client : jours détaillés et total. */
+export function grouperParClient(temps: (Temps & { nom: string })[]) {
+  const parClient = new Map<string, { client_id: string; nom: string; jours: Record<string, number>; total: number }>();
+  for (const t of temps) {
+    const l = parClient.get(t.client_id) ?? { client_id: t.client_id, nom: t.nom, jours: {}, total: 0 };
+    l.jours[t.jour] = (l.jours[t.jour] ?? 0) + t.valeur;
+    l.total += t.valeur;
+    parClient.set(t.client_id, l);
+  }
+  const lignes = [...parClient.values()].sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+  return { lignes, total: lignes.reduce((s, l) => s + l.total, 0) };
+}
+
+// --- Récap mensuel ---
+
+export type LigneRecapBrute = { client_id: string; client: string; tjm_dzd: number; profil_id: string; collaborateur: string; jours: number };
+
+export type RecapClient = {
+  client_id: string;
+  nom: string;
+  tjm_dzd: number;
+  jours: number;
+  montant: number;
+  collaborateurs: { profil_id: string; nom: string; jours: number; montant: number }[];
+};
+
+/** Montant HT = jours × TJM du client, par collaborateur puis par client. */
+export function construireRecap(lignes: LigneRecapBrute[]) {
+  const clients = new Map<string, RecapClient>();
+  for (const l of lignes) {
+    const c = clients.get(l.client_id) ?? { client_id: l.client_id, nom: l.client, tjm_dzd: l.tjm_dzd, jours: 0, montant: 0, collaborateurs: [] };
+    const montant = l.jours * l.tjm_dzd;
+    c.collaborateurs.push({ profil_id: l.profil_id, nom: l.collaborateur, jours: l.jours, montant });
+    c.jours += l.jours;
+    c.montant += montant;
+    clients.set(l.client_id, c);
+  }
+  const liste = [...clients.values()].sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+  for (const c of liste) c.collaborateurs.sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+  return {
+    clients: liste,
+    jours: liste.reduce((s, c) => s + c.jours, 0),
+    montant: liste.reduce((s, c) => s + c.montant, 0),
+  };
+}
+
+const nombreCsv = (n: number) => String(Math.round(n * 100) / 100).replace(".", ",");
+const champCsv = (s: string) => (/[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s);
+
+/** Export CSV pour Excel : BOM UTF-8, séparateur « ; », virgule décimale. */
+export function recapEnCsv(recap: ReturnType<typeof construireRecap>): string {
+  const lignes = [["Client", "Collaborateur", "Jours", "TJM (DZD)", "Montant HT (DZD)"]];
+  for (const c of recap.clients)
+    for (const p of c.collaborateurs) lignes.push([c.nom, p.nom, nombreCsv(p.jours), nombreCsv(c.tjm_dzd), nombreCsv(p.montant)]);
+  lignes.push(["Total", "", nombreCsv(recap.jours), "", nombreCsv(recap.montant)]);
+  return "﻿" + lignes.map((l) => l.map(champCsv).join(";")).join("\r\n") + "\r\n";
+}
+
+/** Mois au format aaaa-mm : décalage et libellé (« novembre 2026 »). */
+export function decalerMois(mois: string, n: number): string {
+  const d = new Date(`${mois}-01T00:00:00Z`);
+  d.setUTCMonth(d.getUTCMonth() + n);
+  return d.toISOString().slice(0, 7);
+}
+
+export function libelleMois(mois: string): string {
+  return new Date(`${mois}-01T12:00:00Z`).toLocaleDateString("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" });
+}

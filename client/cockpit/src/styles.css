@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Couleurs de Cockpit. Le mode sombre suit le réglage du système. */
+:root {
+  --ck-marine: #071538;
+  --ck-orange: #dc5a2e;
+  --ck-orange-texte: #b8441c; /* orange assombri : contraste AA sur fond blanc pour les petits textes */
+  --ck-ciel-haut: #e6f4fc;
+  --ck-ciel-bas: #f6f9fc;
+  --ck-surface: #ffffff;
+  --ck-surface-2: #f3f6fb;
+  --ck-texte: #0a1838;
+  --ck-texte-2: #5b6782;
+  --ck-bordure: #e2e8f1;
+  --ck-titre: #071538;
+  --ck-plein: #071538;
+  --ck-plein-texte: #ffffff;
+  --ck-sidebar: #071538;
+  --ck-ombre: 0 1px 2px rgba(7, 21, 56, 0.04), 0 6px 20px rgba(7, 21, 56, 0.06);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ck-orange: #e8693e;
+    --ck-orange-texte: #f28a63;
+    --ck-ciel-haut: #0d1a3d;
+    --ck-ciel-bas: #081029;
+    --ck-surface: #101c3d;
+    --ck-surface-2: #16244a;
+    --ck-texte: #e8eef9;
+    --ck-texte-2: #a3b0c9;
+    --ck-bordure: #253459;
+    --ck-titre: #ffffff;
+    --ck-plein: #e8eef9;
+    --ck-plein-texte: #071538;
+    --ck-sidebar: #050d26;
+    --ck-ombre: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
+}
+
+body {
+  font-family: "Outfit", system-ui, sans-serif;
+  color: var(--ck-texte);
+  background: var(--ck-ciel-bas) linear-gradient(var(--ck-ciel-haut), var(--ck-ciel-bas) 340px) no-repeat;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ck-titre);
+}
+
+/* Focus toujours visible au clavier */
+:focus-visible {
+  outline: 3px solid var(--ck-orange);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.ck-carte {
+  background: var(--ck-surface);
+  border-radius: 16px;
+  box-shadow: var(--ck-ombre);
+}
+
+.ck-titre {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ck-sidebar {
+  background: var(--ck-sidebar);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

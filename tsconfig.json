@@ -1,7 +1,12 @@
 {
   "include": [
     "client/src/**/*",
-    "api/**/*"
+    "client/cockpit/**/*",
+    "api/**/*",
+    "shared/**/*",
+    "tests/**/*",
+    "scripts/**/*.d.mts",
+    "vitest.config.ts"
   ],
   "compilerOptions": {
     "noEmit": true,

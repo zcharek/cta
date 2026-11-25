@@ -1,10 +1,24 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  content: ["./client/index.html", "./client/src/**/*.{ts,tsx}"],
+  content: ["./client/index.html", "./client/src/**/*.{ts,tsx}", "./client/cockpit/**/*.{html,ts,tsx}", "./shared/**/*.ts"],
   theme: {
     extend: {
       colors: {
+        // Cockpit : couleurs portées par des variables CSS (mode sombre, voir client/cockpit/src/styles.css)
+        ck: {
+          marine: "var(--ck-marine)",
+          orange: "var(--ck-orange)",
+          "orange-texte": "var(--ck-orange-texte)",
+          surface: "var(--ck-surface)",
+          "surface-2": "var(--ck-surface-2)",
+          texte: "var(--ck-texte)",
+          "texte-2": "var(--ck-texte-2)",
+          bordure: "var(--ck-bordure)",
+          titre: "var(--ck-titre)",
+          plein: "var(--ck-plein)",
+          "plein-texte": "var(--ck-plein-texte)",
+        },
         brand: {
           red: { 700: "#e8491d" },
           blue: {
@@ -20,6 +34,7 @@ export default {
       },
       fontFamily: {
         sans: ["Lexend", "system-ui", "sans-serif"],
+        outfit: ["Outfit", "system-ui", "sans-serif"],
       },
     },
   },

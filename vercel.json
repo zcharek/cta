@@ -3,5 +3,19 @@
   "framework": "vite",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/public"
+  "outputDirectory": "dist/public",
+  "rewrites": [
+    {
+      "source": "/api/cockpit/:chemin*",
+      "destination": "/api/cockpit?route=:chemin*"
+    },
+    {
+      "source": "/cockpit",
+      "destination": "/cockpit/index.html"
+    },
+    {
+      "source": "/cockpit/:chemin*",
+      "destination": "/cockpit/index.html"
+    }
+  ]
 }
