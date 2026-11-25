@@ -10,6 +10,8 @@ import { brancherEnvoyeur, type Email } from "../../api/_lib/cockpit/emails";
 /** Postgres en mémoire avec les migrations de db/migrations, branché à la place de Neon. */
 export async function preparerBase() {
   const db = new PGlite();
+  // Schéma de l'espace client (users, questionnaires, assignments), puis migrations Cockpit, comme db-setup.mjs
+  await db.exec(readFileSync(path.resolve(__dirname, "../../db/schema.sql"), "utf8"));
   const dir = path.resolve(__dirname, "../../db/migrations");
   for (const f of readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()) await db.exec(readFileSync(path.join(dir, f), "utf8"));
   const sql: Sql = async (strings, ...values) => {

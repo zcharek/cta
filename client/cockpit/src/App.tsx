@@ -8,6 +8,7 @@ import Cabinets from "./pages/Cabinets";
 import Connexion from "./pages/Connexion";
 import DefinirMotDePasse from "./pages/DefinirMotDePasse";
 import Equipe from "./pages/Equipe";
+import EspaceClient from "./pages/EspaceClient";
 import MessageWhatsApp from "./pages/MessageWhatsApp";
 import RecapMensuel from "./pages/Recap";
 import Saisie from "./pages/Saisie";
@@ -71,7 +72,7 @@ export default function App() {
       "/cabinets": "Cabinets",
       "/reglages/whatsapp": "Message WhatsApp",
     };
-    const t = titres[chemin];
+    const t = titres[chemin] ?? (chemin.startsWith("/espace-client") ? "Espace client" : undefined);
     document.title = t ? `${t} – Cockpit` : "Cockpit – Central Test Agency";
   }, [chemin]);
 
@@ -99,6 +100,7 @@ export default function App() {
   else if (chemin === "/validation") page = <Validation />;
   else if (chemin === "/recap") page = <RecapMensuel />;
   else if (chemin === "/cabinets") page = <Cabinets />;
+  else if (chemin === "/espace-client" || chemin.startsWith("/espace-client/")) page = <EspaceClient key={chemin} chemin={chemin} />;
   else if (chemin === "/reglages/whatsapp") page = <MessageWhatsApp />;
   else page = <Bientot titre="Page introuvable" description="Cette adresse ne correspond à aucune page de Cockpit." />;
 

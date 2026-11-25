@@ -23,6 +23,23 @@ const cle = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCas
 
 async function remplir(db) {
   const hash = bcrypt.hashSync(MOT_DE_PASSE, 8);
+
+  // Espace client : un admin « historique », deux comptes clients, le questionnaire de cadrage et une réponse.
+  await db.query(`INSERT INTO users (email, password_hash, name, role) VALUES ('ancien-admin@cta.test', $1, 'Admin Historique', 'admin')`, [hash]);
+  await db.query(
+    `INSERT INTO users (email, password_hash, name, company, role) VALUES ('nadia@pharma.test', $1, 'Nadia Kaci', 'Pharma Plus', 'client'), ('omar@banque.test', $1, 'Omar Ziani', 'Banque du Sud', 'client')`,
+    [hash],
+  );
+  const q = JSON.parse(readFileSync(path.join(racine, "db/questionnaires/cadrage-cta.json"), "utf8"));
+  await db.query(`INSERT INTO questionnaires (slug, title, description, schema) VALUES ($1, $2, $3, $4)`, [q.slug, q.title, q.description, JSON.stringify({ sections: q.sections })]);
+  const premiere = q.sections[0].questions;
+  const reponses = Object.fromEntries(premiere.map((x) => [x.id, x.type === "multi" ? x.options.slice(0, 2) : x.options ? x.options[0] : "Application de gestion des stocks pour nos pharmacies."]));
+  await db.query(
+    `INSERT INTO assignments (user_id, questionnaire_id, questionnaire_snapshot, title, message, status, answers, submitted_at)
+     SELECT u.id, q.id, jsonb_build_object('description', q.description) || q.schema, q.title, 'Bonjour Nadia', 'submitted', $1::jsonb, now()
+     FROM users u, questionnaires q WHERE u.email = 'nadia@pharma.test'`,
+    [JSON.stringify(reponses)],
+  );
   const profils = [
     ["Amina Cherif", "admin@cta.test", "cofounder"],
     ["Karim Ait Ali", "qa@cta.test", "qa_manager"],
@@ -62,6 +79,7 @@ async function remplir(db) {
 }
 
 const db = new PGlite();
+await db.exec(readFileSync(path.join(racine, "db/schema.sql"), "utf8")); // espace client
 for (const f of readdirSync(path.join(racine, "db/migrations")).filter((f) => f.endsWith(".sql")).sort())
   await db.exec(readFileSync(path.join(racine, "db/migrations", f), "utf8"));
 if (process.env.DEMO_VIDE !== "1") await remplir(db);

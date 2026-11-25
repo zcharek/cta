@@ -19,10 +19,24 @@ export function routesAuth(r: Routeur) {
   r.ajouter("POST", "auth/connexion", async ({ req }) => {
     const b = await readBody<{ email?: string; motDePasse?: string }>(req);
     const email = typeof b.email === "string" ? b.email.trim().toLowerCase() : "";
+    const motDePasse = typeof b.motDePasse === "string" ? b.motDePasse : "";
     const rows = await sql`SELECT id, nom, email, role, actif, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`;
-    const p = rows[0];
-    const ok = await bcrypt.compare(typeof b.motDePasse === "string" ? b.motDePasse : "", p?.mot_de_passe_hash ?? HASH_FACTICE);
-    if (!p || !p.mot_de_passe_hash || !ok) throw new HttpError(401, "E-mail ou mot de passe incorrect.");
+    let p = rows[0];
+
+    // Un admin de l'espace client (table users) entre dans Cockpit avec ses identifiants habituels :
+    // à sa première connexion, son profil Co-Founder est créé avec le même mot de passe.
+    const admin = p ? undefined : (await sql`SELECT name, email, password_hash FROM users WHERE email = ${email} AND role = 'admin'`)[0];
+
+    const ok = await bcrypt.compare(motDePasse, p?.mot_de_passe_hash ?? admin?.password_hash ?? HASH_FACTICE);
+    if (!ok || (!p?.mot_de_passe_hash && !admin)) throw new HttpError(401, "E-mail ou mot de passe incorrect.");
+    if (!p) {
+      await sql`
+        INSERT INTO profils (nom, email, role, mot_de_passe_hash, mot_de_passe_le, active_le)
+        VALUES (${admin!.name}, ${admin!.email}, 'cofounder', ${admin!.password_hash}, now(), now())
+        ON CONFLICT (email) DO NOTHING`;
+      p = (await sql`SELECT id, nom, email, role, actif, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`)[0];
+      if (!p) throw new HttpError(401, "E-mail ou mot de passe incorrect.");
+    }
     if (!p.actif) throw new HttpError(403, "Ce compte est archivé. Contactez un responsable de Central Test Agency.");
     return json({ moi: versMoi(p as Profil) }, { headers: { "Set-Cookie": await cookieSession(p.id, p.version_session) } });
   });

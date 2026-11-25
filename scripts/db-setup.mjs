@@ -1,5 +1,6 @@
 // Crée les tables, applique les migrations Cockpit et charge (ou met à jour) les modèles de questionnaires.
 // Usage : npm run db:setup                         (lit DATABASE_URL dans .env)
+//         (automatique) au build de production Vercel, avec --deploiement
 //         npm run db:make-admin -- toi@exemple.com  (admin de l'espace client)
 //         npm run cockpit:seed                      (premier compte Co-Founder de Cockpit)
 import { createHash, randomBytes } from "node:crypto";
@@ -11,6 +12,14 @@ import { neon } from "@neondatabase/serverless";
 import { decouperSql } from "./sql-split.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+// Appelé par le build Vercel (vercel.json) : migrations appliquées au déploiement de production uniquement.
+// Les previews n'y touchent pas, pour qu'une branche non fusionnée ne modifie pas la base.
+if (process.argv.includes("--deploiement") && process.env.VERCEL_ENV !== "production") {
+  console.log(`Migrations ignorées (environnement : ${process.env.VERCEL_ENV ?? "local"}).`);
+  process.exit(0);
+}
+
 const url = process.env.DATABASE_URL;
 if (!url) {
   console.error("DATABASE_URL manquant. Ajoute-le dans .env.");
@@ -18,7 +27,7 @@ if (!url) {
 }
 const sql = neon(url);
 
-const [command, arg] = process.argv.slice(2);
+const [command, arg] = process.argv.slice(2).filter((a) => a !== "--deploiement");
 
 if (command === "make-admin") {
   if (!arg) {

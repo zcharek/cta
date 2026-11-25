@@ -47,6 +47,7 @@ Voir `.env.example`. Aucune clé ne doit être commitée : `.env` est ignoré pa
 
 - `db/schema.sql` : tables de l'espace client, rejouable sans risque.
 - `db/migrations/*.sql` : migrations versionnées de Cockpit. `npm run db:setup` applique, dans l'ordre et dans une transaction, celles qui ne figurent pas encore dans la table `schema_migrations`. **Un changement de schéma = un nouveau fichier**, jamais la modification d'une migration déjà appliquée.
+- **En production, tout est automatique** : le build Vercel lance `node scripts/db-setup.mjs --deploiement` avant `npm run build` (voir `vercel.json`). Les déploiements de preview n'appliquent pas les migrations. Si une migration échoue, le build échoue et la version précédente reste en ligne.
 
 ## Cockpit : accès et sécurité
 
@@ -59,6 +60,10 @@ Le navigateur n'accède jamais directement à la base : toutes les données pass
 - Les règles d'accès (cabinets, TJM, semaines des autres, validation) sont couvertes par `tests/cockpit/acces.test.ts`.
 - Les liens d'invitation (7 jours) et de réinitialisation (1 heure) sont à usage unique ; seule leur empreinte SHA-256 est stockée.
 - Changer de mot de passe ferme toutes les autres sessions.
+
+### Comptes admin de l'espace client
+
+Un admin de l'espace client (table `users`, rôle `admin`) se connecte à Cockpit avec son e-mail et son mot de passe habituels : à sa première connexion, un profil Co-Founder est créé avec le même mot de passe. Ensuite, les deux comptes vivent séparément (changer le mot de passe de l'un ne change pas l'autre). Archiver ce profil dans Cockpit lui retire l'accès à Cockpit.
 
 ### Inviter un collaborateur
 
@@ -79,6 +84,7 @@ Sans `RESEND_API_KEY` en local, l'e-mail n'est pas envoyé : le lien s'affiche d
 | Récap mensuel | admins | Jours et montants HT par client et collaborateur, export CSV (UTF-8 avec BOM, « ; », virgule décimale) |
 | Clients et collaborateurs | admins | Clients (TJM, équipe), invitations, types, archivage |
 | Message WhatsApp | admins | Modèle de message avec aperçu |
+| Espace client | admins | Comptes de l'espace client du site, envoi des questionnaires de cadrage, lecture des réponses |
 
 Règles métier principales : `shared/prospection.ts` (relances, WhatsApp, recherche, tri), `shared/import.ts` (lecture des fichiers, rapprochement, mise à jour), `shared/cockpit.ts` (temps, récap, CSV).
 

@@ -3,6 +3,7 @@ import { routesAccueil } from "./routes-accueil.js";
 import { routesAuth } from "./routes-auth.js";
 import { routesCabinets } from "./routes-cabinets.js";
 import { routesEquipe } from "./routes-equipe.js";
+import { routesPortail } from "./routes-portail.js";
 import { routesSuivi } from "./routes-suivi.js";
 import { routesTemps } from "./routes-temps.js";
 
@@ -13,5 +14,6 @@ routesTemps(routeur);
 routesSuivi(routeur);
 routesCabinets(routeur);
 routesAccueil(routeur);
+routesPortail(routeur);
 
 export const traiter = (req: Request) => routeur.traiter(req);

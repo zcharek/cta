@@ -18,6 +18,7 @@ const NAVIGATION_ADMIN: Groupe[] = [
       { chemin: "/recap", libelle: "Récap mensuel", icone: "graphique" },
     ],
   },
+  { titre: "Espace client", liens: [{ chemin: "/espace-client", libelle: "Clients et questionnaires", icone: "document" }] },
   {
     titre: "Réglages",
     liens: [
