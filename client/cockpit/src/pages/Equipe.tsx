@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ONGLETS, ONGLET_LABEL, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { ONGLETS, ONGLET_LABEL, ROLES, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
 import type { DonneesDocumentRh, TypeDocumentRh } from "../../../../shared/documents-rh";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
 import { telechargerDocumentRh } from "../documents";
 import { surClicLien } from "../routeur";
-import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
+import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, ChiffreCle, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
 
 type Donnees = { clients: ClientAdmin[]; collaborateurs: Collaborateur[] };
 
@@ -414,6 +414,270 @@ function FenetreCollaborateur({
   );
 }
 
+/** Champs de la fiche que le collaborateur doit encore renseigner dans « Mon profil ». */
+const champsManquants = (c: Collaborateur) =>
+  c.statut === "actif" ? coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }) : [];
+
+const PLURIEL_ROLE: Record<Role, string> = {
+  founder: "Founders",
+  cofounder: "Co-Founders",
+  qa_manager: "QA Managers",
+  assistant: "Assistants",
+  comptable: "Comptables",
+  collaborateur: "Collaborateurs",
+};
+
+const sansAccents = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+type Filtre = "tous" | "a-completer" | Role;
+
+/** Collaborateurs actifs : filtres par type, recherche, une fiche par personne. */
+function ListeCollaborateurs({
+  collaborateurs,
+  moi,
+  nomClient,
+  onDocuments,
+  onModifier,
+  onRenvoyer,
+  onArchiver,
+  onSupprimer,
+}: {
+  collaborateurs: Collaborateur[];
+  moi: Moi;
+  nomClient: Map<string, string>;
+  onDocuments: (c: Collaborateur) => void;
+  onModifier: (c: Collaborateur) => void;
+  onRenvoyer: (c: Collaborateur) => void;
+  onArchiver: (c: Collaborateur) => void;
+  onSupprimer: (c: Collaborateur) => void;
+}) {
+  const [filtre, setFiltre] = useState<Filtre>("tous");
+  const [recherche, setRecherche] = useState("");
+  const roles = ROLES.filter((r) => collaborateurs.some((c) => c.role === r)).reverse();
+  const aCompleter = collaborateurs.filter((c) => champsManquants(c).length > 0).length;
+
+  const visibles = useMemo(() => {
+    const q = sansAccents(recherche.trim());
+    return collaborateurs.filter((c) => {
+      if (filtre === "a-completer" ? champsManquants(c).length === 0 : filtre !== "tous" && c.role !== filtre) return false;
+      if (!q) return true;
+      return sansAccents([c.nom, c.email, c.fonction, c.matricule, ...c.client_ids.map((id) => nomClient.get(id))].filter(Boolean).join(" ")).includes(q);
+    });
+  }, [collaborateurs, filtre, recherche, nomClient]);
+
+  const puce = (cle: Filtre, libelle: string, n?: number, orange = false) => (
+    <button
+      key={cle}
+      type="button"
+      aria-pressed={filtre === cle}
+      onClick={() => setFiltre(cle)}
+      className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
+        filtre === cle ? "bg-ck-plein text-ck-plein-texte" : orange ? "bg-orange-50 text-ck-orange-texte ring-1 ring-orange-200 hover:bg-orange-100" : "bg-ck-surface text-ck-titre ring-1 ring-ck-bordure hover:bg-ck-surface-2"
+      }`}
+    >
+      {libelle}
+      {n !== undefined && <span className="ml-1.5 tabular-nums opacity-80">{n}</span>}
+    </button>
+  );
+
+  return (
+    <section aria-label="Collaborateurs actifs">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label="Filtrer par type" className="flex flex-wrap gap-2">
+          {puce("tous", "Tous", collaborateurs.length)}
+          {roles.map((r) => puce(r, PLURIEL_ROLE[r]))}
+          {aCompleter > 0 && puce("a-completer", "Fiches à compléter", aCompleter, true)}
+        </div>
+        <label className="relative w-full sm:w-80">
+          <span className="sr-only">Rechercher un collaborateur</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ck-texte-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            type="search"
+            value={recherche}
+            onChange={(e) => setRecherche(e.target.value)}
+            placeholder="Rechercher un nom, un e-mail, un client"
+            className="w-full rounded-full border border-ck-bordure bg-ck-surface py-2 pl-9 pr-4 text-sm text-ck-titre placeholder:text-ck-texte-2 focus:border-ck-plein focus:outline-none"
+          />
+        </label>
+      </div>
+
+      {visibles.length === 0 ? (
+        <Carte className="text-sm text-ck-texte-2">{collaborateurs.length ? "Aucun collaborateur ne correspond." : "Aucun collaborateur. Invitez le premier avec « Inviter un collaborateur »."}</Carte>
+      ) : (
+        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {visibles.map((c) => (
+            <li key={c.id}>
+              <FicheCollaborateur
+                c={c}
+                moi={moi}
+                nomClient={nomClient}
+                onDocuments={() => onDocuments(c)}
+                onModifier={() => onModifier(c)}
+                onRenvoyer={() => onRenvoyer(c)}
+                onArchiver={() => onArchiver(c)}
+                onSupprimer={() => onSupprimer(c)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function FicheCollaborateur({
+  c,
+  moi,
+  nomClient,
+  onDocuments,
+  onModifier,
+  onRenvoyer,
+  onArchiver,
+  onSupprimer,
+}: {
+  c: Collaborateur;
+  moi: Moi;
+  nomClient: Map<string, string>;
+  onDocuments: () => void;
+  onModifier: () => void;
+  onRenvoyer: () => void;
+  onArchiver: () => void;
+  onSupprimer: () => void;
+}) {
+  const soi = c.id === moi.id;
+  const manque = champsManquants(c);
+  const clientsNoms = c.client_ids.map((id) => nomClient.get(id)).filter((n): n is string => !!n);
+  const complet = c.role === "founder" || ONGLETS.every((o) => c.onglets.includes(o));
+  const gestion = moi.gereAcces && !soi && c.role !== "founder";
+  const actions = [
+    c.statut === "invitation" && { libelle: "Renvoyer l'invitation", action: onRenvoyer },
+    gestion && { libelle: "Archiver", action: onArchiver },
+    gestion && { libelle: "Supprimer", action: onSupprimer, danger: true },
+  ].filter((a): a is { libelle: string; action: () => void; danger?: boolean } => !!a);
+
+  return (
+    <Carte className="flex h-full flex-col !p-5">
+      <div className="flex items-start gap-3">
+        <Avatar nom={c.nom} couleur={COULEUR_ROLE[c.role]} taille={48} />
+        <div className="min-w-0 flex-1">
+          <p className="font-bold leading-snug text-ck-titre">{c.nom}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <span className="rounded-md bg-[var(--ck-champ)] px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-ck-texte-2" title={c.date_entree ? `Entré le ${c.date_entree.split("-").reverse().join("/")}` : undefined}>
+              N° {c.matricule}
+            </span>
+            {soi && <span className="rounded-md bg-ck-plein px-1.5 py-0.5 text-[11px] font-bold text-ck-plein-texte">Vous</span>}
+          </div>
+          <p className={`mt-1 text-sm ${c.fonction ? "font-semibold text-ck-texte" : "italic text-ck-texte-2"}`}>{c.fonction || "Poste non renseigné"}</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <BadgeRole role={c.role} />
+            <BadgeAcces statut={c.statut} />
+          </div>
+        </div>
+        {actions.length > 0 && (
+          <details className="relative shrink-0">
+            <summary aria-label={`Plus d'actions pour ${c.nom}`} className="grid h-8 w-8 cursor-pointer list-none place-items-center rounded-full text-ck-texte-2 hover:bg-ck-surface-2 hover:text-ck-titre [&::-webkit-details-marker]:hidden">
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+                <circle cx="5" cy="12" r="1.8" />
+                <circle cx="12" cy="12" r="1.8" />
+                <circle cx="19" cy="12" r="1.8" />
+              </svg>
+            </summary>
+            <div className="absolute right-0 z-20 mt-1 w-52 rounded-xl border border-ck-bordure bg-ck-surface p-1 shadow-[var(--ck-ombre)]">
+              {actions.map((a) => (
+                <button
+                  key={a.libelle}
+                  type="button"
+                  onClick={(e) => {
+                    (e.currentTarget.closest("details") as HTMLDetailsElement).open = false;
+                    a.action();
+                  }}
+                  className={`block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold hover:bg-ck-surface-2 ${a.danger ? "text-red-700" : "text-ck-titre"}`}
+                >
+                  {a.libelle}
+                </button>
+              ))}
+            </div>
+          </details>
+        )}
+      </div>
+
+      <div className="mt-4 grid gap-1.5 text-sm text-ck-texte">
+        {[
+          ["mail", c.email],
+          ["telephone", c.telephone],
+          ["lieu", [c.adresse, c.ville, c.wilaya].filter(Boolean).join(", ")],
+        ]
+          .filter(([, v]) => v)
+          .map(([icone, v]) => (
+            <p key={icone} className="flex items-start gap-2">
+              <Icone nom={icone!} taille={16} className="mt-0.5 shrink-0 text-ck-texte-2" />
+              <span className="min-w-0 break-words">{v}</span>
+            </p>
+          ))}
+      </div>
+
+      <dl className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-ck-surface-2 px-3 py-2.5 text-sm">
+        <div className="min-w-0">
+          <dt className="text-[11px] text-ck-texte-2">Clients</dt>
+          <dd className="mt-0.5 font-bold text-ck-titre" title={clientsNoms.join(", ") || undefined}>
+            {clientsNoms.length === 0 ? (
+              "Aucun"
+            ) : (
+              <span className="flex flex-wrap gap-1">
+                {clientsNoms.slice(0, 2).map((n) => (
+                  <span key={n} className="max-w-full truncate rounded-md bg-ck-surface px-1.5 py-0.5 text-xs font-semibold ring-1 ring-ck-bordure">
+                    {n}
+                  </span>
+                ))}
+                {clientsNoms.length > 2 && <span className="text-xs font-semibold text-ck-texte-2">+{clientsNoms.length - 2}</span>}
+              </span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-[11px] text-ck-texte-2">Ce mois</dt>
+          <dd className="mt-0.5 font-bold tabular-nums text-ck-titre">{jours(c.jours_mois)}</dd>
+        </div>
+        <div>
+          <dt className="text-[11px] text-ck-texte-2">Accès</dt>
+          <dd className="mt-0.5 font-bold text-ck-titre" title={complet ? undefined : c.onglets.map((o) => ONGLET_LABEL[o]).join(", ")}>
+            {complet ? "Complet" : `${c.onglets.length} onglet${c.onglets.length > 1 ? "s" : ""}`}
+          </dd>
+        </div>
+      </dl>
+
+      {manque.length > 0 && (
+        <div className="mt-3 flex items-center gap-3 rounded-xl bg-orange-50 px-3 py-2.5 text-sm dark:bg-orange-950/30" title={`Manque : ${manque.join(", ")}`}>
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold text-ck-titre">Fiche à compléter</span>
+            <span className="block text-xs text-ck-texte-2">
+              {manque.length} {manque.length > 1 ? "champs manquants" : "champ manquant"}
+              {soi ? "" : ", à remplir dans son profil"}
+            </span>
+          </span>
+          {soi && (
+            <a href="/cockpit/profil" onClick={(e) => surClicLien(e, "/profil")} className="shrink-0 font-semibold text-ck-orange-texte underline">
+              Compléter
+            </a>
+          )}
+        </div>
+      )}
+
+      <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+        <Bouton variante="contour" className="!border !border-ck-bordure !px-3 !py-2" onClick={onDocuments}>
+          <Icone nom="document" taille={16} /> Documents
+        </Bouton>
+        <Bouton variante="contour" className="!border !border-ck-bordure !px-3 !py-2" onClick={onModifier}>
+          Modifier
+        </Bouton>
+      </div>
+    </Carte>
+  );
+}
+
 /** Deux pages distinctes : « Clients » (/reglages/clients) et « Collaborateurs » (/reglages/collaborateurs). */
 export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "collaborateurs" }) {
   const [donnees, setDonnees] = useState<Donnees | null>(null);
@@ -460,6 +724,17 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
     }
   }
 
+  async function archiver(c: Collaborateur) {
+    if (!window.confirm(`Archiver ${c.nom} ? Son accès à Cockpit sera coupé ; vous pourrez le réactiver.`)) return;
+    setMessage(null);
+    try {
+      await api(`collaborateurs/${c.id}`, { methode: "PATCH", corps: { actif: false } });
+      charger();
+    } catch (e) {
+      setMessage({ texte: (e as Error).message });
+    }
+  }
+
   async function supprimerArchive(id: string, nom: string) {
     if (!window.confirm(confirmationSuppression(nom))) return;
     setMessage(null);
@@ -486,6 +761,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
       : collaborateurs.filter((c) => !c.actif).map((c) => ({ type: "collaborateur" as const, ...c }));
   const assignes = new Set(clientsActifs.flatMap((c) => c.profil_ids)).size;
   const invitations = collabsActifs.filter((c) => c.statut === "invitation").length;
+  const fichesACompleter = collabsActifs.filter((c) => champsManquants(c).length > 0).length;
 
   return (
     <>
@@ -504,6 +780,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         <EnTete
           titre="L'équipe"
           accent="CTA."
+          sousTitre="Vos collaborateurs, leurs accès, leurs clients et leurs documents."
           actions={
             <Bouton onClick={() => setFenetreCollab("nouveau")}>
               <Icone nom="plus" taille={18} /> Inviter un collaborateur
@@ -512,7 +789,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         />
       )}
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className={`mb-8 grid grid-cols-1 gap-4 ${vue === "clients" ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4"}`}>
         {vue === "clients" ? (
           <>
             <Chiffre icone="batiment" valeur={clientsActifs.length} libelle={clientsActifs.length > 1 ? "clients" : "client"} />
@@ -521,9 +798,10 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
           </>
         ) : (
           <>
-            <Chiffre valeur={collabsActifs.length} libelle={collabsActifs.length > 1 ? "collaborateurs" : "collaborateur"} />
-            <Chiffre valeur={invitations} libelle={invitations > 1 ? "invitations en attente" : "invitation en attente"} />
-            <Chiffre valeur={jours(joursMois)} libelle="saisis ce mois" />
+            <ChiffreCle icone="equipe" teinte="bg-[#eef2fb] text-[#2f5bd3]" valeur={collabsActifs.length} libelle={collabsActifs.length > 1 ? "collaborateurs actifs" : "collaborateur actif"} />
+            <ChiffreCle icone="mail" teinte="bg-emerald-50 text-emerald-700" valeur={invitations} libelle={invitations > 1 ? "invitations en attente" : "invitation en attente"} />
+            <ChiffreCle icone="info" teinte="bg-orange-50 text-ck-orange" valeur={fichesACompleter} libelle={fichesACompleter > 1 ? "fiches à compléter" : "fiche à compléter"} />
+            <ChiffreCle icone="horloge" teinte="bg-[#eef2fb] text-ck-titre" valeur={jours(joursMois)} libelle="saisis ce mois" />
           </>
         )}
       </div>
@@ -614,52 +892,16 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
       )}
 
       {vue === "collaborateurs" && (
-        <section aria-label="Collaborateurs actifs">
-          <Carte className="!p-0">
-            <ul className="divide-y divide-[color:var(--ck-bordure)]">
-              {collabsActifs.map((c) => (
-                <li key={c.id} className="flex flex-col gap-3 p-5 sm:flex-row sm:items-start">
-                  <Avatar nom={c.nom} couleur={COULEUR_ROLE[c.role]} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-bold text-ck-titre">{c.nom}</p>
-                      <span className="rounded-md bg-[var(--ck-champ)] px-1.5 py-0.5 text-xs font-semibold tabular-nums text-ck-texte-2" title={c.date_entree ? `Entré le ${c.date_entree.split("-").reverse().join("/")}` : undefined}>
-                        N° {c.matricule}
-                      </span>
-                      <BadgeRole role={c.role} />
-                      <BadgeAcces statut={c.statut} />
-                    </div>
-                    {c.fonction && <p className="text-sm font-semibold text-ck-texte">{c.fonction}</p>}
-                    <p className="truncate text-sm text-ck-texte-2">{[c.email, c.telephone].filter(Boolean).join(" · ")}</p>
-                    {(c.adresse || c.ville || c.wilaya) && <p className="truncate text-sm text-ck-texte-2">{[c.adresse, c.ville, c.wilaya].filter(Boolean).join(", ")}</p>}
-                    {c.statut === "actif" && coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length > 0 && (
-                      <p className="mt-1 text-xs font-semibold text-ck-orange-texte" title={`Manque : ${coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).join(", ")}`}>
-                        Coordonnées incomplètes ({coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length} {coordonneesManquantes({ ...c, nin: c.nin_renseigne ? "oui" : null, numero_ss: c.ss_renseigne ? "oui" : null, numero_compte: c.compte_renseigne ? "oui" : null }).length > 1 ? "champs manquants" : "champ manquant"})
-                      </p>
-                    )}
-                    <p className="mt-1 text-sm text-ck-texte-2">
-                      {c.client_ids.length ? c.client_ids.map((id) => nomClient.get(id)).join(", ") : "Aucun client"} · {jours(c.jours_mois)} ce mois
-                    </p>
-                    {c.onglets_personnalises && <p className="mt-1 text-xs text-ck-texte-2">Onglets : {c.onglets.length ? c.onglets.map((o) => ONGLET_LABEL[o]).join(", ") : "aucun"}</p>}
-                  </div>
-                  <div className="flex shrink-0 flex-wrap gap-2">
-                    {c.statut === "invitation" && (
-                      <Bouton variante="discret" className="!px-3 !py-2" onClick={() => void renvoyer(c)}>
-                        Renvoyer l'invitation
-                      </Bouton>
-                    )}
-                    <Bouton variante="discret" className="!px-3 !py-2" onClick={() => setFenetreDocs(c)}>
-                      <Icone nom="document" taille={16} /> Documents
-                    </Bouton>
-                    <Bouton variante="contour" className="!px-3 !py-2" onClick={() => setFenetreCollab(c)}>
-                      Modifier
-                    </Bouton>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Carte>
-        </section>
+        <ListeCollaborateurs
+          collaborateurs={collabsActifs}
+          moi={moi}
+          nomClient={nomClient}
+          onDocuments={setFenetreDocs}
+          onModifier={setFenetreCollab}
+          onRenvoyer={(c) => void renvoyer(c)}
+          onArchiver={(c) => void archiver(c)}
+          onSupprimer={(c) => void supprimerArchive(c.id, c.nom)}
+        />
       )}
 
       {archives.length > 0 && (
