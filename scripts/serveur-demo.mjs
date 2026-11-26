@@ -25,9 +25,9 @@ async function remplir(db) {
   const hash = bcrypt.hashSync(MOT_DE_PASSE, 8);
 
   // Espace client : un admin « historique », deux comptes clients, le questionnaire de cadrage et une réponse.
-  await db.query(`INSERT INTO users (email, password_hash, name, role) VALUES ('ancien-admin@cta.test', $1, 'Admin Historique', 'admin')`, [hash]);
+  await db.query(`INSERT INTO users (email, password_hash, name, role, email_verifie_le) VALUES ('ancien-admin@cta.test', $1, 'Admin Historique', 'admin', now())`, [hash]);
   await db.query(
-    `INSERT INTO users (email, password_hash, name, company, role) VALUES ('nadia@pharma.test', $1, 'Nadia Kaci', 'Pharma Plus', 'client'), ('omar@banque.test', $1, 'Omar Ziani', 'Banque du Sud', 'client')`,
+    `INSERT INTO users (email, password_hash, name, company, role, email_verifie_le) VALUES ('nadia@pharma.test', $1, 'Nadia Kaci', 'Pharma Plus', 'client', now()), ('omar@banque.test', $1, 'Omar Ziani', 'Banque du Sud', 'client', now())`,
     [hash],
   );
   const q = JSON.parse(readFileSync(path.join(racine, "db/questionnaires/cadrage-cta.json"), "utf8"));

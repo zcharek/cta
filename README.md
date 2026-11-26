@@ -88,8 +88,16 @@ Le navigateur n'accède jamais directement à la base : toutes les données pass
 - Les règles d'accès (cabinets, TJM, semaines des autres, validation) sont couvertes par `tests/cockpit/acces.test.ts`.
 - Les liens d'invitation (7 jours) et de réinitialisation (1 heure) sont à usage unique ; seule leur empreinte SHA-256 est stockée.
 - Changer de mot de passe ferme toutes les autres sessions.
+- Tentatives limitées (table `tentatives`) : connexion 5 échecs par compte et 30 par IP sur 15 min ; mot de passe oublié 3 par compte et 10 par IP par heure ; inscription à l'espace client 10 par IP par heure ; renvoi du lien de confirmation 3 par adresse par heure. Au-delà : 429.
+- Hiérarchie des accès : le Founder gère tout le monde ; un Co-Founder tout le monde sauf le Founder ; un QA Manager seulement les Collaborateurs, Comptables et Assistants (il ne peut ni se promouvoir, ni changer ses propres onglets, ni toucher à un Co-Founder).
+- **Journal des accès** (table `journal_acces`, bouton « Journal des accès » dans Collaborateurs, réservé à la gestion des accès) : créations, changements de type, d'onglets ou d'e-mail (avant → après), archivages, suppressions, invitations renvoyées, mots de passe changés ou réinitialisés.
+- En-têtes de sécurité (CSP, HSTS, `X-Frame-Options`, etc.) dans `vercel.json`. Une nouvelle ressource externe (police, script, API appelée depuis le navigateur) doit y être ajoutée à la CSP.
 
 ### Comptes admin de l'espace client
+
+L'inscription sur le site crée toujours un compte **client**, et l'adresse doit être confirmée par le lien reçu (valable 24 h, à usage unique) avant de pouvoir se connecter. Le lien mène à `/#/espace/verifier/<jeton>`, une page qui confirme par un appel à l'API : un antivirus qui ouvre le lien ne le consomme pas. L'inscription répond de la même façon que l'adresse soit libre ou non (le titulaire d'un compte existant est prévenu par e-mail). Les comptes créés avant cette règle sont considérés comme vérifiés. La déconnexion invalide le jeton de session côté serveur.
+
+Pour désigner un admin, créez d'abord le compte sur le site, puis : `npm run db:make-admin -- email@exemple.com`. Seul un admin à l'adresse confirmée peut entrer dans Cockpit.
 
 Un admin de l'espace client (table `users`, rôle `admin`) se connecte à Cockpit avec son e-mail et son mot de passe habituels : à sa première connexion, un profil Co-Founder est créé (Founder pour `centraltestagency@gmail.com`) avec le même mot de passe. Ensuite, les deux comptes vivent séparément (changer le mot de passe de l'un ne change pas l'autre). Archiver ce profil dans Cockpit lui retire l'accès à Cockpit.
 

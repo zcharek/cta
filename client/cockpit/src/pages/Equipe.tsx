@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import { ONGLETS, ONGLET_LABEL, ROLES, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, type Onglet, type Role } from "../../../../shared/cockpit";
+import { ONGLETS, ONGLET_LABEL, ROLES, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESCRIPTION, ROLE_LABEL, coordonneesManquantes, formatDzd, gereLesAcces, ongletsParDefaut, peutGererRole, type Onglet, type Role } from "../../../../shared/cockpit";
 import type { DonneesDocumentRh, TypeDocumentRh } from "../../../../shared/documents-rh";
-import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
+import { api, type ClientAdmin, type Collaborateur, type EvenementJournal, type Invitation, type Moi } from "../api";
 import { telechargerDocumentRh } from "../documents";
 import { naviguer, surClicLien } from "../routeur";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, ChiffreCle, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
@@ -306,9 +306,16 @@ function FenetreCollaborateur({
   const [occupe, setOccupe] = useState(false);
   const soiMeme = existant?.id === moi.id;
   const founder = existant?.role === "founder";
-  // Type, onglets, archivage et e-mail d'un autre : Founder, Co-Founder et QA Manager uniquement.
-  const gestion = moi.gereAcces && !founder;
-  const rolesProposes = moi.gereAcces ? ROLES_ATTRIBUABLES : (["collaborateur", "assistant"] as Role[]);
+  // Type, onglets, archivage et e-mail d'un autre : Founder, Co-Founder et QA Manager, chacun dans sa hiérarchie
+  // (un QA Manager ne gère que les Collaborateurs, Comptables et Assistants).
+  const moiRole = { role: moi.role, actif: true };
+  const gere = moi.gereAcces && (!existant || peutGererRole(moiRole, existant.role));
+  const gestion = gere && !founder;
+  const rolesProposes: readonly Role[] = gere
+    ? ROLES_ATTRIBUABLES.filter((r) => peutGererRole(moiRole, r))
+    : existant
+      ? [existant.role]
+      : ["collaborateur", "assistant"];
 
   function choisirRole(r: Role) {
     setRole(r);
@@ -355,8 +362,8 @@ function FenetreCollaborateur({
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     void envoyer({
       nom: f.nom,
-      ...(founder || (!soiMeme && existant && !moi.gereAcces) ? {} : { email: f.email }),
-      ...(founder || (existant && !moi.gereAcces) ? {} : { role }),
+      ...(founder || (!soiMeme && existant && !gere) ? {} : { email: f.email }),
+      ...(founder || (existant && !gere) ? {} : { role }),
       ...(gestion && ongletsTouches ? { onglets } : {}),
       fonction: f.fonction ?? "",
       clientIds: choisis,
@@ -403,13 +410,13 @@ function FenetreCollaborateur({
           required
           defaultValue={existant?.email}
           autoComplete="off"
-          readOnly={founder || (!!existant && !soiMeme && !moi.gereAcces)}
+          readOnly={founder || (!!existant && !soiMeme && !gere)}
           aide={founder ? "L'adresse du compte Founder ne peut pas être modifiée." : existant ? undefined : "Le collaborateur y recevra le lien pour définir son mot de passe."}
         />
         {founder ? (
           <Info>Compte Founder : il a toujours accès à tous les onglets et ne peut être ni archivé ni changé de type.</Info>
         ) : (
-          <fieldset disabled={!!existant && !moi.gereAcces}>
+          <fieldset disabled={!!existant && !gere}>
             <legend className="mb-2 text-sm font-semibold text-ck-titre">Type</legend>
             <div className="grid gap-2 sm:grid-cols-2">
               {rolesProposes.map((r) => {
@@ -487,6 +494,7 @@ function ListeCollaborateurs({
   onRenvoyer,
   onArchiver,
   onSupprimer,
+  onJournal,
 }: {
   collaborateurs: Collaborateur[];
   moi: Moi;
@@ -496,6 +504,7 @@ function ListeCollaborateurs({
   onRenvoyer: (c: Collaborateur) => void;
   onArchiver: (c: Collaborateur) => void;
   onSupprimer: (c: Collaborateur) => void;
+  onJournal: (c: Collaborateur) => void;
 }) {
   const [filtre, setFiltre] = useState<Filtre>("tous");
   const [recherche, setRecherche] = useState("");
@@ -565,6 +574,7 @@ function ListeCollaborateurs({
                 onRenvoyer={() => onRenvoyer(c)}
                 onArchiver={() => onArchiver(c)}
                 onSupprimer={() => onSupprimer(c)}
+                onJournal={() => onJournal(c)}
               />
             </li>
           ))}
@@ -585,6 +595,7 @@ function FicheCollaborateur({
   onRenvoyer,
   onArchiver,
   onSupprimer,
+  onJournal,
 }: {
   c: Collaborateur;
   moi: Moi;
@@ -594,14 +605,16 @@ function FicheCollaborateur({
   onRenvoyer: () => void;
   onArchiver: () => void;
   onSupprimer: () => void;
+  onJournal: () => void;
 }) {
   const soi = c.id === moi.id;
   const manque = champsManquants(c);
   const clientsNoms = c.client_ids.map((id) => nomClient.get(id)).filter((n): n is string => !!n);
   const complet = c.role === "founder" || ONGLETS.every((o) => c.onglets.includes(o));
-  const gestion = moi.gereAcces && !soi && c.role !== "founder";
+  const gestion = peutGererRole({ role: moi.role, actif: true }, c.role) && !soi && c.role !== "founder";
   const actions = [
     c.statut === "invitation" && { libelle: "Renvoyer l'invitation", action: onRenvoyer },
+    moi.gereAcces && { libelle: "Journal des accès", action: onJournal },
     gestion && { libelle: "Archiver", action: onArchiver },
     gestion && { libelle: "Supprimer", action: onSupprimer, danger: true },
   ].filter((a): a is { libelle: string; action: () => void; danger?: boolean } => !!a);
@@ -622,6 +635,7 @@ function FicheCollaborateur({
           <div className="mt-2 flex flex-wrap gap-1.5">
             <BadgeRole role={c.role} />
             <BadgeAcces statut={c.statut} />
+
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-0.5">
@@ -734,6 +748,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
   const [fenetreClient, setFenetreClient] = useState<ClientAdmin | "nouveau" | null>(null);
   const [fenetreCollab, setFenetreCollab] = useState<Collaborateur | "nouveau" | null>(null);
   const [fenetreDocs, setFenetreDocs] = useState<Collaborateur | null>(null);
+  const [fenetreJournal, setFenetreJournal] = useState<{ profil: Collaborateur | null } | null>(null);
 
   const charger = useCallback(() => {
     Promise.all([api<{ clients: ClientAdmin[] }>("clients"), api<{ collaborateurs: Collaborateur[] }>("collaborateurs")])
@@ -842,9 +857,16 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
           accent="CTA."
           sousTitre="Vos collaborateurs, leurs accès, leurs clients et leurs documents."
           actions={
-            <Bouton onClick={() => setFenetreCollab("nouveau")}>
-              <Icone nom="plus" taille={18} /> Inviter un collaborateur
-            </Bouton>
+            <>
+              {moi.gereAcces && (
+                <Bouton variante="contour" onClick={() => setFenetreJournal({ profil: null })}>
+                  <Icone nom="bouclier" taille={18} /> Journal des accès
+                </Bouton>
+              )}
+              <Bouton onClick={() => setFenetreCollab("nouveau")}>
+                <Icone nom="plus" taille={18} /> Inviter un collaborateur
+              </Bouton>
+            </>
           }
         />
       )}
@@ -971,6 +993,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
           onRenvoyer={(c) => void renvoyer(c)}
           onArchiver={(c) => void archiver(c)}
           onSupprimer={(c) => void supprimerArchive(c.id, c.nom)}
+          onJournal={(c) => setFenetreJournal({ profil: c })}
         />
       )}
 
@@ -1014,6 +1037,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
       )}
 
       {fenetreDocs && <FenetreDocuments collaborateur={fenetreDocs} onFermer={() => setFenetreDocs(null)} onEnregistre={() => (setFenetreDocs(null), charger())} />}
+      {fenetreJournal && <JournalAcces profil={fenetreJournal.profil} onFermer={() => setFenetreJournal(null)} />}
       {fenetreClient && (
         <FenetreClient
           client={fenetreClient}
@@ -1042,5 +1066,85 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         />
       )}
     </>
+  );
+}
+
+// ——— Journal des accès ———
+
+const ACTION_JOURNAL: Record<string, string> = {
+  creation: "Compte créé",
+  modification: "Accès modifiés",
+  archivage: "Compte archivé",
+  reactivation: "Compte réactivé",
+  suppression: "Compte supprimé",
+  invitation: "Invitation renvoyée",
+  mot_de_passe_change: "Mot de passe changé",
+  mot_de_passe_reinitialise: "Mot de passe réinitialisé par e-mail",
+};
+
+const valeurJournal = (cle: string, v: unknown): string => {
+  if (Array.isArray(v)) return v.map((o) => ONGLET_LABEL[o as Onglet] ?? String(o)).join(", ") || "aucun";
+  if (cle === "role" && typeof v === "string") return ROLE_LABEL[v as Role] ?? v;
+  return String(v);
+};
+
+/** Détail lisible : « Type : Assistant → QA Manager ». */
+function detailsJournal(d: Record<string, unknown>): string[] {
+  const libelles: Record<string, string> = { role: "Type", onglets: "Onglets", email: "E-mail", origine: "Origine" };
+  return Object.entries(d)
+    .filter(([k]) => k !== "renvoi")
+    .map(([k, v]) => {
+      const l = libelles[k] ?? k;
+      if (v && typeof v === "object" && !Array.isArray(v) && "avant" in v) {
+        const { avant, apres } = v as { avant: unknown; apres: unknown };
+        return `${l} : ${valeurJournal(k, avant)} → ${valeurJournal(k, apres)}`;
+      }
+      return `${l} : ${valeurJournal(k, v)}`;
+    });
+}
+
+function JournalAcces({ profil, onFermer }: { profil: Collaborateur | null; onFermer: () => void }) {
+  const [evenements, setEvenements] = useState<EvenementJournal[] | null>(null);
+  const [erreur, setErreur] = useState("");
+  useEffect(() => {
+    api<{ evenements: EvenementJournal[] }>(`journal-acces${profil ? `?profil=${profil.id}` : ""}`)
+      .then((d) => setEvenements(d.evenements))
+      .catch((e: Error) => setErreur(e.message));
+  }, [profil]);
+
+  return (
+    <Modale titre={profil ? `Journal des accès · ${profil.nom}` : "Journal des accès"} ouverte onFermer={onFermer} large>
+      {erreur ? (
+        <Erreur>{erreur}</Erreur>
+      ) : !evenements ? (
+        <Chargement />
+      ) : evenements.length === 0 ? (
+        <p className="text-sm text-ck-texte-2">Aucun événement enregistré pour l'instant.</p>
+      ) : (
+        <ol className="grid gap-2">
+          {evenements.map((e) => (
+            <li key={e.id} className="rounded-xl bg-ck-surface-2 px-4 py-3 text-sm">
+              <p className="flex flex-wrap items-baseline justify-between gap-x-3">
+                <span className="font-bold text-ck-titre">
+                  {ACTION_JOURNAL[e.action] ?? e.action}
+                  {!profil && e.cible_nom && <span className="font-semibold text-ck-texte"> · {e.cible_nom}</span>}
+                </span>
+                <time dateTime={e.le} className="text-xs tabular-nums text-ck-texte-2">
+                  {new Date(e.le).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
+                </time>
+              </p>
+              <p className="mt-0.5 text-xs text-ck-texte-2">
+                {e.auteur_nom ? (e.auteur_nom === e.cible_nom ? "Par la personne elle-même" : `Par ${e.auteur_nom}`) : "Automatique"}
+              </p>
+              {detailsJournal(e.details).map((d) => (
+                <p key={d} className="mt-1 text-xs text-ck-texte">
+                  {d}
+                </p>
+              ))}
+            </li>
+          ))}
+        </ol>
+      )}
+    </Modale>
   );
 }

@@ -4,11 +4,18 @@ import { HttpError, json, readBody } from "../web.js";
 import { sql } from "./db.js";
 import { emailReinitialisation, envoyerEmail, urlApplication } from "./emails.js";
 import { creerJeton, lienMotDePasse, lireJeton } from "./jetons.js";
+import { journaliser } from "./journal.js";
+import { compterTentative, effacerTentatives, limiter, regles, verifierLimite } from "./limite.js";
 import type { Routeur } from "./router.js";
 import { cookieDeconnexion, cookieSession, profilConnecte, versMoi, type Profil } from "./session.js";
 
 // Hash factice : on compare quand même quand l'e-mail est inconnu, pour ne pas révéler par le temps de réponse quels comptes existent.
 const HASH_FACTICE = bcrypt.hashSync("compte-inexistant", 10);
+
+/** Ouvre la session : cookie signé et profil de la personne. */
+async function ouvrirSession(p: Profil & { version_session: number }) {
+  return json({ moi: versMoi(p) }, { headers: { "Set-Cookie": await cookieSession(p.id, p.version_session) } });
+}
 
 export function routesAuth(r: Routeur) {
   r.ajouter("GET", "auth/moi", async ({ req }) => {
@@ -20,25 +27,36 @@ export function routesAuth(r: Routeur) {
     const b = await readBody<{ email?: string; motDePasse?: string }>(req);
     const email = typeof b.email === "string" ? b.email.trim().toLowerCase() : "";
     const motDePasse = typeof b.motDePasse === "string" ? b.motDePasse : "";
-    const rows = await sql`SELECT id, nom, email, role, actif, onglets, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`;
-    let p = rows[0];
+    // 5 échecs par compte et 30 par adresse IP sur 15 minutes.
+    const limites = regles(req, "connexion", { email, max: 5 }, 30, 15);
+    await verifierLimite(limites);
+    const lire = () => sql`
+      SELECT id, nom, email, role, actif, onglets, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`;
+    let p = (await lire())[0];
 
-    // Un admin de l'espace client (table users) entre dans Cockpit avec ses identifiants habituels :
-    // à sa première connexion, son profil Co-Founder (Founder pour EMAIL_FOUNDER) est créé avec le même mot de passe.
-    const admin = p ? undefined : (await sql`SELECT name, email, password_hash FROM users WHERE email = ${email} AND role = 'admin'`)[0];
+    // Un admin de l'espace client (table users, désigné par npm run db:make-admin) entre dans Cockpit avec ses identifiants
+    // habituels : à sa première connexion, son profil Co-Founder (Founder pour EMAIL_FOUNDER) est créé avec le même mot de passe.
+    const admin = p
+      ? undefined
+      : (await sql`SELECT name, email, password_hash FROM users WHERE email = ${email} AND role = 'admin' AND email_verifie_le IS NOT NULL`)[0];
 
     const ok = await bcrypt.compare(motDePasse, p?.mot_de_passe_hash ?? admin?.password_hash ?? HASH_FACTICE);
-    if (!ok || (!p?.mot_de_passe_hash && !admin)) throw new HttpError(401, "E-mail ou mot de passe incorrect.");
+    if (!ok || (!p?.mot_de_passe_hash && !admin)) {
+      await compterTentative(limites);
+      throw new HttpError(401, "E-mail ou mot de passe incorrect.");
+    }
+    await effacerTentatives(`connexion:email:${email}`);
     if (!p) {
       await sql`
         INSERT INTO profils (nom, email, role, mot_de_passe_hash, mot_de_passe_le, active_le)
         VALUES (${admin!.name}, ${admin!.email}, ${email === EMAIL_FOUNDER ? "founder" : "cofounder"}, ${admin!.password_hash}, now(), now())
         ON CONFLICT (email) DO NOTHING`;
-      p = (await sql`SELECT id, nom, email, role, actif, onglets, mot_de_passe_hash, version_session FROM profils WHERE email = ${email}`)[0];
+      p = (await lire())[0];
       if (!p) throw new HttpError(401, "E-mail ou mot de passe incorrect.");
+      await journaliser(null, { id: p.id, nom: p.nom }, "creation", { role: p.role, origine: "admin de l'espace client" });
     }
     if (!p.actif) throw new HttpError(403, "Ce compte est archivé. Contactez un responsable de Central Test Agency.");
-    return json({ moi: versMoi(p as Profil) }, { headers: { "Set-Cookie": await cookieSession(p.id, p.version_session) } });
+    return ouvrirSession(p as Profil & { version_session: number });
   });
 
   r.ajouter("POST", "auth/deconnexion", async () => json({ ok: true }, { headers: { "Set-Cookie": cookieDeconnexion() } }));
@@ -47,6 +65,8 @@ export function routesAuth(r: Routeur) {
   r.ajouter("POST", "auth/mot-de-passe-oublie", async ({ req }) => {
     const b = await readBody<{ email?: string }>(req);
     const email = typeof b.email === "string" ? b.email.trim().toLowerCase() : "";
+    // 3 demandes par compte et 10 par adresse IP par heure : évite d'inonder une boîte de liens.
+    await limiter(regles(req, "oubli", { email, max: 3 }, 10, 60));
     const rows = await sql`SELECT id, email FROM profils WHERE email = ${email} AND actif`;
     if (rows[0]) {
       const jeton = await creerJeton(rows[0].id, "reinitialisation");
@@ -83,6 +103,8 @@ export function routesAuth(r: Routeur) {
       RETURNING id, nom, email, role, actif, onglets, version_session`;
     if (!rows[0]) throw new HttpError(410, "Ce lien n'est plus valable. Demandez-en un nouveau.");
     await sql`DELETE FROM jetons WHERE profil_id = ${j.profil_id} AND utilise_le IS NULL`;
-    return json({ moi: versMoi(rows[0] as Profil) }, { headers: { "Set-Cookie": await cookieSession(rows[0].id, rows[0].version_session) } });
+    const p = rows[0] as Profil & { version_session: number };
+    if (j.type === "reinitialisation") await journaliser({ id: p.id, nom: p.nom }, { id: p.id, nom: p.nom }, "mot_de_passe_reinitialise");
+    return ouvrirSession(p);
   });
 }

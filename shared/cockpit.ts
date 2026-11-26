@@ -22,7 +22,7 @@ export const ROLE_DESCRIPTION: Record<Role, string> = {
   collaborateur: "Saisit ses temps sur ses clients. Ne voit ni TJM ni montants.",
   comptable: "Récap mensuel, factures et bulletins de paie par défaut. Ne gère pas les accès.",
   assistant: "Accès complet par défaut. Ne gère pas les accès.",
-  qa_manager: "Accès complet. Gère les accès et les onglets.",
+  qa_manager: "Accès complet. Gère les accès et les onglets des Collaborateurs, Comptables et Assistants.",
   cofounder: "Accès complet. Gère les accès et les onglets.",
   founder: "Compte fondateur : accès complet, ne peut être ni archivé ni restreint.",
 };
@@ -39,6 +39,18 @@ export function estAdmin(p: { role: Role; actif: boolean } | null | undefined): 
 
 export function gereLesAcces(p: { role: Role; actif: boolean } | null | undefined): boolean {
   return !!p && p.actif && ROLES_GESTION_ACCES.includes(p.role);
+}
+
+/**
+ * Hiérarchie de la gestion des accès : quels types de compte cette personne peut attribuer, modifier, archiver ou supprimer.
+ * Founder : tous. Co-Founder : tous sauf Founder. QA Manager : Collaborateurs, Comptables et Assistants seulement,
+ * pour qu'il ne puisse ni se promouvoir, ni prendre la main sur un compte Co-Founder.
+ */
+export function peutGererRole(p: { role: Role; actif: boolean } | null | undefined, cible: Role): boolean {
+  if (!gereLesAcces(p)) return false;
+  if (p!.role === "founder") return true;
+  if (p!.role === "cofounder") return cible !== "founder";
+  return ["collaborateur", "comptable", "assistant"].includes(cible);
 }
 
 /** Onglets de Cockpit, activables utilisateur par utilisateur. */

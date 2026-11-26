@@ -43,5 +43,8 @@
     "vite": "^6.3.5",
     "vitest": "^3.2.7"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "zod": "^4.6.6"
+  }
 }

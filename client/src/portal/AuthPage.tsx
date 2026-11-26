@@ -1,23 +1,78 @@
 import { useState, type FormEvent } from "react";
-import { api, inputClass, primaryButton, type User } from "./api";
+import { ApiError, api, inputClass, primaryButton, secondaryButton, type User } from "./api";
 import { ErrorNote } from "./Shell";
+
+/** Après l'inscription, ou à la connexion d'un compte non confirmé : renvoi du lien de confirmation. */
+function VerifiezVotreBoite({ email, lien, onRetour }: { email: string; lien?: string; onRetour: () => void }) {
+  const [etat, setEtat] = useState<"" | "envoi" | "renvoye">("");
+  const [erreur, setErreur] = useState("");
+  const [lienDev, setLienDev] = useState(lien);
+
+  async function renvoyer() {
+    setEtat("envoi");
+    setErreur("");
+    try {
+      const r = await api<{ lien?: string }>("auth/verify", { body: { email } });
+      if (r.lien) setLienDev(r.lien);
+      setEtat("renvoye");
+    } catch (err) {
+      setErreur((err as Error).message);
+      setEtat("");
+    }
+  }
+
+  return (
+    <div className="grid gap-4 text-sm text-gray-600">
+      <h2 className="text-xl font-bold text-brand-blue-900">Vérifiez votre boîte mail</h2>
+      <p>
+        Nous avons envoyé un lien de confirmation à <strong className="text-gray-900">{email}</strong>. Cliquez dessus pour accéder à votre
+        espace. Le lien est valable 24 heures.
+      </p>
+      <p>Rien reçu ? Regardez dans les courriers indésirables, ou demandez un nouveau lien.</p>
+      {lienDev && (
+        <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-900">
+          Mode développement (aucun e-mail envoyé) :{" "}
+          <a href={lienDev} className="font-semibold underline">
+            ouvrir le lien de confirmation
+          </a>
+        </p>
+      )}
+      {erreur && <ErrorNote>{erreur}</ErrorNote>}
+      {etat === "renvoye" && <p className="font-semibold text-emerald-700">Un nouveau lien vient d'être envoyé.</p>}
+      <button type="button" onClick={renvoyer} disabled={etat === "envoi"} className={secondaryButton}>
+        {etat === "envoi" ? "Envoi…" : "Renvoyer le lien"}
+      </button>
+      <button type="button" onClick={onRetour} className="text-brand-blue-700 hover:underline">
+        Retour à la connexion
+      </button>
+    </div>
+  );
+}
 
 export default function AuthPage({ onAuth }: { onAuth: (user: User) => void }) {
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [aVerifier, setAVerifier] = useState<{ email: string; lien?: string } | null>(null);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setBusy(true);
-    const body = Object.fromEntries(new FormData(e.currentTarget));
+    const body = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     try {
-      await api(`auth/${mode}`, { body });
+      if (mode === "signup") {
+        const r = await api<{ lien?: string }>("auth/signup", { body });
+        setAVerifier({ email: body.email!.trim().toLowerCase(), lien: r.lien });
+        return;
+      }
+      await api("auth/login", { body });
       const { user } = await api<{ user: User }>("auth/me");
       onAuth(user);
     } catch (err) {
-      setError((err as Error).message);
+      // Compte pas encore confirmé : on propose de renvoyer le lien.
+      if (err instanceof ApiError && err.status === 403 && mode === "login") setAVerifier({ email: body.email!.trim().toLowerCase() });
+      else setError((err as Error).message);
     } finally {
       setBusy(false);
     }
@@ -61,6 +116,16 @@ export default function AuthPage({ onAuth }: { onAuth: (user: User) => void }) {
           {tab("login", "Se connecter")}
         </div>
 
+        {aVerifier ? (
+          <VerifiezVotreBoite
+            email={aVerifier.email}
+            lien={aVerifier.lien}
+            onRetour={() => {
+              setAVerifier(null);
+              setMode("login");
+            }}
+          />
+        ) : (
         <form onSubmit={submit} className="grid gap-4">
           {mode === "signup" && (
             <>
@@ -94,6 +159,7 @@ export default function AuthPage({ onAuth }: { onAuth: (user: User) => void }) {
             </p>
           )}
         </form>
+        )}
       </div>
     </div>
   );

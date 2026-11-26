@@ -4,12 +4,14 @@ export type Email = { a: string; sujet: string; html: string; texte: string };
 export type Envoyeur = (e: Email) => Promise<void>;
 
 const enProduction = () => process.env.VERCEL_ENV === "production";
+/** Déploiement accessible en ligne (production ou preview), par opposition au poste de développement. */
+const enLigne = () => process.env.VERCEL_ENV === "production" || process.env.VERCEL_ENV === "preview";
 
 /** Envoi par l'API Resend. EMAIL_REPLY_TO (facultatif) reçoit les réponses des destinataires. */
 export async function envoyerParResend(e: Email) {
   const cle = process.env.RESEND_API_KEY;
   if (!cle) {
-    if (enProduction()) throw new HttpError(500, "L'envoi d'e-mails n'est pas configuré (RESEND_API_KEY).");
+    if (enLigne()) throw new HttpError(500, "L'envoi d'e-mails n'est pas configuré (RESEND_API_KEY).");
     console.info(`[cockpit] E-mail non envoyé (RESEND_API_KEY absent) à ${e.a} : ${e.sujet}\n${e.texte}`);
     return;
   }
@@ -40,8 +42,8 @@ export function brancherEnvoyeur(e: Envoyeur | null) {
 
 export const envoyerEmail = (e: Email) => envoyeur(e);
 
-/** Sans clé Resend hors production, l'API renvoie le lien pour pouvoir tester sans e-mail. */
-export const lienVisibleEnReponse = () => !process.env.RESEND_API_KEY && !enProduction();
+/** Sans clé Resend sur un poste de développement, l'API renvoie le lien pour tester sans e-mail. Jamais en ligne (preview comprise). */
+export const lienVisibleEnReponse = () => !process.env.RESEND_API_KEY && !enLigne();
 
 /** Adresse publique de l'application. En production, jamais déduite de la requête (en-tête Host falsifiable). */
 export function urlApplication(req: Request) {
@@ -54,14 +56,14 @@ export function urlApplication(req: Request) {
 const echapper = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
-function gabarit({ titre, intro, bouton, lien, note }: { titre: string; intro: string; bouton: string; lien: string; note: string }) {
+function gabarit({ titre, intro, bouton, lien, note, produit = "Cockpit" }: { titre: string; intro: string; bouton: string; lien: string; note: string; produit?: string }) {
   const html = `<!doctype html>
 <html lang="fr"><body style="margin:0;padding:0;background:#E6F4FC;font-family:Outfit,Segoe UI,Helvetica,Arial,sans-serif;color:#0A1838">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(#E6F4FC,#F6F9FC);padding:32px 16px">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(7,21,56,.08)">
 <tr><td style="background:#071538;padding:20px 28px;color:#FFFFFF;font-size:18px;font-weight:800;letter-spacing:-.01em">
-Cockpit <span style="color:#DC5A2E">·</span> <span style="font-weight:500;opacity:.85">Central Test Agency</span></td></tr>
+${echapper(produit)} <span style="color:#DC5A2E">·</span> <span style="font-weight:500;opacity:.85">Central Test Agency</span></td></tr>
 <tr><td style="padding:28px">
 <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;letter-spacing:-.02em;color:#071538">${echapper(titre)}</h1>
 <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#5B6782">${echapper(intro)}</p>
@@ -95,4 +97,31 @@ export function emailReinitialisation(a: string, lien: string): Email {
     note: "Ce lien est valable 1 heure et ne peut servir qu'une fois. Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail : votre mot de passe actuel reste valable.",
   });
   return { a, sujet: "Réinitialisation de votre mot de passe Cockpit", html, texte };
+}
+
+// ——— Espace client du site ———
+
+export function emailVerification(a: string, nom: string, lien: string): Email {
+  const { html, texte } = gabarit({
+    produit: "Espace client",
+    titre: `Confirmez votre adresse, ${nom.split(/\s+/)[0]}`,
+    intro: "Vous venez de créer votre espace client Central Test Agency. Confirmez votre adresse e-mail pour y accéder.",
+    bouton: "Confirmer mon adresse",
+    lien,
+    note: "Ce lien est valable 24 heures et ne peut servir qu'une fois. Si vous n'avez pas créé de compte, ignorez simplement cet e-mail.",
+  });
+  return { a, sujet: "Confirmez votre adresse – Central Test Agency", html, texte };
+}
+
+/** Inscription avec une adresse déjà utilisée : on prévient le titulaire au lieu de le dire à l'écran (rien n'est révélé). */
+export function emailCompteExistant(a: string, lien: string): Email {
+  const { html, texte } = gabarit({
+    produit: "Espace client",
+    titre: "Vous avez déjà un compte",
+    intro: "Quelqu'un (sans doute vous) a essayé de créer un espace client avec cette adresse, mais un compte existe déjà. Connectez-vous avec votre mot de passe habituel.",
+    bouton: "Me connecter",
+    lien,
+    note: "Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail : votre compte n'a pas été modifié.",
+  });
+  return { a, sujet: "Votre espace client Central Test Agency", html, texte };
 }

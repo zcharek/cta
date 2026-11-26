@@ -14,7 +14,7 @@ let assistant: Awaited<ReturnType<typeof creerProfil>>;
 beforeAll(async () => {
   ({ sql } = await preparerBase());
   // Le compte fondateur existe dans l'espace client : sa première connexion crée son profil Founder.
-  await sql`INSERT INTO users (email, password_hash, name, role) VALUES (${EMAIL_FOUNDER}, ${bcrypt.hashSync("fondateur-123", 4)}, 'Central Test Agency', 'admin')`;
+  await sql`INSERT INTO users (email, password_hash, name, role, email_verifie_le) VALUES (${EMAIL_FOUNDER}, ${bcrypt.hashSync("fondateur-123", 4)}, 'Central Test Agency', 'admin', now())`;
   const r = await appeler("POST", "auth/connexion", { corps: { email: EMAIL_FOUNDER, motDePasse: "fondateur-123" } });
   expect(r.status).toBe(200);
   founder = { id: r.data.moi.id, cookie: r.cookie! };

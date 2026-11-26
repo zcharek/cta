@@ -12,6 +12,7 @@ export function versMoi(p: Profil): Moi {
   return { id: p.id, nom: p.nom, email: p.email, role: p.role, admin: estAdmin(p), gereAcces: gereLesAcces(p), onglets: ongletsDe(p) };
 }
 
+
 export async function cookieSession(profilId: string, version: number) {
   const token = await new SignJWT({ v: version })
     .setProtectedHeader({ alg: "HS256" })

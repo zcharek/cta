@@ -27,8 +27,9 @@ export async function preparerBase() {
 export type Reponse = { status: number; data: any; cookie?: string };
 
 /** Appelle l'API comme le ferait le navigateur. */
-export async function appeler(methode: string, chemin: string, options: { corps?: unknown; cookie?: string } = {}): Promise<Reponse> {
+export async function appeler(methode: string, chemin: string, options: { corps?: unknown; cookie?: string; ip?: string } = {}): Promise<Reponse> {
   const headers: Record<string, string> = {};
+  if (options.ip) headers["x-forwarded-for"] = options.ip;
   if (options.corps !== undefined) headers["content-type"] = "application/json";
   if (options.cookie) headers.cookie = options.cookie;
   const res = await traiter(

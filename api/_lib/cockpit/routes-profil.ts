@@ -3,6 +3,7 @@ import { MOT_DE_PASSE_MIN, aujourdhui, normaliserNin } from "../../../shared/coc
 import { HttpError, json, readBody } from "../web.js";
 import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
+import { journaliser } from "./journal.js";
 import { cookieSession, exigerProfil } from "./session.js";
 import { texte } from "./valider.js";
 
@@ -122,6 +123,7 @@ export function routesProfil(r: Routeur) {
     const [maj] = await sql`
       UPDATE profils SET mot_de_passe_hash = ${await bcrypt.hash(nouveau, 10)}, mot_de_passe_le = now(), version_session = version_session + 1
       WHERE id = ${moi.id} RETURNING version_session`;
+    await journaliser(moi, moi, "mot_de_passe_change");
     // Les autres sessions sont fermées ; celle-ci reçoit un nouveau cookie.
     return json({ ok: true }, { headers: { "Set-Cookie": await cookieSession(moi.id, maj!.version_session) } });
   });

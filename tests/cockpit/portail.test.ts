@@ -12,9 +12,9 @@ beforeAll(async () => {
   ({ sql } = await preparerBase());
   const hash = bcrypt.hashSync("ancien-mot-de-passe", 4);
   await sql`
-    INSERT INTO users (email, password_hash, name, role) VALUES
-      ('admin@cta.test', ${hash}, 'Charek Admin', 'admin'),
-      ('client@societe.test', ${hash}, 'Nadia Client', 'client')`;
+    INSERT INTO users (email, password_hash, name, role, email_verifie_le) VALUES
+      ('admin@cta.test', ${hash}, 'Charek Admin', 'admin', now()),
+      ('client@societe.test', ${hash}, 'Nadia Client', 'client', now())`;
   [{ id: clientId }] = (await sql`SELECT id FROM users WHERE email = 'client@societe.test'`) as [{ id: string }];
   [{ id: questionnaireId }] = (await sql`
     INSERT INTO questionnaires (slug, title, description, schema)
@@ -38,6 +38,12 @@ describe("connexion d'un admin de l'espace client", () => {
     await sql`INSERT INTO users (email, password_hash, name, role) VALUES ('autre-admin@cta.test', ${bcrypt.hashSync("secret-123", 4)}, 'Autre', 'admin')`;
     expect((await appeler("POST", "auth/connexion", { corps: { email: "autre-admin@cta.test", motDePasse: "faux" } })).status).toBe(401);
     expect(await sql`SELECT 1 FROM profils WHERE email = 'autre-admin@cta.test'`).toHaveLength(0);
+  });
+
+  it("un admin dont l'adresse n'est pas confirmée n'entre pas dans Cockpit", async () => {
+    await sql`INSERT INTO users (email, password_hash, name, role) VALUES ('non-verifie@cta.test', ${bcrypt.hashSync("secret-123", 4)}, 'Pas Vérifié', 'admin')`;
+    expect((await appeler("POST", "auth/connexion", { corps: { email: "non-verifie@cta.test", motDePasse: "secret-123" } })).status).toBe(401);
+    expect(await sql`SELECT 1 FROM profils WHERE email = 'non-verifie@cta.test'`).toHaveLength(0);
   });
 
   it("un compte client de l'espace client n'entre pas dans Cockpit", async () => {

@@ -1,20 +1,21 @@
-import { neon } from "@neondatabase/serverless";
 import { SignJWT, jwtVerify } from "jose";
+import { sql } from "./cockpit/db.js";
 import { HttpError, authSecret as secret, readCookie } from "./web.js";
 
 export { HttpError, handler, json, readBody, uuid } from "./web.js";
 
 // Fichiers préfixés par « _ » : Vercel ne les expose pas comme routes.
 
-export const sql = neon(process.env.DATABASE_URL!);
+// Même connexion que Cockpit : les tests la remplacent par un Postgres en mémoire.
+export { sql };
 
 const COOKIE = "cta_session";
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 jours
 
-export type Session = { id: string; email: string; role: "client" | "admin" };
+export type Session = { id: string; email: string; role: "client" | "admin"; version_session: number };
 
 export async function sessionCookie(user: Session) {
-  const token = await new SignJWT({ email: user.email, role: user.role })
+  const token = await new SignJWT({ v: user.version_session })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
     .setIssuedAt()
@@ -33,8 +34,10 @@ export async function getSession(req: Request): Promise<Session | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret());
+    if (typeof payload.v !== "number" || !/^[0-9a-f-]{36}$/i.test(payload.sub ?? "")) return null;
     // Le rôle est relu en base : une rétrogradation prend effet immédiatement.
-    const rows = await sql`SELECT id, email, role FROM users WHERE id = ${payload.sub!}`;
+    // La version de session change à la déconnexion : un jeton copié avant ne sert plus.
+    const rows = await sql`SELECT id, email, role, version_session FROM users WHERE id = ${payload.sub!} AND version_session = ${payload.v}`;
     return (rows[0] as Session | undefined) ?? null;
   } catch {
     return null;
@@ -51,12 +54,4 @@ export async function requireAdmin(req: Request) {
   const s = await requireUser(req);
   if (s.role !== "admin") throw new HttpError(403, "Accès réservé à l'administrateur.");
   return s;
-}
-
-export function isAdminEmail(email: string) {
-  return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean)
-    .includes(email);
 }

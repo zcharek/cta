@@ -116,3 +116,13 @@ export type FicheCabinet = CabinetCarte & {
 };
 
 export type LigneHistorique = { id: string; le: string; statut: string | null; action: string; note: string | null; auteur: string | null };
+
+export type EvenementJournal = {
+  id: string;
+  le: string;
+  auteur_nom: string | null;
+  cible_id: string | null;
+  cible_nom: string | null;
+  action: string;
+  details: Record<string, unknown>;
+};

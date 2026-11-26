@@ -6,6 +6,7 @@ import {
   bornesMois,
   gereLesAcces,
   ongletsDe,
+  peutGererRole,
   type Onglet,
   type Role,
   type StatutAcces,
@@ -15,6 +16,7 @@ import { sql } from "./db.js";
 import { emailInvitation, envoyerEmail, lienVisibleEnReponse, urlApplication } from "./emails.js";
 import { numeroFacture } from "../../../shared/facture.js";
 import { creerJeton, lienMotDePasse } from "./jetons.js";
+import { journaliser } from "./journal.js";
 import type { Routeur } from "./router.js";
 import { aOnglet, exigerOnglet, exigerProfil, type Profil } from "./session.js";
 import { stockage } from "./stockage.js";
@@ -65,6 +67,7 @@ function facturation(b: Record<string, unknown>) {
 }
 
 const RESERVE_GESTION = "Seuls le Founder, un Co-Founder ou un QA Manager peuvent changer le type, les onglets, l'archivage ou la suppression d'un utilisateur.";
+const RESERVE_HIERARCHIE = "Un QA Manager ne gère que les Collaborateurs, Comptables et Assistants ; seul le Founder gère les Co-Founders et lui-même.";
 
 /** Remplace la liste des clients d'un collaborateur (seuls les clients actifs sont retenus). */
 async function affecterClients(profilId: string, clientIds: string[]) {
@@ -130,6 +133,7 @@ export function routesEquipe(r: Routeur) {
     const choisis = b.onglets === undefined || b.onglets === null ? null : onglets(b.onglets);
     // Sans droit de gestion des accès : uniquement des Collaborateurs ou Assistants, avec les onglets par défaut.
     if (!gereLesAcces(auteur) && (choisis || !["collaborateur", "assistant"].includes(p.role))) throw new HttpError(403, RESERVE_GESTION);
+    if (gereLesAcces(auteur) && !peutGererRole(auteur, p.role)) throw new HttpError(403, RESERVE_HIERARCHIE);
     if (p.email === EMAIL_FOUNDER) throw new HttpError(409, "Cette adresse est celle du compte Founder.");
     const clientIds = idsListe(b.clientIds, "Client");
     const rows = await sql`
@@ -138,6 +142,7 @@ export function routesEquipe(r: Routeur) {
       RETURNING id, nom, email`;
     if (!rows[0]) throw new HttpError(409, "Un collaborateur existe déjà avec cette adresse e-mail.");
     await affecterClients(rows[0].id, clientIds);
+    await journaliser(auteur, { id: rows[0].id, nom: p.nom }, "creation", { role: p.role, email: p.email, ...(choisis ? { onglets: choisis } : {}) });
     const invitation = await inviter(req, auteur, rows[0] as { id: string; nom: string; email: string });
     return json({ id: rows[0].id, invitation }, { status: 201 });
   });
@@ -183,6 +188,11 @@ export function routesEquipe(r: Routeur) {
       if (!apres.includes("collaborateurs")) throw new HttpError(400, "Vous ne pouvez pas retirer votre propre accès à « Collaborateurs ».");
     }
 
+    // Hiérarchie : on ne gère que les comptes d'un type qu'on peut attribuer, et on n'attribue pas un type au-dessus du sien.
+    // Un QA Manager ne peut donc ni se promouvoir, ni changer ses propres onglets, ni toucher à un Co-Founder.
+    if ((nouveauRole || actif !== null || choisis || (mail && id !== auteur.id)) && (!peutGererRole(auteur, existant.role) || (nouveauRole && !peutGererRole(auteur, nouveauRole))))
+      throw new HttpError(403, RESERVE_HIERARCHIE);
+
     // Changer de type sans préciser les onglets revient aux onglets par défaut du nouveau type.
     const majOnglets = choisis !== null || nouveauRole !== null;
     try {
@@ -201,6 +211,15 @@ export function routesEquipe(r: Routeur) {
     }
     // Un compte archivé ne doit plus pouvoir utiliser un lien en attente.
     if (actif === false) await sql`DELETE FROM jetons WHERE profil_id = ${id} AND utilise_le IS NULL`;
+
+    // Journal : seulement les changements de droits ou d'identifiant (pas le nom ni le poste).
+    const cible = { id, nom: nom ?? existant.nom };
+    if (actif !== null) await journaliser(auteur, cible, actif ? "reactivation" : "archivage");
+    const changements: Record<string, unknown> = {};
+    if (nouveauRole) changements.role = { avant: existant.role, apres: nouveauRole };
+    if (majOnglets) changements.onglets = { avant: ongletsActuels, apres: choisis ?? ongletsDe({ role: nouveauRole ?? existant.role }) };
+    if (mail) changements.email = { avant: existant.email, apres: mail };
+    if (Object.keys(changements).length) await journaliser(auteur, cible, "modification", changements);
     if (b.clientIds !== undefined) await affecterClients(id, idsListe(b.clientIds, "Client"));
     return json({ ok: true });
   });
@@ -211,17 +230,32 @@ export function routesEquipe(r: Routeur) {
     const auteur = await exigerOnglet(req, "collaborateurs");
     if (!gereLesAcces(auteur)) throw new HttpError(403, RESERVE_GESTION);
     const id = uuid(params.id, "Collaborateur");
-    const [p] = await sql`SELECT role, (SELECT count(*) FROM bulletins b WHERE b.profil_id = profils.id)::int AS bulletins FROM profils WHERE id = ${id}`;
+    const [p] = await sql`SELECT nom, email, role, (SELECT count(*) FROM bulletins b WHERE b.profil_id = profils.id)::int AS bulletins FROM profils WHERE id = ${id}`;
     if (!p) throw new HttpError(404, "Collaborateur introuvable.");
     if (p.role === "founder") throw new HttpError(403, "Le compte Founder ne peut pas être supprimé.");
     if (id === auteur.id) throw new HttpError(400, "Vous ne pouvez pas supprimer votre propre compte.");
+    if (!peutGererRole(auteur, p.role)) throw new HttpError(403, RESERVE_HIERARCHIE);
     if (p.bulletins > 0) throw new HttpError(409, "Ce collaborateur a des bulletins de paie, qui doivent être conservés : archivez-le plutôt.");
     // Traces laissées sur le travail des autres : on garde le travail, sans l'auteur.
     await sql`UPDATE semaines SET validee_par = NULL WHERE validee_par = ${id}`;
     await sql`UPDATE factures SET cree_par = NULL WHERE cree_par = ${id}`;
     await sql`UPDATE bulletins SET cree_par = NULL WHERE cree_par = ${id}`;
     await sql`DELETE FROM profils WHERE id = ${id}`;
+    await journaliser(auteur, { id: null, nom: p.nom }, "suppression", { email: p.email, role: p.role });
     return json({ ok: true });
+  });
+
+  // Journal des accès (200 derniers événements, éventuellement pour un seul compte) : gestion des accès uniquement.
+  r.ajouter("GET", "journal-acces", async ({ req, url }) => {
+    const auteur = await exigerOnglet(req, "collaborateurs");
+    if (!gereLesAcces(auteur)) throw new HttpError(403, RESERVE_GESTION);
+    const profil = url.searchParams.get("profil");
+    const cible = profil ? uuid(profil, "Collaborateur") : null;
+    const evenements = await sql`
+      SELECT id, le::text AS le, auteur_nom, cible_id, cible_nom, action, details
+      FROM journal_acces WHERE ${cible}::uuid IS NULL OR cible_id = ${cible}::uuid
+      ORDER BY le DESC LIMIT 200`;
+    return json({ evenements });
   });
 
   r.ajouter("POST", "collaborateurs/:id/invitation", async ({ req, params }) => {
@@ -232,6 +266,7 @@ export function routesEquipe(r: Routeur) {
     if (!p) throw new HttpError(404, "Collaborateur introuvable.");
     if (!p.actif) throw new HttpError(409, "Ce collaborateur est archivé. Réactivez-le d'abord.");
     if (p.a_mot_de_passe) throw new HttpError(409, "Ce collaborateur a déjà défini son mot de passe.");
+    await journaliser(auteur, { id: p.id, nom: p.nom }, "invitation", { renvoi: true });
     return json({ invitation: await inviter(req, auteur, p as { id: string; nom: string; email: string }) });
   });
 
