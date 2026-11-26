@@ -99,7 +99,7 @@ describe("gestion des accès", () => {
     expect((await modifier(qa.cookie, c.id, { role: "assistant" })).status).toBe(200);
     const [p] = await sql`SELECT role, onglets FROM profils WHERE id = ${c.id}`;
     expect(p).toMatchObject({ role: "assistant", onglets: null });
-    expect(ongletsDe({ role: "assistant", onglets: null })).toEqual(ONGLETS.filter((o) => o !== "paie"));
+    expect(ongletsDe({ role: "assistant", onglets: null })).toEqual(ONGLETS.filter((o) => o !== "paie" && o !== "documents"));
   });
 
   it("on ne peut pas se retirer soi-même la gestion des accès", async () => {
@@ -119,7 +119,7 @@ describe("type Comptable", () => {
     const collab = await creerProfil(sql, "collaborateur");
     expect((await modifier(qa.cookie, collab.id, { role: "comptable" })).status).toBe(200);
     const comptable = await appeler("GET", "auth/moi", { cookie: collab.cookie });
-    expect(comptable.data.moi).toMatchObject({ role: "comptable", admin: false, gereAcces: false, onglets: ["aujourdhui", "recap", "factures", "paie"] });
+    expect(comptable.data.moi).toMatchObject({ role: "comptable", admin: false, gereAcces: false, onglets: ["aujourdhui", "recap", "factures", "paie", "documents"] });
     expect((await appeler("GET", "factures", { cookie: collab.cookie })).status).toBe(200);
     expect((await appeler("GET", "paie", { cookie: collab.cookie })).status).not.toBe(403);
     expect((await appeler("GET", "collaborateurs", { cookie: collab.cookie })).status).toBe(403);

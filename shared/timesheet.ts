@@ -46,7 +46,7 @@ export function lignesRecapitulatif(d: DonneesTimesheet): string[] {
 }
 
 export function nomFichier(d: DonneesTimesheet): string {
-  const court = (d.client.nom.split(" - ").pop() ?? d.client.nom).normalize("NFD").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const court = (d.client.nom.split(" - ").pop() ?? d.client.nom).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
   return `Timesheet_${court || "client"}_${d.mois}.pdf`;
 }
 

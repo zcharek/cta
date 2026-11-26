@@ -42,7 +42,7 @@ export function gereLesAcces(p: { role: Role; actif: boolean } | null | undefine
 }
 
 /** Onglets de Cockpit, activables utilisateur par utilisateur. */
-export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "factures", "paie", "espace_client", "clients", "collaborateurs", "whatsapp"] as const;
+export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "factures", "paie", "documents", "espace_client", "clients", "collaborateurs", "whatsapp"] as const;
 export type Onglet = (typeof ONGLETS)[number];
 
 export const ONGLET_LABEL: Record<Onglet, string> = {
@@ -53,6 +53,7 @@ export const ONGLET_LABEL: Record<Onglet, string> = {
   recap: "Récap mensuel",
   factures: "Factures",
   paie: "Bulletins de paie",
+  documents: "Documents (contrats, NDA, légal)",
   espace_client: "Espace client",
   clients: "Clients",
   collaborateurs: "Collaborateurs",
@@ -61,9 +62,11 @@ export const ONGLET_LABEL: Record<Onglet, string> = {
 
 export function ongletsParDefaut(role: Role): Onglet[] {
   if (role === "collaborateur") return ["saisie"];
-  if (role === "comptable") return ["aujourdhui", "recap", "factures", "paie"];
+  if (role === "comptable") return ["aujourdhui", "recap", "factures", "paie", "documents"];
   // Les salaires sont confidentiels : pas de bulletins de paie par défaut pour un Assistant.
-  if (role === "assistant") return ONGLETS.filter((o) => o !== "paie");
+  // Les documents (contrats, NDA, légal) : Founder, Co-Founders et Comptables par défaut.
+  if (role === "assistant") return ONGLETS.filter((o) => o !== "paie" && o !== "documents");
+  if (role === "qa_manager") return ONGLETS.filter((o) => o !== "documents");
   return [...ONGLETS];
 }
 

@@ -2,6 +2,7 @@ import { Routeur } from "./router.js";
 import { routesAccueil } from "./routes-accueil.js";
 import { routesAuth } from "./routes-auth.js";
 import { routesCabinets } from "./routes-cabinets.js";
+import { routesCoffre } from "./routes-coffre.js";
 import { routesDocuments } from "./routes-documents.js";
 import { routesEquipe } from "./routes-equipe.js";
 import { routesFactures } from "./routes-factures.js";
@@ -23,5 +24,6 @@ routesProfil(routeur);
 routesFactures(routeur);
 routesPaie(routeur);
 routesDocuments(routeur);
+routesCoffre(routeur);
 
 export const traiter = (req: Request) => routeur.traiter(req);

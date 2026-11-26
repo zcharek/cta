@@ -10,6 +10,7 @@ import DefinirMotDePasse from "./pages/DefinirMotDePasse";
 import Equipe from "./pages/Equipe";
 import EspaceClient from "./pages/EspaceClient";
 import MonProfil from "./pages/MonProfil";
+import Documents from "./pages/Documents";
 import Factures from "./pages/Factures";
 import Paie from "./pages/Paie";
 import RecapMensuel from "./pages/Recap";
@@ -86,6 +87,7 @@ export default function App() {
       "/profil": "Mon profil",
       "/factures": "Factures",
       "/paie": "Bulletins de paie",
+      "/documents": "Documents",
       "/validation": "Validation",
       "/recap": "Récap mensuel",
       "/cabinets": "Cabinets",
@@ -116,8 +118,9 @@ export default function App() {
   else if (chemin === "/saisie") page = <Saisie moi={moi} />;
   else if (chemin === "/reglages/clients") page = <Equipe key="clients" moi={moi} vue="clients" />;
   else if (chemin === "/reglages/collaborateurs") page = <Equipe key="collaborateurs" moi={moi} vue="collaborateurs" />;
-  else if (chemin === "/factures") page = <Factures />;
   else if (chemin === "/paie") page = <Paie />;
+  else if (chemin === "/documents") page = <Documents />;
+  else if (chemin === "/factures") page = <Factures moi={moi} />;
   else if (chemin === "/profil") page = <MonProfil moi={moi} onMisAJour={recharger} />;
   else if (chemin === "/validation") page = <Validation />;
   else if (chemin === "/recap") page = <RecapMensuel moi={moi} />;

@@ -54,7 +54,7 @@ export function paragraphesDocument(d: DonneesDocumentRh): string[] {
 }
 
 export function nomFichierDocumentRh(d: DonneesDocumentRh): string {
-  const nom = d.salarie.nom.normalize("NFD").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const nom = d.salarie.nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
   return `${d.type === "attestation" ? "Attestation" : "Certificat"}_de_travail_${nom || d.salarie.matricule}_${d.date}.pdf`;
 }
 

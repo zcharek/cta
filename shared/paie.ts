@@ -88,7 +88,7 @@ export function montantPaie(n: number): string {
 }
 
 export function nomFichierBulletin(d: DonneesBulletin): string {
-  const nom = d.salarie.nom.normalize("NFD").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const nom = d.salarie.nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
   return `Bulletin_${d.mois}_${nom || d.salarie.matricule}.pdf`;
 }
 

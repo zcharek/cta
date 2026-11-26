@@ -528,6 +528,8 @@ function ListeCollaborateurs({
   );
 }
 
+const boutonIcone = "grid h-8 w-8 place-items-center rounded-full text-ck-texte-2 transition hover:bg-ck-surface-2 hover:text-ck-titre";
+
 function FicheCollaborateur({
   c,
   moi,
@@ -576,32 +578,40 @@ function FicheCollaborateur({
             <BadgeAcces statut={c.statut} />
           </div>
         </div>
-        {actions.length > 0 && (
-          <details className="relative shrink-0">
-            <summary aria-label={`Plus d'actions pour ${c.nom}`} className="grid h-8 w-8 cursor-pointer list-none place-items-center rounded-full text-ck-texte-2 hover:bg-ck-surface-2 hover:text-ck-titre [&::-webkit-details-marker]:hidden">
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                <circle cx="5" cy="12" r="1.8" />
-                <circle cx="12" cy="12" r="1.8" />
-                <circle cx="19" cy="12" r="1.8" />
-              </svg>
-            </summary>
-            <div className="absolute right-0 z-20 mt-1 w-52 rounded-xl border border-ck-bordure bg-ck-surface p-1 shadow-[var(--ck-ombre)]">
-              {actions.map((a) => (
-                <button
-                  key={a.libelle}
-                  type="button"
-                  onClick={(e) => {
-                    (e.currentTarget.closest("details") as HTMLDetailsElement).open = false;
-                    a.action();
-                  }}
-                  className={`block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold hover:bg-ck-surface-2 ${a.danger ? "text-red-700" : "text-ck-titre"}`}
-                >
-                  {a.libelle}
-                </button>
-              ))}
-            </div>
-          </details>
-        )}
+        <div className="flex shrink-0 items-center gap-0.5">
+          <button type="button" onClick={onDocuments} aria-label={`Documents de ${c.nom}`} title="Documents" className={boutonIcone}>
+            <Icone nom="document" taille={17} />
+          </button>
+          <button type="button" onClick={onModifier} aria-label={`Modifier ${c.nom}`} title="Modifier" className={boutonIcone}>
+            <Icone nom="crayon" taille={17} />
+          </button>
+          {actions.length > 0 && (
+            <details className="relative shrink-0">
+              <summary aria-label={`Plus d'actions pour ${c.nom}`} title="Plus d'actions" className={`${boutonIcone} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+                  <circle cx="5" cy="12" r="1.8" />
+                  <circle cx="12" cy="12" r="1.8" />
+                  <circle cx="19" cy="12" r="1.8" />
+                </svg>
+              </summary>
+              <div className="absolute right-0 z-20 mt-1 w-52 rounded-xl border border-ck-bordure bg-ck-surface p-1 shadow-[var(--ck-ombre)]">
+                {actions.map((a) => (
+                  <button
+                    key={a.libelle}
+                    type="button"
+                    onClick={(e) => {
+                      (e.currentTarget.closest("details") as HTMLDetailsElement).open = false;
+                      a.action();
+                    }}
+                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold hover:bg-ck-surface-2 ${a.danger ? "text-red-700" : "text-ck-titre"}`}
+                  >
+                    {a.libelle}
+                  </button>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 grid gap-1.5 text-sm text-ck-texte">
@@ -666,14 +676,6 @@ function FicheCollaborateur({
         </div>
       )}
 
-      <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
-        <Bouton variante="contour" className="!border !border-ck-bordure !px-3 !py-2" onClick={onDocuments}>
-          <Icone nom="document" taille={16} /> Documents
-        </Bouton>
-        <Bouton variante="contour" className="!border !border-ck-bordure !px-3 !py-2" onClick={onModifier}>
-          Modifier
-        </Bouton>
-      </div>
     </Carte>
   );
 }

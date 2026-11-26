@@ -5,6 +5,7 @@ import { sql } from "./db.js";
 import type { Routeur } from "./router.js";
 import { identiteEntreprise } from "./entreprise.js";
 import { exigerOnglet } from "./session.js";
+import { stockage } from "./stockage.js";
 
 type Facturation = { tva: number; derniere: { numero: number; annee: number } | null };
 
@@ -80,7 +81,7 @@ export function routesFactures(r: Routeur) {
     const factures = await sql`
       SELECT f.id, f.annee, f.numero, f.mois, f.date_emission::text AS date_emission, f.jours::float8 AS jours,
         f.montant_ht::float8 AS montant_ht, f.montant_tva::float8 AS montant_tva, f.montant_ttc::float8 AS montant_ttc,
-        f.donnees->'client'->>'raison_sociale' AS client, c.nom AS client_nom, f.client_id, p.nom AS cree_par, f.cree_le::text AS cree_le,
+        COALESCE(f.donnees->'client'->>'raison_sociale', c.raison_sociale_facture, c.raison_sociale, c.nom) AS client, c.nom AS client_nom, f.fichier IS NOT NULL AS importee, f.client_id, p.nom AS cree_par, f.cree_le::text AS cree_le,
         f.numero = (SELECT max(numero) FROM factures x WHERE x.annee = f.annee) AS derniere,
         f.payee_le::text AS payee_le,
         -- Statut : payée, en retard (non payée 30 jours après l'émission) ou envoyée
@@ -156,8 +157,10 @@ export function routesFactures(r: Routeur) {
 
   r.ajouter("GET", "factures/:id", async ({ req, params }) => {
     await exigerOnglet(req, "factures");
-    const [f] = await sql`SELECT donnees FROM factures WHERE id = ${uuid(params.id, "Facture")}`;
+    const [f] = await sql`SELECT donnees, fichier FROM factures WHERE id = ${uuid(params.id, "Facture")}`;
     if (!f) throw new HttpError(404, "Facture introuvable.");
+    // Facture importée : lien signé vers le PDF d'origine
+    if (f.fichier) return json({ donnees: null, lien: await stockage().lienLecture(f.fichier) });
     return json({ donnees: f.donnees });
   });
 
@@ -177,8 +180,14 @@ export function routesFactures(r: Routeur) {
   r.ajouter("DELETE", "factures/:id", async ({ req, params }) => {
     await exigerOnglet(req, "factures");
     const id = uuid(params.id, "Facture");
-    const [f] = await sql`SELECT annee, numero FROM factures WHERE id = ${id}`;
+    const [f] = await sql`SELECT annee, numero, fichier FROM factures WHERE id = ${id}`;
     if (!f) throw new HttpError(404, "Facture introuvable.");
+    // Facture importée : son numéro vient d'avant Cockpit, on peut la retirer à tout moment (erreur d'import).
+    if (f.fichier) {
+      await sql`DELETE FROM factures WHERE id = ${id}`;
+      await stockage().supprimer(f.fichier).catch(() => undefined);
+      return json({ ok: true });
+    }
     const [{ max }] = (await sql`SELECT max(numero)::int AS max FROM factures WHERE annee = ${f.annee}`) as [{ max: number }];
     if (f.numero !== max) throw new HttpError(409, "Seule la dernière facture émise peut être supprimée, pour garder une numérotation continue.");
     await sql`DELETE FROM factures WHERE id = ${id}`;

@@ -304,6 +304,7 @@ const ICONES: Record<string, ReactNode> = {
     </>
   ),
   batiment: <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4" />,
+  dossier: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />,
 };
 
 export function Icone({ nom, taille = 20, className }: { nom: keyof typeof ICONES | string; taille?: number; className?: string }) {

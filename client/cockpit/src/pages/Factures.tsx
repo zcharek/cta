@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { aujourdhui, decalerMois, formatDzd, formatJours, libelleMois } from "../../../../shared/cockpit";
 import type { DonneesFacture } from "../../../../shared/facture";
 import type { DonneesTimesheet } from "../../../../shared/timesheet";
-import { api, type ClientAdmin } from "../api";
+import { api, type ClientAdmin, type Moi } from "../api";
+import { ouvrirFichier } from "../coffre";
 import { telechargerFacture } from "../documents";
 import { naviguer } from "../routeur";
 import { Bouton, Carte, Chargement, ChiffreCle, EnTete, Erreur, Etape, Icone, Verification, classeChamp } from "../ui";
@@ -22,6 +23,7 @@ type Facture = {
   derniere: boolean;
   payee_le: string | null;
   statut: Statut;
+  importee: boolean;
 };
 type Liste = { factures: Facture[]; tva: number; derniereHorsCockpit: string | null; prochain: string; clientsEnAttente: number };
 type Apercu = {
@@ -410,6 +412,11 @@ function ListeFactures({ liste, clients, onChange, onErreur }: { liste: Liste; c
                 <tr key={f.id} className="border-b border-ck-bordure last:border-0">
                   <th scope="row" className="px-4 py-3 text-left font-bold tabular-nums text-ck-titre">
                     {f.numero_affiche}
+                    {f.importee && (
+                      <span className="ml-2 rounded bg-ck-surface-2 px-1.5 py-0.5 text-[11px] font-semibold text-ck-texte-2" title="Facture émise avant Cockpit : PDF d'origine importé">
+                        Importée
+                      </span>
+                    )}
                   </th>
                   <td className="px-4 py-3">{f.client}</td>
                   <td className="px-4 py-3 capitalize">{libelleMois(f.mois)}</td>
@@ -421,17 +428,17 @@ function ListeFactures({ liste, clients, onChange, onErreur }: { liste: Liste; c
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-right">
-                    <button type="button" onClick={() => void action(async () => telechargerFacture((await api<{ donnees: DonneesFacture }>(`factures/${f.id}`)).donnees))} className="font-bold text-ck-orange-texte hover:underline">
+                    <button type="button" onClick={() => void action(async () => (f.importee ? ouvrirFichier(`factures/${f.id}`) : telechargerFacture((await api<{ donnees: DonneesFacture }>(`factures/${f.id}`)).donnees)))} className="font-bold text-ck-orange-texte hover:underline">
                       PDF
                     </button>
                     <button type="button" onClick={() => void action(() => api(`factures/${f.id}`, { methode: "PATCH", corps: { payee: !f.payee_le } }))} className="ml-4 font-semibold text-[#2f5bd3] hover:underline">
                       {f.payee_le ? "Annuler le paiement" : "Marquer payée"}
                     </button>
-                    {f.derniere && (
+                    {(f.derniere || f.importee) && (
                       <button
                         type="button"
                         onClick={() => {
-                          if (window.confirm(`Supprimer la facture ${f.numero_affiche} ? Son numéro sera réutilisé pour la prochaine facture.`)) void action(() => api(`factures/${f.id}`, { methode: "DELETE" }));
+                          if (window.confirm(f.importee ? `Retirer la facture importée ${f.numero_affiche} et son PDF ?` : `Supprimer la facture ${f.numero_affiche} ? Son numéro sera réutilisé pour la prochaine facture.`)) void action(() => api(`factures/${f.id}`, { methode: "DELETE" }));
                         }}
                         className="ml-4 text-ck-texte-2 hover:text-red-700 hover:underline"
                       >
@@ -518,7 +525,7 @@ function Parametres({ liste }: { liste: Liste }) {
   );
 }
 
-export default function Factures() {
+export default function Factures({ moi }: { moi: Moi }) {
   const [liste, setListe] = useState<Liste | null>(null);
   const [clients, setClients] = useState<ClientAdmin[] | null>(null);
   const [erreur, setErreur] = useState("");
@@ -531,12 +538,13 @@ export default function Factures() {
   useEffect(() => {
     charger();
     api<{ clients: ClientAdmin[] }>("clients")
-      .then((d) => setClients(d.clients.filter((c) => c.actif)))
+      .then((d) => setClients(d.clients))
       .catch((e: Error) => setErreur(e.message));
   }, [charger]);
 
   if (!liste || !clients) return erreur ? <Erreur>{erreur}</Erreur> : <Chargement />;
 
+  const actifs = clients.filter((c) => c.actif);
   const annee = Number(aujourdhui().slice(0, 4));
   const deLAnnee = liste.factures.filter((f) => f.annee === annee);
   const ttc = deLAnnee.reduce((s, f) => s + f.montant_ttc, 0);
@@ -548,9 +556,16 @@ export default function Factures() {
         accent="factures."
         sousTitre="Émettez une facture en trois étapes. Seuls les jours validés sont facturés."
         actions={
-          <Bouton variante="contour" onClick={() => document.getElementById("factures-emises")?.scrollIntoView({ behavior: "smooth" })}>
-            <Icone nom="menu" taille={18} /> Factures émises
-          </Bouton>
+          <>
+            {moi.onglets.includes("documents") && (
+              <Bouton variante="contour" onClick={() => naviguer("/documents")}>
+                <Icone nom="dossier" taille={18} /> Importer d'anciennes factures
+              </Bouton>
+            )}
+            <Bouton variante="contour" onClick={() => document.getElementById("factures-emises")?.scrollIntoView({ behavior: "smooth" })}>
+              <Icone nom="menu" taille={18} /> Factures émises
+            </Bouton>
+          </>
         }
       />
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -564,8 +579,8 @@ export default function Factures() {
           <Erreur>{erreur}</Erreur>
         </div>
       )}
-      {clients.length ? <Emettre clients={clients} onEmise={charger} /> : <Carte className="text-sm text-ck-texte-2">Créez d'abord un client.</Carte>}
-      <ListeFactures liste={liste} clients={clients} onChange={charger} onErreur={setErreur} />
+      {actifs.length ? <Emettre clients={actifs} onEmise={charger} /> : <Carte className="text-sm text-ck-texte-2">Créez d'abord un client.</Carte>}
+      <ListeFactures liste={liste} clients={clients.filter((c) => c.actif || liste.factures.some((f) => f.client_id === c.id))} onChange={charger} onErreur={setErreur} />
       <Parametres liste={liste} />
     </>
   );

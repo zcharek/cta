@@ -94,6 +94,34 @@ const serveur = await createServer({
       async configureServer(srv) {
         const { brancherSql } = await srv.ssrLoadModule(path.join(racine, "api/_lib/cockpit/db.ts"));
         brancherSql(async (strings, ...valeurs) => (await db.query(strings.reduce((a, s, i) => a + (i ? `$${i}` : "") + s, ""), valeurs)).rows);
+        // Stockage des documents en mémoire (pas de Vercel Blob en démo) : envoi et lecture via /__demo-stockage/
+        const fichiers = new Map();
+        const { definirStockage } = await srv.ssrLoadModule(path.join(racine, "api/_lib/cockpit/stockage.ts"));
+        definirStockage({
+          jetonEnvoi: async (chemin) => `demo:${chemin}`,
+          infos: async (chemin) => (fichiers.has(chemin) ? { taille: fichiers.get(chemin).octets.length, type: fichiers.get(chemin).type } : null),
+          lienLecture: async (chemin) => `/__demo-stockage/${chemin}`,
+          supprimer: async (chemin) => {
+            fichiers.delete(chemin);
+          },
+        });
+        srv.middlewares.use(async (req, res, suite) => {
+          if (!req.url?.startsWith("/__demo-stockage/")) return suite();
+          const chemin = decodeURIComponent(req.url.slice("/__demo-stockage/".length).split("?")[0]);
+          if (req.method === "PUT") {
+            const morceaux = [];
+            for await (const m of req) morceaux.push(m);
+            fichiers.set(chemin, { octets: Buffer.concat(morceaux), type: req.headers["content-type"] || "application/octet-stream" });
+            return res.end("ok");
+          }
+          const f = fichiers.get(chemin);
+          if (!f) {
+            res.statusCode = 404;
+            return res.end();
+          }
+          res.setHeader("content-type", f.type);
+          res.end(f.octets);
+        });
         srv.middlewares.use(async (req, res, suite) => {
           if (!req.url?.startsWith("/api/cockpit")) return suite();
           const morceaux = [];

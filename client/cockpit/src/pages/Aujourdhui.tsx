@@ -15,6 +15,7 @@ type Accueil = {
     restantSemaine: number;
   } | null;
   semainesAValider: number | null;
+  documentsAExpiration: { nombre: number; premiere: string | null } | null;
   semainePrecedente: { lundi: string; manquants: { id: string; nom: string }[] } | null;
   prospection: {
     parStatut: Record<StatutCabinet, number>;
@@ -93,7 +94,8 @@ export default function Aujourdhui(_: { moi: Moi }) {
 
   const { relances, jamaisContactes: jc, semainePrecedente: sp, prospection: p, temps: t } = d;
   const manquants = sp?.manquants.map((m) => m.nom) ?? [];
-  const aFaire = relances || jc || d.semainesAValider !== null || sp;
+  const ex = d.documentsAExpiration;
+  const aFaire = relances || jc || d.semainesAValider !== null || sp || ex;
 
   return (
     <>
@@ -146,6 +148,15 @@ export default function Aujourdhui(_: { moi: Moi }) {
                   explication={manquants.length ? `${libelleSemaine(sp.lundi)} : ${manquants.join(", ")}.` : `Tout le monde a soumis la ${libelleSemaine(sp.lundi).toLowerCase()}.`}
                   action="Voir la saisie"
                   lien={sp.manquants[0] ? `/saisie?profil=${sp.manquants[0].id}&lundi=${sp.lundi}` : "/saisie"}
+                />
+              )}
+              {ex && (
+                <Tache
+                  nombre={ex.nombre}
+                  titre={ex.nombre > 1 ? "documents à renouveler" : "document à renouveler"}
+                  explication={ex.nombre ? `Expirés ou expirant d'ici 30 jours ; le premier le ${dateLongue(ex.premiere!)}.` : "Aucun document n'expire dans les 30 jours."}
+                  action="Voir les documents"
+                  lien="/documents?expiration=1"
                 />
               )}
             </ul>

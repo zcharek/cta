@@ -13,7 +13,7 @@ export function routesAccueil(r: Routeur) {
     const { debut, fin } = bornesMois(jour);
     const lundiPrecedent = ajouterJours(lundiDe(jour), -7);
 
-    const [relances, aContacter, repartition, aValider, retardataires, temps] = await Promise.all([
+    const [relances, aContacter, repartition, aValider, retardataires, temps, expirations] = await Promise.all([
       sql`
         SELECT count(*)::int AS nombre, min(relance_le)::text AS plus_ancienne FROM cabinets
         WHERE relance_le <= ${jour}::date AND statut IN ('message_envoye', 'relance', 'en_discussion', 'demo_planifiee')`,
@@ -34,6 +34,10 @@ export function routesAccueil(r: Routeur) {
           COALESCE(sum(t.valeur) FILTER (WHERE s.statut <> 'validee'), 0)::float8 AS jours_non_valides
         FROM temps t JOIN semaines s ON s.id = t.semaine_id JOIN clients c ON c.id = t.client_id
         WHERE t.jour BETWEEN ${debut}::date AND ${fin}::date`,
+      // Documents (dernière version) expirés ou expirant dans les 30 jours : attestations CNAS, fiscales…
+      sql`
+        SELECT count(*)::int AS nombre, min(expire_le)::text AS premiere FROM documents d
+        WHERE expire_le <= ${ajouterJours(jour, 30)}::date AND NOT EXISTS (SELECT 1 FROM documents n WHERE n.precedent_id = d.id)`,
     ]);
 
     const parStatut = Object.fromEntries(STATUTS_CABINET.filter((s) => s !== "hors_cible").map((s) => [s, 0])) as Record<StatutCabinet, number>;
@@ -66,6 +70,7 @@ export function routesAccueil(r: Routeur) {
           }
         : null,
       temps: aOnglet(moi, "recap") ? temps[0] : null,
+      documentsAExpiration: aOnglet(moi, "documents") ? expirations[0] : null,
     });
   });
 }

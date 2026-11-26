@@ -116,7 +116,7 @@ const dateFr = (iso: string) => iso.split("-").reverse().join("/");
 const quantite = (n: number) => String(Math.round(n * 10) / 10).replace(".", ",");
 
 export function nomFichierFacture(d: DonneesFacture): string {
-  const court = (d.client.raison_sociale.replace(/^SARL\s+|^SPA\s+|^EURL\s+/i, "").normalize("NFD").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "client").slice(0, 40);
+  const court = (d.client.raison_sociale.replace(/^SARL\s+|^SPA\s+|^EURL\s+/i, "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "client").slice(0, 40);
   return `Facture_${d.numero}_${court}.pdf`;
 }
 
