@@ -1,5 +1,5 @@
 import { DndContext, DragOverlay, PointerSensor, TouchSensor, useDraggable, useDroppable, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STATUT_CABINET_LABEL, type StatutCabinet } from "../../../../shared/cockpit";
 import {
   COLONNES_KANBAN,
@@ -16,10 +16,15 @@ import { api, type CabinetCarte } from "../api";
 import type { Moi } from "../api";
 import Fiche from "../prospection/Fiche";
 import ImportCabinets from "../prospection/Import";
-import { Bouton, Chargement, EnTete, Erreur, IconeWhatsApp, Icone, Info, Pastille, classeChamp } from "../ui";
+import { Avatar, Bouton, Chargement, EnTete, Erreur, IconeWhatsApp, Icone, Info, Pastille, classeChamp } from "../ui";
 import FenetreMessageWhatsApp from "./MessageWhatsApp";
 
 const PAR_PAGE = 25;
+/** Fréquence du contrôle des changements faits par les autres (onglet visible uniquement). */
+const INTERVALLE_SYNCHRO = 4000;
+
+type Membre = { id: string; nom: string };
+type Donnees = { cabinets: CabinetCarte[]; modele: string; equipe: Membre[]; version: string; aujourdhui: string };
 
 export const dateCourte = (iso: string | null) =>
   iso ? new Date(`${iso}T12:00:00Z`).toLocaleDateString("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }) : "";
@@ -28,19 +33,81 @@ type Actions = {
   ouvrir: (id: string) => void;
   deplacer: (c: CabinetCarte, statut: StatutCabinet) => void;
   whatsapp: (c: CabinetCarte) => void;
+  assigner: (c: CabinetCarte, profilId: string | null) => void;
 };
 
-function ContenuCarte({ c, du, doublon, modele, actions, apercu }: { c: CabinetCarte; du: boolean; doublon: boolean; modele: string; actions?: Actions; apercu?: boolean }) {
+const ORANGE = "#dc5a2e";
+
+/** Pastille de suivi : « M'assigner » si personne ne suit le cabinet, sinon l'avatar de la personne. */
+function Suivi({ c, suivi, moiId, actions }: { c: CabinetCarte; suivi: Membre | null; moiId: string; actions?: Actions }) {
+  const stop = (e: React.PointerEvent) => e.stopPropagation(); // pas de glisser-déposer depuis le bouton
+  if (!suivi)
+    return (
+      <button
+        type="button"
+        onPointerDown={stop}
+        onClick={() => actions?.assigner(c, moiId)}
+        aria-label={`M'assigner ${c.nom}`}
+        title="M'assigner ce cabinet"
+        className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-dashed border-ck-bordure text-ck-texte-2 transition hover:border-ck-orange hover:text-ck-orange-texte"
+      >
+        <Icone nom="plus" taille={14} />
+      </button>
+    );
+  const soi = suivi.id === moiId;
+  return (
+    <button
+      type="button"
+      onPointerDown={stop}
+      onClick={() => {
+        if (soi) actions?.assigner(c, null);
+        else if (window.confirm(`${suivi.nom} suit ${c.nom}. Le reprendre à votre nom ?`)) actions?.assigner(c, moiId);
+      }}
+      aria-label={soi ? `Vous suivez ${c.nom} : vous retirer` : `Suivi par ${suivi.nom} : le reprendre`}
+      title={soi ? "Suivi par vous · cliquer pour vous retirer" : `Suivi par ${suivi.nom} · cliquer pour le reprendre`}
+      className="shrink-0 rounded-full transition hover:opacity-80"
+    >
+      <Avatar nom={suivi.nom} couleur={soi ? ORANGE : "#071538"} taille={28} />
+    </button>
+  );
+}
+
+function ContenuCarte({
+  c,
+  du,
+  doublon,
+  modele,
+  actions,
+  apercu,
+  suivi,
+  moiId,
+  recent,
+}: {
+  c: CabinetCarte;
+  du: boolean;
+  doublon: boolean;
+  modele: string;
+  actions?: Actions;
+  apercu?: boolean;
+  suivi: Membre | null;
+  moiId: string;
+  recent?: boolean;
+}) {
   const wa = lienWhatsApp(c, modele);
   const appel = wa ? null : lienAppelCabinet(c);
   return (
     <div
-      className={`rounded-xl border border-ck-bordure bg-ck-surface p-3.5 shadow-sm ${du ? "border-l-4 !border-l-ck-orange" : ""} ${apercu ? "rotate-2 shadow-xl" : ""}`}
+      className={`rounded-xl border border-ck-bordure bg-ck-surface p-3.5 shadow-sm transition-shadow duration-700 ${du ? "border-l-4 !border-l-ck-orange" : ""} ${apercu ? "rotate-2 shadow-xl" : ""} ${
+        recent ? "ring-2 ring-[#2f5bd3]/60" : ""
+      }`}
     >
-      <button type="button" onClick={() => actions?.ouvrir(c.id)} className="block w-full text-left">
-        <span className="block font-bold leading-snug text-ck-titre hover:underline">{c.nom}</span>
-        {c.veterinaire && <span className="mt-0.5 block truncate text-sm text-ck-texte-2">{c.veterinaire}</span>}
-      </button>
+      <div className="flex items-start gap-2">
+        <button type="button" onClick={() => actions?.ouvrir(c.id)} className="block min-w-0 flex-1 text-left">
+          <span className="block font-bold leading-snug text-ck-titre hover:underline">{c.nom}</span>
+          {c.veterinaire && <span className="mt-0.5 block truncate text-sm text-ck-texte-2">{c.veterinaire}</span>}
+        </button>
+        <Suivi c={c} suivi={suivi} moiId={moiId} actions={actions} />
+      </div>
       <div className="mt-2 flex flex-wrap gap-1">
         {c.commune && <Pastille className="bg-ck-surface-2 text-ck-texte">{c.commune}</Pastille>}
         {c.segment && <Pastille className="bg-ck-surface-2 text-ck-texte">{c.segment}</Pastille>}
@@ -97,7 +164,7 @@ function ContenuCarte({ c, du, doublon, modele, actions, apercu }: { c: CabinetC
   );
 }
 
-const Carte = memo(function Carte(props: { c: CabinetCarte; du: boolean; doublon: boolean; modele: string; actions: Actions }) {
+const Carte = memo(function Carte(props: { c: CabinetCarte; du: boolean; doublon: boolean; modele: string; actions: Actions; suivi: Membre | null; moiId: string; recent: boolean }) {
   const { setNodeRef, listeners, isDragging } = useDraggable({ id: props.c.id, data: props.c });
   // Pas d'attributs clavier de dnd-kit : au clavier, on déplace avec le menu « Déplacer vers… ».
   return (
@@ -151,33 +218,82 @@ function Filtre({ id, libelle, valeur, options, onChange }: { id: string; libell
 export default function Cabinets({ moi }: { moi: Moi }) {
   const [whatsappOuvert, setWhatsappOuvert] = useState(() => new URLSearchParams(window.location.search).has("whatsapp"));
   const requete = new URLSearchParams(window.location.search);
-  const [donnees, setDonnees] = useState<{ cabinets: CabinetCarte[]; modele: string; aujourdhui: string } | null>(null);
+  const [donnees, setDonnees] = useState<Donnees | null>(null);
   const [erreur, setErreur] = useState("");
   const [recherche, setRecherche] = useState("");
   const [semaine, setSemaine] = useState(requete.get("semaine") ?? "");
   const [segment, setSegment] = useState("");
   const [commune, setCommune] = useState("");
   const [aRelancer, setARelancer] = useState(requete.get("relance") === "1");
+  // Suivi : "" (tous), "moi", "aucun" ou l'id d'une personne
+  const [suiviPar, setSuiviPar] = useState(requete.get("suivi") === "moi" ? "moi" : "");
   const [limites, setLimites] = useState<Partial<Record<StatutCabinet, number>>>({});
   const [ficheId, setFicheId] = useState<string | null>(null);
   const [importOuvert, setImportOuvert] = useState(false);
   const [glisse, setGlisse] = useState<CabinetCarte | null>(null);
   const [annonce, setAnnonce] = useState("");
 
-  const charger = useCallback(() => {
-    api<{ cabinets: CabinetCarte[]; modele: string; aujourdhui: string }>("cabinets")
-      .then(setDonnees)
-      .catch((e: Error) => setErreur(e.message));
+  // ——— Synchronisation : chaque écran vérifie régulièrement si un collègue a changé quelque chose ———
+  const version = useRef<string | null>(null);
+  const enVol = useRef(0); // nos propres enregistrements en cours : on ne recharge pas par-dessus
+  const glisseEnCours = useRef(false);
+  const [recents, setRecents] = useState<Set<string>>(new Set());
+
+  const charger = useCallback((silencieux = false) => {
+    api<Donnees>("cabinets")
+      .then((d) => {
+        version.current = d.version;
+        setDonnees((avant) => {
+          if (silencieux && avant) {
+            // Cartes changées par quelqu'un d'autre : brièvement mises en évidence
+            const anciens = new Map(avant.cabinets.map((c) => [c.id, c]));
+            const changes = d.cabinets.filter((c) => {
+              const a = anciens.get(c.id);
+              return !a || a.statut !== c.statut || a.assigne_a !== c.assigne_a || a.relance_le !== c.relance_le || a.nom !== c.nom;
+            });
+            if (changes.length && changes.length < 30) {
+              setRecents(new Set(changes.map((c) => c.id)));
+              setTimeout(() => setRecents(new Set()), 2500);
+            }
+          }
+          return d;
+        });
+      })
+      .catch((e: Error) => !silencieux && setErreur(e.message));
   }, []);
-  useEffect(charger, [charger]);
+  useEffect(() => charger(), [charger]);
+
+  useEffect(() => {
+    let actif = true;
+    const verifier = async () => {
+      if (document.visibilityState !== "visible" || glisseEnCours.current || enVol.current > 0 || !version.current) return;
+      try {
+        const r = await api<{ version: string }>("cabinets/version");
+        if (actif && r.version !== version.current && !glisseEnCours.current && enVol.current === 0) charger(true);
+      } catch {
+        // Réseau coupé : on réessaiera au prochain tour
+      }
+    };
+    const minuterie = window.setInterval(() => void verifier(), INTERVALLE_SYNCHRO);
+    const auRetour = () => void verifier();
+    document.addEventListener("visibilitychange", auRetour);
+    window.addEventListener("focus", auRetour);
+    return () => {
+      actif = false;
+      window.clearInterval(minuterie);
+      document.removeEventListener("visibilitychange", auRetour);
+      window.removeEventListener("focus", auRetour);
+    };
+  }, [charger]);
 
   // Filtres dans l'adresse : liens depuis « Aujourd'hui » et partage
   useEffect(() => {
     const q = new URLSearchParams();
     if (semaine) q.set("semaine", semaine);
     if (aRelancer) q.set("relance", "1");
+    if (suiviPar === "moi") q.set("suivi", "moi");
     window.history.replaceState(null, "", `/cockpit/cabinets${q.toString() ? `?${q}` : ""}`);
-  }, [semaine, aRelancer]);
+  }, [semaine, aRelancer, suiviPar]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }), useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }));
 
@@ -192,20 +308,40 @@ export default function Cabinets({ moi }: { moi: Moi }) {
         const avant = { statut: c.statut, relance_le: c.relance_le, premier_contact: c.premier_contact };
         majLocale(c.id, { statut });
         setAnnonce(`${c.nom} déplacé vers ${STATUT_CABINET_LABEL[statut]}.`);
+        enVol.current++;
         try {
           const r = await api<{ cabinet: Partial<CabinetCarte> }>(`cabinets/${c.id}/statut`, { corps: { statut } });
           majLocale(c.id, r.cabinet);
         } catch (e) {
           majLocale(c.id, avant);
           setErreur((e as Error).message);
+        } finally {
+          enVol.current--;
         }
       },
       whatsapp: async (c) => {
+        enVol.current++;
         try {
           const r = await api<{ cabinet: Partial<CabinetCarte> }>(`cabinets/${c.id}/whatsapp`, { methode: "POST" });
           majLocale(c.id, r.cabinet);
         } catch (e) {
           setErreur((e as Error).message);
+        } finally {
+          enVol.current--;
+        }
+      },
+      assigner: async (c, profilId) => {
+        const avant = c.assigne_a;
+        majLocale(c.id, { assigne_a: profilId });
+        setAnnonce(profilId ? `${c.nom} vous est assigné.` : `Vous ne suivez plus ${c.nom}.`);
+        enVol.current++;
+        try {
+          await api(`cabinets/${c.id}/assignation`, { corps: { profilId } });
+        } catch (e) {
+          majLocale(c.id, { assigne_a: avant });
+          setErreur((e as Error).message);
+        } finally {
+          enVol.current--;
         }
       },
     }),
@@ -226,6 +362,7 @@ export default function Cabinets({ moi }: { moi: Moi }) {
         (!segment || c.segment === segment) &&
         (!commune || c.commune === commune) &&
         (!aRelancer || estARelancer(c, aujourdhui)) &&
+        (!suiviPar || (suiviPar === "moi" ? c.assigne_a === moi.id : suiviPar === "aucun" ? !c.assigne_a : c.assigne_a === suiviPar)) &&
         correspond(c, recherche),
     );
     const colonnes = Object.fromEntries(COLONNES_KANBAN.map((s) => [s, trierCartes(filtres.filter((c) => c.statut === s), aujourdhui)])) as Record<StatutCabinet, CabinetCarte[]>;
@@ -233,6 +370,8 @@ export default function Cabinets({ moi }: { moi: Moi }) {
       colonnes,
       nombre: filtres.length,
       dues: cabinets.filter((c) => estARelancer(c, aujourdhui)).length,
+      miens: cabinets.filter((c) => c.assigne_a === moi.id).length,
+      membres: new Map(donnees.equipe.map((m) => [m.id, m])),
       estDoublon: (c: CabinetCarte) => {
         const t = neufDerniersChiffres(c.telephone);
         return !!t && (telephones.get(t) ?? 0) > 1;
@@ -241,10 +380,11 @@ export default function Cabinets({ moi }: { moi: Moi }) {
       segments: trierSemaines(cabinets.map((c) => c.segment)),
       communes: trierSemaines(cabinets.map((c) => c.commune)),
     };
-  }, [donnees, semaine, segment, commune, aRelancer, recherche]);
+  }, [donnees, semaine, segment, commune, aRelancer, suiviPar, recherche, moi.id]);
 
   function finGlisser(e: DragEndEvent) {
     setGlisse(null);
+    glisseEnCours.current = false;
     const c = e.active.data.current as CabinetCarte | undefined;
     const vers = e.over?.id as StatutCabinet | undefined;
     if (c && vers && vers !== c.statut) void actions.deplacer(c, vers);
@@ -252,9 +392,20 @@ export default function Cabinets({ moi }: { moi: Moi }) {
 
   if (!donnees || !vue) return erreur ? <Erreur>{erreur}</Erreur> : <Chargement />;
 
-  const filtresActifs = !!(recherche || semaine || segment || commune || aRelancer);
+  const filtresActifs = !!(recherche || semaine || segment || commune || aRelancer || suiviPar);
+  const suiviDe = (c: CabinetCarte) => (c.assigne_a ? (vue.membres.get(c.assigne_a) ?? { id: c.assigne_a, nom: "Compte retiré" }) : null);
   const rendu = (c: CabinetCarte) => (
-    <Carte key={c.id} c={c} du={estARelancer(c, donnees.aujourdhui)} doublon={vue.estDoublon(c)} modele={donnees.modele} actions={actions} />
+    <Carte
+      key={c.id}
+      c={c}
+      du={estARelancer(c, donnees.aujourdhui)}
+      doublon={vue.estDoublon(c)}
+      modele={donnees.modele}
+      actions={actions}
+      suivi={suiviDe(c)}
+      moiId={moi.id}
+      recent={recents.has(c.id)}
+    />
   );
 
   return (
@@ -300,6 +451,23 @@ export default function Cabinets({ moi }: { moi: Moi }) {
         <Filtre id="f-semaine" libelle="Semaine" valeur={semaine} options={vue.semaines} onChange={setSemaine} />
         <Filtre id="f-segment" libelle="Segment" valeur={segment} options={vue.segments} onChange={setSegment} />
         <Filtre id="f-commune" libelle="Commune" valeur={commune} options={vue.communes} onChange={setCommune} />
+        <div>
+          <label htmlFor="f-suivi" className="sr-only">
+            Suivi par
+          </label>
+          <select id="f-suivi" value={suiviPar} onChange={(e) => setSuiviPar(e.target.value)} className={`${classeChamp} !py-2 sm:w-44`}>
+            <option value="">Suivi par : tous</option>
+            <option value="moi">Mes cabinets ({vue.miens})</option>
+            <option value="aucun">Personne</option>
+            {donnees.equipe
+              .filter((m) => m.id !== moi.id)
+              .map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.nom}
+                </option>
+              ))}
+          </select>
+        </div>
         <button
           type="button"
           aria-pressed={aRelancer}
@@ -308,6 +476,10 @@ export default function Cabinets({ moi }: { moi: Moi }) {
         >
           À relancer{vue.dues ? ` (${vue.dues})` : ""}
         </button>
+        <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-ck-texte-2" title="Les changements faits par vos collègues apparaissent automatiquement, en quelques secondes.">
+          <span aria-hidden="true" className="h-2 w-2 animate-pulse rounded-full bg-emerald-500 motion-reduce:animate-none" />
+          En direct
+        </span>
         {filtresActifs && (
           <Bouton
             variante="discret"
@@ -318,6 +490,7 @@ export default function Cabinets({ moi }: { moi: Moi }) {
               setSegment("");
               setCommune("");
               setARelancer(false);
+              setSuiviPar("");
             }}
           >
             Effacer les filtres ({vue.nombre})
@@ -337,7 +510,18 @@ export default function Cabinets({ moi }: { moi: Moi }) {
       {donnees.cabinets.length === 0 ? (
         <Info>Aucun cabinet pour l'instant. Importez le fichier Excel des vétérinaires avec « Importer un fichier ».</Info>
       ) : (
-        <DndContext sensors={sensors} onDragStart={(e: DragStartEvent) => setGlisse(e.active.data.current as CabinetCarte)} onDragEnd={finGlisser} onDragCancel={() => setGlisse(null)}>
+        <DndContext
+          sensors={sensors}
+          onDragStart={(e: DragStartEvent) => {
+            glisseEnCours.current = true;
+            setGlisse(e.active.data.current as CabinetCarte);
+          }}
+          onDragEnd={finGlisser}
+          onDragCancel={() => {
+            glisseEnCours.current = false;
+            setGlisse(null);
+          }}
+        >
                     <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-4 sm:-mx-8 sm:px-8">
             {COLONNES_KANBAN.map((s) => (
               <Colonne
@@ -352,7 +536,7 @@ export default function Cabinets({ moi }: { moi: Moi }) {
             ))}
           </div>
           <DragOverlay>
-            {glisse && <ContenuCarte c={glisse} du={estARelancer(glisse, donnees.aujourdhui)} doublon={vue.estDoublon(glisse)} modele={donnees.modele} apercu />}
+            {glisse && <ContenuCarte c={glisse} du={estARelancer(glisse, donnees.aujourdhui)} doublon={vue.estDoublon(glisse)} modele={donnees.modele} suivi={suiviDe(glisse)} moiId={moi.id} apercu />}
           </DragOverlay>
         </DndContext>
       )}
@@ -360,8 +544,10 @@ export default function Cabinets({ moi }: { moi: Moi }) {
       {ficheId && (
         <Fiche
           id={ficheId}
+          equipe={donnees.equipe}
+          moiId={moi.id}
           onFermer={() => setFicheId(null)}
-          onChange={(c) => (c ? majLocale(c.id, c) : charger())}
+          onChange={(c) => (c ? majLocale(c.id, c) : charger(true))}
           onSupprime={(id) => {
             setFicheId(null);
             setDonnees((d) => d && { ...d, cabinets: d.cabinets.filter((c) => c.id !== id) });

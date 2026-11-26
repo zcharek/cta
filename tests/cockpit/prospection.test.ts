@@ -168,6 +168,35 @@ describe("API cabinets", () => {
     expect(r2.data.cabinet.statut).toBe("message_envoye");
   });
 
+  it("suivi : on s'assigne un cabinet, la version du Kanban change, l'historique le trace", async () => {
+    const v1 = (await appeler("GET", "cabinets/version", { cookie: admin.cookie })).data.version;
+    expect((await appeler("GET", "cabinets", { cookie: admin.cookie })).data.version).toBe(v1);
+    const r = await appeler("POST", `cabinets/${id}/assignation`, { cookie: admin.cookie, corps: { profilId: admin.id } });
+    expect(r.status).toBe(200);
+    const liste = await appeler("GET", "cabinets", { cookie: admin.cookie });
+    expect(liste.data.cabinets[0].assigne_a).toBe(admin.id);
+    expect(liste.data.equipe.map((m: { id: string }) => m.id)).toContain(admin.id);
+    expect(liste.data.equipe.map((m: { id: string }) => m.id)).not.toContain(collab.id);
+    const v2 = (await appeler("GET", "cabinets/version", { cookie: admin.cookie })).data.version;
+    expect(v2).not.toBe(v1);
+    const fiche = await appeler("GET", `cabinets/${id}`, { cookie: admin.cookie });
+    expect(fiche.data.historique[0]).toMatchObject({ action: "Suivi par Nadia Assistante (s'est assigné)", auteur: "Nadia Assistante" });
+
+    // Pas d'assignation à quelqu'un sans accès à la prospection ; pas d'accès sans l'onglet
+    expect((await appeler("POST", `cabinets/${id}/assignation`, { cookie: admin.cookie, corps: { profilId: collab.id } })).status).toBe(400);
+    expect((await appeler("POST", `cabinets/${id}/assignation`, { cookie: collab.cookie, corps: { profilId: collab.id } })).status).toBe(403);
+    expect((await appeler("GET", "cabinets/version", { cookie: collab.cookie })).status).toBe(403);
+
+    // Se retirer
+    expect((await appeler("POST", `cabinets/${id}/assignation`, { cookie: admin.cookie, corps: { profilId: null } })).status).toBe(200);
+    expect((await sql`SELECT assigne_a FROM cabinets WHERE id = ${id}`)[0]).toEqual({ assigne_a: null });
+    // Une suppression change aussi la version
+    const v3 = (await appeler("GET", "cabinets/version", { cookie: admin.cookie })).data.version;
+    const [{ id: ferme }] = (await sql`SELECT id FROM cabinets WHERE cle = 'ferme'`) as [{ id: string }];
+    expect((await appeler("DELETE", `cabinets/${ferme}`, { cookie: admin.cookie })).status).toBe(200);
+    expect((await appeler("GET", "cabinets/version", { cookie: admin.cookie })).data.version).not.toBe(v3);
+  });
+
   it("déplacer une carte change le statut, programme la relance et alimente l'historique", async () => {
     const r = await appeler("POST", `cabinets/${id}/statut`, { cookie: admin.cookie, corps: { statut: "en_discussion" } });
     expect(r.data.cabinet).toMatchObject({ statut: "en_discussion", premier_contact: jour, relance_le: ajouterJours(jour, 3) });

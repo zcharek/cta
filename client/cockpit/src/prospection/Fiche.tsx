@@ -44,7 +44,21 @@ const lienExterne = (url: string | null, texte?: string) =>
 
 const dateHeure = (iso: string) => new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
-export default function Fiche({ id, onFermer, onChange, onSupprime }: { id: string; onFermer: () => void; onChange: (c?: Partial<CabinetCarte> & { id: string }) => void; onSupprime: (id: string) => void }) {
+export default function Fiche({
+  id,
+  equipe = [],
+  moiId,
+  onFermer,
+  onChange,
+  onSupprime,
+}: {
+  id: string;
+  equipe?: { id: string; nom: string }[];
+  moiId?: string;
+  onFermer: () => void;
+  onChange: (c?: Partial<CabinetCarte> & { id: string }) => void;
+  onSupprime: (id: string) => void;
+}) {
   const [fiche, setFiche] = useState<{ cabinet: FicheCabinet; historique: LigneHistorique[]; modele: string } | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const [erreur, setErreur] = useState("");
@@ -93,6 +107,18 @@ export default function Fiche({ id, onFermer, onChange, onSupprime }: { id: stri
       await charger();
       onChange({ id, ...r.cabinet });
       setMessage(`Statut : ${STATUT_CABINET_LABEL[statut]}.`);
+    } catch (err) {
+      setErreur((err as Error).message);
+    }
+  }
+
+  async function assigner(profilId: string | null) {
+    setErreur("");
+    try {
+      await api(`cabinets/${id}/assignation`, { corps: { profilId } });
+      await charger();
+      onChange({ id, assigne_a: profilId });
+      setMessage(profilId ? `Suivi par ${profilId === moiId ? "vous" : (equipe.find((m) => m.id === profilId)?.nom ?? "")}.` : "Plus personne ne suit ce cabinet.");
     } catch (err) {
       setErreur((err as Error).message);
     }
@@ -174,6 +200,27 @@ export default function Fiche({ id, onFermer, onChange, onSupprime }: { id: stri
                 </option>
               ))}
             </select>
+          </div>
+          <div className="min-w-[12rem] flex-1">
+            <label htmlFor="fiche-suivi" className="mb-1.5 block text-sm font-semibold text-ck-titre">
+              Suivi par
+            </label>
+            <div className="flex gap-2">
+              <select id="fiche-suivi" value={c.assigne_a ?? ""} onChange={(e) => void assigner(e.target.value || null)} className={classeChamp}>
+                <option value="">Personne</option>
+                {equipe.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.id === moiId ? `${m.nom} (vous)` : m.nom}
+                  </option>
+                ))}
+                {c.assigne_a && !equipe.some((m) => m.id === c.assigne_a) && <option value={c.assigne_a}>Compte sans accès</option>}
+              </select>
+              {moiId && c.assigne_a !== moiId && (
+                <Bouton variante="contour" className="shrink-0 !px-3" onClick={() => void assigner(moiId)}>
+                  M'assigner
+                </Bouton>
+              )}
+            </div>
           </div>
           {wa && (
             <a href={wa} target="_blank" rel="noopener noreferrer" onClick={() => void whatsapp()} className="inline-flex items-center gap-2 rounded-[10px] bg-[#1E8A5A] px-4 py-2.5 text-sm font-bold text-white hover:opacity-90">

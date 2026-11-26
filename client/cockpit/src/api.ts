@@ -87,6 +87,8 @@ export type CabinetCarte = {
   notes: string | null;
   message: string | null;
   statut: import("../../../shared/cockpit").StatutCabinet;
+  /** Personne qui suit le cabinet. */
+  assigne_a: string | null;
   premier_contact: string | null;
   relance_le: string | null;
   demo_le: string | null;

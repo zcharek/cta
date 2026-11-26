@@ -1,4 +1,4 @@
-import { STATUT_CABINET_LABEL, aujourdhui } from "../../../shared/cockpit.js";
+import { STATUT_CABINET_LABEL, aujourdhui, ongletsDe, type Role } from "../../../shared/cockpit.js";
 import { calculerMiseAJour } from "../../../shared/import.js";
 import { MODELE_PAR_DEFAUT, appliquerStatut, type EtatProspection } from "../../../shared/prospection.js";
 import { HttpError, json, readBody, uuid } from "../web.js";
@@ -12,6 +12,18 @@ async function modeleWhatsApp(): Promise<string> {
   return typeof p?.valeur === "string" ? p.valeur : MODELE_PAR_DEFAUT;
 }
 
+/** Version du Kanban : change dès qu'un cabinet est ajouté, modifié ou supprimé. */
+async function versionCabinets(): Promise<string> {
+  const [v] = await sql`SELECT count(*)::int AS n, COALESCE(max(maj_le), 'epoch')::text AS maj FROM cabinets`;
+  return `${v!.n}:${v!.maj}`;
+}
+
+/** Personnes qui peuvent suivre un cabinet : comptes actifs avec l'onglet Cabinets. */
+async function equipeProspection(): Promise<{ id: string; nom: string }[]> {
+  const profils = await sql`SELECT id, nom, role, onglets FROM profils WHERE actif ORDER BY nom`;
+  return profils.filter((p) => ongletsDe({ role: p.role as Role, onglets: p.onglets }).includes("cabinets")).map((p) => ({ id: p.id, nom: p.nom }));
+}
+
 async function etatCabinet(id: string): Promise<EtatProspection & { id: string }> {
   const [c] = await sql`SELECT id, statut, premier_contact::text AS premier_contact, relance_le::text AS relance_le, demo_le::text AS demo_le FROM cabinets WHERE id = ${id}`;
   if (!c) throw new HttpError(404, "Cabinet introuvable.");
@@ -23,15 +35,25 @@ export function routesCabinets(r: Routeur) {
   // Liste pour le Kanban (Hors cible exclus), avec le modèle de message pour les liens WhatsApp.
   r.ajouter("GET", "cabinets", async ({ req }) => {
     await exigerOnglet(req, "cabinets");
-    const [cabinets, modele] = await Promise.all([
+    // Version lue avant la liste : un changement fait pendant la lecture sera vu au prochain contrôle
+    const version = await versionCabinets();
+    const [cabinets, modele, equipe] = await Promise.all([
       sql`
         SELECT id, nom, veterinaire, commune, segment, semaine_plan, canal1, contact_canal1, contact_relance,
-          telephone, telephone2, email, adresse, notes, message, statut,
+          telephone, telephone2, email, adresse, notes, message, statut, assigne_a,
           premier_contact::text AS premier_contact, relance_le::text AS relance_le, demo_le::text AS demo_le
         FROM cabinets WHERE statut <> 'hors_cible' ORDER BY nom`,
       modeleWhatsApp(),
+      equipeProspection(),
     ]);
-    return json({ cabinets, modele, aujourdhui: aujourdhui() });
+    return json({ cabinets, modele, equipe, version, aujourdhui: aujourdhui() });
+  });
+
+
+  // Contrôle léger, appelé toutes les quelques secondes par chaque Kanban ouvert.
+  r.ajouter("GET", "cabinets/version", async ({ req }) => {
+    await exigerOnglet(req, "cabinets");
+    return json({ version: await versionCabinets() });
   });
 
   r.ajouter("GET", "cabinets/:id", async ({ req, params }) => {
@@ -90,6 +112,26 @@ export function routesCabinets(r: Routeur) {
     await modifierCabinet(id, { statut: apres.statut, premier_contact: apres.premier_contact, relance_le: apres.relance_le });
     await ajouterHistorique(id, moi.id, apres.statut, "Message WhatsApp envoyé");
     return json({ cabinet: { id, ...apres } });
+  });
+
+  // Suivi : la personne qui s'occupe du cabinet (soi-même, un collègue de la prospection, ou personne).
+  r.ajouter("POST", "cabinets/:id/assignation", async ({ req, params }) => {
+    const moi = await exigerOnglet(req, "cabinets");
+    const id = uuid(params.id, "Cabinet");
+    const b = await readBody<{ profilId?: unknown }>(req);
+    const profilId = b.profilId === null || b.profilId === "" ? null : uuid(b.profilId, "Personne");
+    let nom: string | null = null;
+    if (profilId) {
+      const p = (await equipeProspection()).find((x) => x.id === profilId);
+      if (!p) throw new HttpError(400, "Cette personne n'a pas accès à la prospection.");
+      nom = p.nom;
+    }
+    const [c] = await sql`SELECT statut, assigne_a FROM cabinets WHERE id = ${id}`;
+    if (!c) throw new HttpError(404, "Cabinet introuvable.");
+    if (c.assigne_a === profilId) return json({ cabinet: { id, assigne_a: profilId } });
+    await sql`UPDATE cabinets SET assigne_a = ${profilId} WHERE id = ${id}`;
+    await ajouterHistorique(id, moi.id, c.statut, nom ? (profilId === moi.id ? `Suivi par ${nom} (s'est assigné)` : `Suivi par ${nom}`) : "Plus de suivi assigné");
+    return json({ cabinet: { id, assigne_a: profilId } });
   });
 
   r.ajouter("DELETE", "cabinets/:id", async ({ req, params }) => {
