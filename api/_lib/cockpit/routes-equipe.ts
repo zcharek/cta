@@ -13,9 +13,11 @@ import {
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
 import { emailInvitation, envoyerEmail, lienVisibleEnReponse, urlApplication } from "./emails.js";
+import { numeroFacture } from "../../../shared/facture.js";
 import { creerJeton, lienMotDePasse } from "./jetons.js";
 import type { Routeur } from "./router.js";
 import { aOnglet, exigerOnglet, exigerProfil, type Profil } from "./session.js";
+import { stockage } from "./stockage.js";
 import { email, entier, estDoublon, idsListe, texte } from "./valider.js";
 
 function role(v: unknown): Role {
@@ -296,6 +298,86 @@ export function routesEquipe(r: Routeur) {
       WHERE id = ${id} RETURNING id`;
     if (!rows[0]) throw new HttpError(404, "Client introuvable.");
     if (b.profilIds !== undefined) await affecterEquipe(id, idsListe(b.profilIds, "Collaborateur"));
+    return json({ ok: true });
+  });
+
+  // Dossier d'un client : sa fiche, son équipe, ses documents (onglet Documents) et ses factures (onglet Factures).
+  r.ajouter("GET", "clients/:id/dossier", async ({ req, params }) => {
+    const moi = await exigerOnglet(req, "clients");
+    const id = uuid(params.id, "Client");
+    const { debut, fin } = bornesMois(aujourdhui());
+    const [client] = await sql`
+      SELECT c.id, c.nom, c.tjm_dzd, c.actif, c.raison_sociale, c.adresse, c.numero_contrat, c.mission,
+        c.forfait_mensuel_dzd, c.jours_forfait, c.raison_sociale_facture, c.rc, c.nif, c.cree_le::text AS cree_le,
+        COALESCE((SELECT json_agg(a.profil_id) FROM affectations a WHERE a.client_id = c.id), '[]'::json) AS profil_ids,
+        COALESCE((SELECT sum(t.valeur) FROM temps t
+                  WHERE t.client_id = c.id AND t.jour BETWEEN ${debut}::date AND ${fin}::date), 0)::float8 AS jours_mois,
+        COALESCE((SELECT sum(t.valeur) FROM temps t WHERE t.client_id = c.id), 0)::float8 AS jours_total
+      FROM clients c WHERE c.id = ${id}`;
+    if (!client) throw new HttpError(404, "Client introuvable.");
+    const voitDocuments = aOnglet(moi, "documents");
+    const voitFactures = aOnglet(moi, "factures");
+    const [equipe, documents, factures] = await Promise.all([
+      sql`
+        SELECT p.id, p.nom, p.role, p.fonction, p.actif,
+          COALESCE((SELECT sum(t.valeur) FROM temps t JOIN semaines s ON s.id = t.semaine_id
+                    WHERE s.profil_id = p.id AND t.client_id = ${id} AND t.jour BETWEEN ${debut}::date AND ${fin}::date), 0)::float8 AS jours_mois
+        FROM affectations a JOIN profils p ON p.id = a.profil_id WHERE a.client_id = ${id} ORDER BY p.nom`,
+      voitDocuments
+        ? sql`
+          SELECT d.id, d.categorie, d.titre, d.date_document::text AS date_document, d.expire_le::text AS expire_le,
+            d.nom_fichier, d.type_mime, d.taille, p.nom AS ajoute_par, d.ajoute_le::text AS ajoute_le,
+            (WITH RECURSIVE h AS (SELECT id, precedent_id FROM documents WHERE id = d.precedent_id
+               UNION ALL SELECT x.id, x.precedent_id FROM documents x JOIN h ON x.id = h.precedent_id)
+             SELECT count(*)::int FROM h) AS versions_precedentes
+          FROM documents d LEFT JOIN profils p ON p.id = d.ajoute_par
+          WHERE d.client_id = ${id} AND NOT EXISTS (SELECT 1 FROM documents n WHERE n.precedent_id = d.id)
+          ORDER BY d.ajoute_le DESC`
+        : Promise.resolve(null),
+      voitFactures
+        ? sql`
+          SELECT f.id, f.annee, f.numero, f.mois, f.date_emission::text AS date_emission, f.jours::float8 AS jours,
+            f.montant_ht::float8 AS montant_ht, f.montant_ttc::float8 AS montant_ttc, f.fichier IS NOT NULL AS importee, f.payee_le::text AS payee_le,
+            CASE WHEN f.payee_le IS NOT NULL THEN 'payee'
+                 WHEN f.date_emission + 30 < ${aujourdhui()}::date THEN 'en_retard'
+                 ELSE 'envoyee' END AS statut
+          FROM factures f WHERE f.client_id = ${id} ORDER BY f.annee DESC, f.numero DESC`
+        : Promise.resolve(null),
+    ]);
+    const [emises] = await sql`SELECT count(*)::int AS n FROM factures WHERE client_id = ${id} AND fichier IS NULL`;
+    return json({
+      client,
+      equipe,
+      documents,
+      factures: factures?.map((f) => ({ ...f, numero_affiche: numeroFacture(f.numero, f.annee) })) ?? null,
+      // Factures émises par Cockpit : elles bloquent la suppression définitive.
+      facturesEmises: emises!.n,
+      peutSupprimer: gereLesAcces(moi),
+    });
+  });
+
+  // Suppression définitive (gestion des accès) : le client, ses affectations, ses temps saisis, ses documents
+  // (toutes versions, fichiers compris) et ses factures importées. Les factures émises par Cockpit, à conserver
+  // et à numérotation continue, bloquent la suppression : il faut alors archiver le client.
+  r.ajouter("DELETE", "clients/:id", async ({ req, params }) => {
+    const auteur = await exigerOnglet(req, "clients");
+    if (!gereLesAcces(auteur)) throw new HttpError(403, "Seuls le Founder, un Co-Founder ou un QA Manager peuvent supprimer un client.");
+    const id = uuid(params.id, "Client");
+    const [c] = await sql`SELECT (SELECT count(*) FROM factures f WHERE f.client_id = clients.id AND f.fichier IS NULL)::int AS emises FROM clients WHERE id = ${id}`;
+    if (!c) throw new HttpError(404, "Client introuvable.");
+    if (c.emises > 0)
+      throw new HttpError(409, `Ce client a ${c.emises > 1 ? `${c.emises} factures émises` : "une facture émise"} par Cockpit, qui doivent être conservées : archivez-le plutôt.`);
+    // Documents du client et toutes leurs versions précédentes
+    const documents = await sql`
+      WITH RECURSIVE h AS (SELECT id, precedent_id, fichier FROM documents WHERE client_id = ${id}
+        UNION SELECT d.id, d.precedent_id, d.fichier FROM documents d JOIN h ON d.id = h.precedent_id)
+      SELECT id, fichier FROM h`;
+    const factures = await sql`SELECT fichier FROM factures WHERE client_id = ${id} AND fichier IS NOT NULL`;
+    if (documents.length) await sql`DELETE FROM documents WHERE id = ANY(${documents.map((d) => d.id)}::uuid[])`;
+    await sql`DELETE FROM factures WHERE client_id = ${id}`;
+    await sql`DELETE FROM temps WHERE client_id = ${id}`;
+    await sql`DELETE FROM clients WHERE id = ${id}`;
+    await Promise.all([...documents, ...factures].map((f) => stockage().supprimer(f.fichier).catch(() => undefined)));
     return json({ ok: true });
   });
 }

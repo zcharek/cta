@@ -11,6 +11,7 @@ import Equipe from "./pages/Equipe";
 import EspaceClient from "./pages/EspaceClient";
 import MonProfil from "./pages/MonProfil";
 import Documents from "./pages/Documents";
+import DossierClient from "./pages/DossierClient";
 import Factures from "./pages/Factures";
 import Paie from "./pages/Paie";
 import RecapMensuel from "./pages/Recap";
@@ -92,7 +93,7 @@ export default function App() {
       "/recap": "Récap mensuel",
       "/cabinets": "Cabinets",
     };
-    const t = titres[chemin] ?? (chemin.startsWith("/espace-client") ? "Espace client" : undefined);
+    const t = titres[chemin] ?? (chemin.startsWith("/espace-client") ? "Espace client" : chemin.startsWith("/reglages/clients/") ? "Dossier client" : undefined);
     document.title = t ? `${t} – Cockpit` : "Cockpit – Central Test Agency";
   }, [chemin]);
 
@@ -117,6 +118,7 @@ export default function App() {
   if (chemin === "/") page = <Aujourdhui moi={moi} />;
   else if (chemin === "/saisie") page = <Saisie moi={moi} />;
   else if (chemin === "/reglages/clients") page = <Equipe key="clients" moi={moi} vue="clients" />;
+  else if (/^\/reglages\/clients\/[0-9a-f-]{36}$/.test(chemin)) page = <DossierClient key={chemin} id={chemin.split("/").pop()!} />;
   else if (chemin === "/reglages/collaborateurs") page = <Equipe key="collaborateurs" moi={moi} vue="collaborateurs" />;
   else if (chemin === "/paie") page = <Paie />;
   else if (chemin === "/documents") page = <Documents />;

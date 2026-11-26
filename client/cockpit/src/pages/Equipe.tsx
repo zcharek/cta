@@ -3,7 +3,7 @@ import { ONGLETS, ONGLET_LABEL, ROLES, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESC
 import type { DonneesDocumentRh, TypeDocumentRh } from "../../../../shared/documents-rh";
 import { api, type ClientAdmin, type Collaborateur, type Invitation, type Moi } from "../api";
 import { telechargerDocumentRh } from "../documents";
-import { surClicLien } from "../routeur";
+import { naviguer, surClicLien } from "../routeur";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, ChiffreCle, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
 
 type Donnees = { clients: ClientAdmin[]; collaborateurs: Collaborateur[] };
@@ -60,7 +60,31 @@ function Cases({ legende, options, choisis, onChange, vide }: { legende: string;
   );
 }
 
-function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { client: ClientAdmin | "nouveau"; collaborateurs: Collaborateur[]; onFermer: () => void; onEnregistre: () => void }) {
+export const confirmationSuppressionClient = (nom: string) =>
+  `Supprimer définitivement le client ${nom} ?\n\nSa fiche, ses affectations, tous les temps saisis pour lui, ses documents (contrats, NDA…) et ses factures importées seront effacés. Cette action est irréversible : pour simplement le retirer de la liste, archivez-le.`;
+
+/** Supprime définitivement un client après confirmation ; renvoie true s'il a été supprimé. */
+export async function supprimerClient(c: { id: string; nom: string }): Promise<boolean> {
+  if (!window.confirm(confirmationSuppressionClient(c.nom))) return false;
+  await api(`clients/${c.id}`, { methode: "DELETE" });
+  return true;
+}
+
+export function FenetreClient({
+  client,
+  collaborateurs,
+  peutSupprimer = false,
+  onFermer,
+  onEnregistre,
+  onSupprime,
+}: {
+  client: ClientAdmin | "nouveau";
+  collaborateurs: Collaborateur[];
+  peutSupprimer?: boolean;
+  onFermer: () => void;
+  onEnregistre: () => void;
+  onSupprime?: () => void;
+}) {
   const existant = client === "nouveau" ? null : client;
   const [equipe, setEquipe] = useState<string[]>(existant?.profil_ids ?? []);
   const [forfait, setForfait] = useState(!!existant?.forfait_mensuel_dzd);
@@ -74,6 +98,19 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
       if (existant) await api(`clients/${existant.id}`, { methode: "PATCH", corps });
       else await api("clients", { corps });
       onEnregistre();
+    } catch (err) {
+      setErreur((err as Error).message);
+      setOccupe(false);
+    }
+  }
+
+  async function supprimer() {
+    if (!existant) return;
+    setErreur("");
+    setOccupe(true);
+    try {
+      if (await supprimerClient(existant)) (onSupprime ?? onEnregistre)();
+      else setOccupe(false);
     } catch (err) {
       setErreur((err as Error).message);
       setOccupe(false);
@@ -104,10 +141,19 @@ function FenetreClient({ client, collaborateurs, onFermer, onEnregistre }: { cli
       onFermer={onFermer}
       pied={
         <>
-          {existant?.actif && (
-            <Bouton variante="danger" className="mr-auto" disabled={occupe} onClick={() => void envoyer({ actif: false })}>
-              Archiver
-            </Bouton>
+          {existant && (existant.actif || peutSupprimer) && (
+            <span className="mr-auto flex gap-2">
+              {existant.actif && (
+                <Bouton variante="danger" disabled={occupe} onClick={() => void envoyer({ actif: false })}>
+                  Archiver
+                </Bouton>
+              )}
+              {peutSupprimer && (
+                <Bouton variante="discret" className="!text-red-700" disabled={occupe} onClick={() => void supprimer()}>
+                  Supprimer
+                </Bouton>
+              )}
+            </span>
           )}
           <Bouton variante="discret" onClick={onFermer}>
             Annuler
@@ -748,6 +794,18 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
     }
   }
 
+  async function supprimerClientArchive(c: { id: string; nom: string }) {
+    setMessage(null);
+    try {
+      if (await supprimerClient(c)) {
+        setMessage({ texte: `Client ${c.nom} supprimé.` });
+        charger();
+      }
+    } catch (e) {
+      setMessage({ texte: (e as Error).message });
+    }
+  }
+
   if (erreur) return <Erreur>{erreur}</Erreur>;
   if (!donnees) return <Chargement />;
 
@@ -834,11 +892,20 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                 const actif = c.profil_ids.length > 0;
                 return (
                   <li key={c.id}>
-                    <Carte className="ck-halo h-full !p-6">
+                    <Carte
+                      className="ck-halo h-full cursor-pointer !p-6 transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(7,21,56,0.45)]"
+                      onClick={(e) => {
+                        // Les boutons et liens de la carte gardent leur propre action
+                        if ((e.target as HTMLElement).closest("a, button")) return;
+                        naviguer(`/reglages/clients/${c.id}`);
+                      }}
+                    >
                       <div className="relative z-10 flex items-start gap-4">
                         <Avatar nom={c.nom} couleur="#071538" taille={64} />
                         <div className="min-w-0 flex-1">
-                          <p className="ck-titre truncate text-xl">{c.nom}</p>
+                          <a href={`/cockpit/reglages/clients/${c.id}`} onClick={(e) => surClicLien(e, `/reglages/clients/${c.id}`)} className="ck-titre block truncate text-xl hover:underline">
+                            {c.nom}
+                          </a>
                           <p className="mt-0.5 text-ck-texte-2">
                             {c.forfait_mensuel_dzd ? (
                               <>
@@ -875,14 +942,15 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                         >
                           <Icone nom="graphique" taille={18} /> Gérer l'équipe
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setFenetreClient(c)}
-                          aria-label={`Ouvrir la fiche de ${c.nom}`}
+                        <a
+                          href={`/cockpit/reglages/clients/${c.id}`}
+                          onClick={(e) => surClicLien(e, `/reglages/clients/${c.id}`)}
+                          aria-label={`Ouvrir le dossier de ${c.nom}`}
+                          title="Ouvrir le dossier"
                           className="grid h-10 w-10 place-items-center rounded-full bg-ck-surface text-[#2f5bd3] shadow-[var(--ck-ombre)] transition hover:bg-[#eef2fb]"
                         >
                           <Icone nom="droite" taille={18} />
-                        </button>
+                        </a>
                       </div>
                     </Carte>
                   </li>
@@ -928,8 +996,13 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                       Documents
                     </Bouton>
                   )}
-                  {a.type === "collaborateur" && moi.gereAcces && (
-                    <Bouton variante="discret" className="!px-3 !py-1.5 !text-red-700" onClick={() => void supprimerArchive(a.id, a.nom)}>
+                  {a.type === "client" && (
+                    <Bouton variante="discret" className="!px-3 !py-1.5" onClick={() => naviguer(`/reglages/clients/${a.id}`)}>
+                      Dossier
+                    </Bouton>
+                  )}
+                  {moi.gereAcces && (
+                    <Bouton variante="discret" className="!px-3 !py-1.5 !text-red-700" onClick={() => void (a.type === "client" ? supprimerClientArchive(a) : supprimerArchive(a.id, a.nom))}>
                       Supprimer
                     </Bouton>
                   )}
@@ -945,6 +1018,7 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         <FenetreClient
           client={fenetreClient}
           collaborateurs={collaborateurs}
+          peutSupprimer={moi.gereAcces}
           onFermer={() => setFenetreClient(null)}
           onEnregistre={() => {
             setFenetreClient(null);
