@@ -131,7 +131,7 @@ export default function App() {
   else if (/^\/reglages\/clients\/[0-9a-f-]{36}$/.test(chemin)) page = <DossierClient key={chemin} id={chemin.split("/").pop()!} />;
   else if (chemin === "/reglages/collaborateurs") page = <Equipe key="collaborateurs" moi={moi} vue="collaborateurs" />;
   else if (chemin === "/paie") page = <Paie />;
-  else if (chemin === "/documents") page = <Documents />;
+  else if (chemin === "/documents") page = <Documents moi={moi} />;
   else if (chemin === "/factures") page = <Factures moi={moi} />;
   else if (chemin === "/profil") page = <MonProfil moi={moi} onMisAJour={recharger} />;
   else if (chemin === "/validation") page = <Validation />;

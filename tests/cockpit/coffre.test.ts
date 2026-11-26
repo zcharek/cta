@@ -51,8 +51,20 @@ describe("détection automatique", () => {
     expect(detecter(["CONTRAT DE PRESTATION DE SERVICES", "EURL Beyn Tech"], "contrat.pdf", [{ id: "b", nom: "Beyn Tech" }], SOI)).toMatchObject({ type: "contrat", client: { id: "b" } });
     expect(detecter(["Extrait du registre de commerce"], "rc.pdf", [], SOI)).toMatchObject({ type: "registre_commerce", client: null });
     expect(detecter(["CNAS", "Attestation de mise à jour"], "x.pdf", [], SOI).type).toBe("social");
-    expect(detecter([], "Statuts CTA.pdf", [], SOI)).toMatchObject({ type: "autre", texte: false, titre: "Statuts CTA" });
+    expect(detecter([], "Statuts CTA.pdf", [], SOI)).toMatchObject({ type: "statuts", piece: "statuts", texte: false, titre: "Statuts CTA" });
+    expect(detecter([], "Contrat cadre.pdf", [], SOI).piece).toBeNull();
     expect(detecter([], "NDA-Client.pdf", [], SOI).type).toBe("nda");
+  });
+
+  it("reconnaît les pièces du dossier légal de CTA", () => {
+    expect(detecter([], "Attestation CASNOS 2026.pdf", [], SOI)).toMatchObject({ type: "social", piece: "casnos" });
+    expect(detecter([], "attestation_cnas.pdf", [], SOI).piece).toBe("cnas");
+    expect(detecter([], "NIF CTA.pdf", [], SOI)).toMatchObject({ type: "fiscal", piece: "nif" });
+    expect(detecter([], "Extrait de role.pdf", [], SOI)).toMatchObject({ type: "fiscal", piece: "extrait_role" });
+    expect(detecter(["AVIS D'IDENTIFICATION STATISTIQUE", "NIF : 000000000000002"], "scan-12.pdf", [], SOI).piece).toBe("nis");
+    expect(detecter(["RELEVE D'IDENTITE BANCAIRE"], "doc.pdf", [], SOI)).toMatchObject({ type: "banque", piece: "rib" });
+    // Une facture cite le NIF dans son en-tête : ce n'est pas une pièce
+    expect(detecter(["FACTURE N° 012-26", "NIF : 000000000000002", "Total HT 100"], "f.pdf", [], SOI).piece).toBeNull();
   });
 });
 
@@ -149,6 +161,32 @@ describe("coffre : routes", () => {
     expect(supprimes).toContain(b.data.chemin);
     docs = (await appeler("GET", "coffre", { cookie: comptable.cookie })).data.documents.filter((d: { categorie: string }) => d.categorie === "registre_commerce");
     expect(docs.map((d: { id: string }) => d.id)).toEqual([v1.data.id]);
+  });
+
+  it("dossier légal : une pièce prend sa catégorie, sans client ; la suivante en devient la nouvelle version", async () => {
+    const a = await deposer(comptable.cookie, "documents", "cnas.pdf");
+    // Attestation à renouveler : date de validité obligatoire
+    expect((await appeler("POST", "coffre/documents", { cookie: comptable.cookie, corps: { fichier: a.data.chemin, piece: "cnas", titre: "Attestation CNAS" } })).status).toBe(400);
+    expect((await appeler("POST", "coffre/documents", { cookie: comptable.cookie, corps: { fichier: a.data.chemin, piece: "inconnue", titre: "X", expireLe: "2027-01-31" } })).status).toBe(400);
+    const v1 = await appeler("POST", "coffre/documents", { cookie: comptable.cookie, corps: { fichier: a.data.chemin, piece: "cnas", categorie: "contrat", titre: "Attestation CNAS", expireLe: "2027-01-31", clientId: null } });
+    expect(v1.status).toBe(201);
+    const b = await deposer(comptable.cookie, "documents", "cnas-2.pdf");
+    const v2 = await appeler("POST", "coffre/documents", { cookie: comptable.cookie, corps: { fichier: b.data.chemin, piece: "cnas", titre: "Attestation CNAS", expireLe: "2027-06-30" } });
+    expect(v2.status).toBe(201);
+
+    const coffre = (await appeler("GET", "coffre", { cookie: comptable.cookie })).data;
+    const cnas = coffre.documents.filter((d: { piece: string | null }) => d.piece === "cnas");
+    expect(cnas).toHaveLength(1);
+    expect(cnas[0]).toMatchObject({ id: v2.data.id, categorie: "social", client_id: null, expire_le: "2027-06-30", versions_precedentes: 1 });
+    // Identité de CTA et factures importées (le Comptable a l'onglet Factures)
+    expect(coffre).toHaveProperty("identite");
+    expect(Array.isArray(coffre.facturesImportees)).toBe(true);
+
+    // Une nouvelle version par « precedentId » garde la pièce
+    const c = await deposer(comptable.cookie, "documents", "cnas-3.pdf");
+    const v3 = await appeler("POST", "coffre/documents", { cookie: comptable.cookie, corps: { fichier: c.data.chemin, categorie: "social", titre: "Attestation CNAS", expireLe: "2027-12-31", precedentId: v2.data.id } });
+    expect(v3.status).toBe(201);
+    expect((await sql`SELECT piece FROM documents WHERE id = ${v3.data.id}`)[0]).toEqual({ piece: "cnas" });
   });
 
   it("importe une facture d'avant Cockpit : client créé une seule fois, numérotation continuée, PDF d'origine", async () => {

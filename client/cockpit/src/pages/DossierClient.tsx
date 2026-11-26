@@ -6,7 +6,7 @@ import { api, ErreurApi, type ClientAdmin, type Collaborateur } from "../api";
 import { ACCEPT, envoyerFichier, lireTexte, ouvrirFichier } from "../coffre";
 import { telechargerFacture } from "../documents";
 import { naviguer, surClicLien } from "../routeur";
-import { Avatar, Bouton, COULEUR_ROLE, Carte, Chargement, Erreur, Icone, Info, classeChamp } from "../ui";
+import { Avatar, Bouton, COULEUR_ROLE, Carte, Chargement, Erreur, Extension, Icone, Info, classeChamp } from "../ui";
 import { FenetreClient, supprimerClient } from "./Equipe";
 import { BadgeEnvoi, CHEMIN_PROSPECTS, Lien, cheminCompte, date as dateLongue, type Envoi } from "./EspaceClient";
 
@@ -79,16 +79,6 @@ function expiration(expireLe: string | null) {
   if (j < 0) return { libelle: `Expiré le ${dateFr(expireLe)}`, style: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300" };
   if (j <= 30) return { libelle: `Expire le ${dateFr(expireLe)}`, style: "bg-orange-50 text-ck-orange-texte" };
   return { libelle: `Jusqu'au ${dateFr(expireLe)}`, style: "bg-ck-surface-2 text-ck-texte-2" };
-}
-
-function Extension({ nom }: { nom: string }) {
-  const ext = (nom.split(".").pop() ?? "").slice(0, 4).toUpperCase();
-  const pdf = ext === "PDF";
-  return (
-    <span aria-hidden="true" className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[10px] font-extrabold ${pdf ? "bg-orange-50 text-ck-orange-texte" : "bg-[#eef2fb] text-[#2f5bd3]"}`}>
-      {ext || "DOC"}
-    </span>
-  );
 }
 
 /** Ligne « clé : valeur » de la fiche ; une valeur absente est signalée. */

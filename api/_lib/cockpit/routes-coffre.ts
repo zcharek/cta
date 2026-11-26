@@ -2,7 +2,7 @@
 // Le navigateur lit le PDF, détecte le type, le client et les montants (shared/detection.ts), puis envoie le fichier
 // directement au store privé avec un jeton limité à un chemin ; on enregistre ensuite ses informations ici.
 import { aujourdhui, gereLesAcces } from "../../../shared/cockpit.js";
-import { CATEGORIES, type Categorie } from "../../../shared/detection.js";
+import { CATEGORIES, PIECE, type Categorie, type Piece } from "../../../shared/detection.js";
 import { numeroFacture } from "../../../shared/facture.js";
 import { HttpError, json, readBody, uuid } from "../web.js";
 import { sql } from "./db.js";
@@ -35,6 +35,13 @@ function montant(v: unknown, quoi: string): number {
 function categorie(v: unknown): Categorie {
   if (!CATEGORIES.includes(v as Categorie)) throw new HttpError(400, "Type de document inconnu.");
   return v as Categorie;
+}
+
+function piece(v: unknown): Piece | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null || v === "") return null;
+  if (typeof v !== "string" || !(v in PIECE)) throw new HttpError(400, "Pièce du dossier légal inconnue.");
+  return v as Piece;
 }
 
 type NouveauClient = { nom?: unknown; rc?: unknown; nif?: unknown; adresse?: unknown; actif?: unknown };
@@ -87,9 +94,10 @@ export function routesCoffre(r: Routeur) {
   // Documents actuels (dernière version de chacun), clients pour la détection, identité de CTA à exclure.
   r.ajouter("GET", "coffre", async ({ req }) => {
     const moi = await exigerOnglet(req, "documents");
-    const [documents, clients, factures, { entreprise }] = await Promise.all([
+    const voitFactures = aOnglet(moi, "factures");
+    const [documents, clients, factures, { entreprise }, importees] = await Promise.all([
       sql`
-        SELECT d.id, d.categorie, d.titre, d.client_id, c.nom AS client, d.date_document::text AS date_document, d.expire_le::text AS expire_le,
+        SELECT d.id, d.categorie, d.titre, d.client_id, d.piece, c.nom AS client, d.date_document::text AS date_document, d.expire_le::text AS expire_le,
           d.nom_fichier, d.type_mime, d.taille, p.nom AS ajoute_par, d.ajoute_le::text AS ajoute_le,
           (WITH RECURSIVE h AS (SELECT id, precedent_id FROM documents WHERE id = d.precedent_id
              UNION ALL SELECT x.id, x.precedent_id FROM documents x JOIN h ON x.id = h.precedent_id)
@@ -100,13 +108,23 @@ export function routesCoffre(r: Routeur) {
       sql`SELECT id, nom, raison_sociale, raison_sociale_facture, rc, nif, actif FROM clients ORDER BY actif DESC, nom`,
       sql`SELECT annee, numero FROM factures`,
       identiteEntreprise(),
+      voitFactures
+        ? sql`
+          SELECT f.id, f.annee, f.numero, f.date_emission::text AS date_emission, f.montant_ttc::float8 AS montant_ttc, f.payee_le::text AS payee_le, c.nom AS client
+          FROM factures f JOIN clients c ON c.id = f.client_id WHERE f.fichier IS NOT NULL ORDER BY f.annee DESC, f.numero DESC`
+        : Promise.resolve(null),
     ]);
     return json({
       documents,
       clients,
       facturesExistantes: factures.map((f) => numeroFacture(f.numero, f.annee)),
       soi: { raison_sociale: entreprise?.raison_sociale ?? null, rc: entreprise?.rc ?? null, nif: entreprise?.nif ?? null },
-      peutImporterFactures: aOnglet(moi, "factures"),
+      // Numéros légaux de CTA, affichés sur les cartes du dossier légal
+      identite: entreprise
+        ? { raison_sociale: entreprise.raison_sociale, siege: entreprise.siege, rc: entreprise.rc, nif: entreprise.nif, nis: entreprise.nis, ai: entreprise.ai, rib: entreprise.rib, banque: entreprise.banque }
+        : null,
+      facturesImportees: importees?.map((f) => ({ ...f, numero_affiche: numeroFacture(f.numero, f.annee) })) ?? null,
+      peutImporterFactures: voitFactures,
       peutSupprimer: gereLesAcces(moi),
     });
   });
@@ -115,16 +133,27 @@ export function routesCoffre(r: Routeur) {
     const moi = await exigerOnglet(req, "documents");
     const b = await readBody<Record<string, unknown> & { nouveauClient?: NouveauClient }>(req);
     const f = await fichierDepose(b.fichier, "documents");
-    const precedent = b.precedentId ? uuid(b.precedentId, "Document") : null;
+    let precedent = b.precedentId ? uuid(b.precedentId, "Document") : null;
+    let p = piece(b.piece);
     if (precedent) {
-      const [p] = await sql`SELECT id FROM documents d WHERE id = ${precedent} AND NOT EXISTS (SELECT 1 FROM documents n WHERE n.precedent_id = d.id)`;
-      if (!p) throw new HttpError(409, "Ce document a déjà été remplacé par une version plus récente.");
+      const [x] = await sql`SELECT id, piece FROM documents d WHERE id = ${precedent} AND NOT EXISTS (SELECT 1 FROM documents n WHERE n.precedent_id = d.id)`;
+      if (!x) throw new HttpError(409, "Ce document a déjà été remplacé par une version plus récente.");
+      // Une nouvelle version garde la pièce du dossier légal qu'elle remplace
+      if (p === undefined) p = x.piece;
+    } else if (p) {
+      // Pièce déjà fournie : le nouveau fichier en devient la version actuelle, l'ancien reste dans l'historique
+      const [actuel] = await sql`SELECT id FROM documents d WHERE piece = ${p} AND NOT EXISTS (SELECT 1 FROM documents n WHERE n.precedent_id = d.id) ORDER BY ajoute_le DESC LIMIT 1`;
+      precedent = actuel?.id ?? null;
     }
-    const client = await resoudreClient(b);
+    // Une pièce du dossier légal est un document de CTA, de la catégorie de la pièce
+    const client = p ? null : await resoudreClient(b);
+    const cat = p ? PIECE[p].categorie : categorie(b.categorie);
+    const expireLe = dateIso(b.expireLe, "Date d'expiration");
+    if (p && PIECE[p].renouveler && !expireLe) throw new HttpError(400, `${PIECE[p].titre} : date de validité obligatoire.`);
     const [d] = await sql`
-      INSERT INTO documents (categorie, titre, client_id, date_document, expire_le, fichier, nom_fichier, type_mime, taille, precedent_id, ajoute_par)
-      VALUES (${categorie(b.categorie)}, ${texte(b.titre, "Titre", 200, true)}, ${client?.id ?? null}, ${dateIso(b.dateDocument, "Date du document")},
-        ${dateIso(b.expireLe, "Date d'expiration")}, ${f.chemin}, ${texte(b.nomFichier, "Nom du fichier", 255) ?? f.chemin.split("/").pop()!},
+      INSERT INTO documents (categorie, piece, titre, client_id, date_document, expire_le, fichier, nom_fichier, type_mime, taille, precedent_id, ajoute_par)
+      VALUES (${cat}, ${p ?? null}, ${texte(b.titre, "Titre", 200, true)}, ${client?.id ?? null}, ${dateIso(b.dateDocument, "Date du document")},
+        ${expireLe}, ${f.chemin}, ${texte(b.nomFichier, "Nom du fichier", 255) ?? f.chemin.split("/").pop()!},
         ${f.type}, ${f.taille}, ${precedent}, ${moi.id})
       RETURNING id`;
     return json({ id: d!.id, clientCree: client?.cree ?? false }, { status: 201 });

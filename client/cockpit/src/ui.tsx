@@ -305,7 +305,20 @@ const ICONES: Record<string, ReactNode> = {
   ),
   batiment: <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4" />,
   dossier: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />,
+  diese: <path d="M5 9h14M5 15h14M10 3 8 21M16 3l-2 18" />,
+  televerser: <path d="M12 16V4M7 9l5-5 5 5M4 20h16" />,
+  telecharger: <path d="M12 4v12M7 11l5 5 5-5M4 20h16" />,
 };
+
+/** Pastille du format d'un fichier (PDF, DOCX, PNG…), d'après son nom. */
+export function Extension({ nom }: { nom: string }) {
+  const ext = (nom.split(".").pop() ?? "").slice(0, 4).toUpperCase();
+  return (
+    <span aria-hidden="true" className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[10px] font-extrabold ${ext === "PDF" ? "bg-orange-50 text-ck-orange-texte" : "bg-[#eef2fb] text-[#2f5bd3]"}`}>
+      {ext || "DOC"}
+    </span>
+  );
+}
 
 export function Icone({ nom, taille = 20, className }: { nom: keyof typeof ICONES | string; taille?: number; className?: string }) {
   return (

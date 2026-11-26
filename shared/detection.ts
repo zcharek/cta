@@ -21,6 +21,54 @@ export const CATEGORIE_LABEL: Record<Categorie, string> = {
 /** Catégories liées à un client ; les autres concernent CTA elle-même. */
 export const CATEGORIES_CLIENT: readonly Categorie[] = ["contrat", "nda", "bon_commande"];
 
+/** Pièces du dossier légal de CTA. « renouveler » : attestation à durée limitée, ajoutée avec sa date de validité. */
+export const PIECES = [
+  { cle: "registre_commerce", titre: "Registre de commerce", categorie: "registre_commerce", identite: "rc", prefixe: "RC", icone: "batiment" },
+  { cle: "nif", titre: "Numéro d'identification fiscale", categorie: "fiscal", identite: "nif", prefixe: "NIF", icone: "document" },
+  { cle: "nis", titre: "Numéro d'identification statistique", categorie: "fiscal", identite: "nis", prefixe: "NIS", icone: "diese" },
+  { cle: "article_imposition", titre: "Article d'imposition", categorie: "fiscal", identite: "ai", prefixe: "AI", icone: "facture" },
+  { cle: "statuts", titre: "Statuts de la SARL", categorie: "statuts", detail: "Version signée en vigueur", icone: "document" },
+  { cle: "rib", titre: "Relevé d'identité bancaire", categorie: "banque", identite: "rib", prefixe: "RIB", icone: "banque" },
+  { cle: "cnas", titre: "Attestation CNAS", categorie: "social", detail: "Mise à jour des cotisations salariés", renouveler: true, icone: "horloge" },
+  { cle: "casnos", titre: "Attestation CASNOS", categorie: "social", detail: "Mise à jour des cotisations non-salariés", renouveler: true, icone: "horloge" },
+  { cle: "extrait_role", titre: "Extrait de rôle", categorie: "fiscal", detail: "Situation fiscale à jour", renouveler: true, icone: "horloge" },
+] as const satisfies readonly { cle: string; titre: string; categorie: Categorie; identite?: string; prefixe?: string; detail?: string; renouveler?: boolean; icone: string }[];
+export type Piece = (typeof PIECES)[number]["cle"];
+export type DefinitionPiece = (typeof PIECES)[number] & { identite?: string; prefixe?: string; detail?: string; renouveler?: boolean };
+export const PIECE = Object.fromEntries(PIECES.map((p) => [p.cle, p])) as Record<Piece, DefinitionPiece>;
+
+/** Pièce du dossier légal reconnue dans le nom du fichier, puis dans le texte (null : aucune). */
+function pieceDepuis(texte: string, nomFichier: string, type: TypeDocument): Piece | null {
+  if (type === "facture" || CATEGORIES_CLIENT.includes(type as Categorie)) return null;
+  const regles: [Piece, RegExp][] = [
+    ["registre_commerce", /registre (du |de )?commerce|extrait du registre|\bcnrc\b|\brc\b/],
+    ["casnos", /\bcasnos\b/],
+    ["cnas", /\bcnas\b/],
+    ["extrait_role", /extrait de role|\brole\b/],
+    ["article_imposition", /article d'imposition|\barticle\b.*\bimposition\b|\bai\b/],
+    ["nis", /identification statistique|\bnis\b/],
+    ["nif", /identification fiscale|\bnif\b/],
+    ["rib", /releve d'identite bancaire|\brib\b/],
+    ["statuts", /\bstatuts?\b/],
+  ];
+  const f = normaliser(nomFichier).replace(/[_.-]+/g, " ");
+  for (const [piece, re] of regles) if (re.test(f)) return piece;
+  // Dans le texte, les mentions « NIF », « RC » ou « NIS » d'un en-tête ne suffisent pas : intitulés seulement
+  const intitules: [Piece, RegExp][] = [
+    ["registre_commerce", /extrait du registre (du |de )?commerce/],
+    ["casnos", /\bcasnos\b/],
+    ["cnas", /\bcnas\b/],
+    ["extrait_role", /extrait de role/],
+    ["article_imposition", /article d'imposition/],
+    ["nis", /avis d'identification statistique|numero d'identification statistique/],
+    ["nif", /carte d'identification fiscale|attestation d'identification fiscale|numero d'identification fiscale/],
+    ["rib", /releve d'identite bancaire/],
+    ["statuts", /^statuts\b|\bstatuts de la (sarl|eurl|spa)/m],
+  ];
+  for (const [piece, re] of intitules) if (re.test(texte)) return piece;
+  return null;
+}
+
 export type ClientConnu = { id: string; nom: string; raison_sociale?: string | null; raison_sociale_facture?: string | null; rc?: string | null; nif?: string | null };
 /** Identité de CTA, pour ne pas la prendre pour le client. */
 export type Soi = { raison_sociale?: string | null; rc?: string | null; nif?: string | null };
@@ -32,6 +80,7 @@ export type Detection = {
   date: string | null; // aaaa-mm-jj : émission (facture) ou date du document
   facture: { numero: number | null; annee: number | null; mois: string | null; ht: number | null; tva: number | null; ttc: number | null } | null;
   texte: boolean; // false : aucun texte lisible (scan, image)
+  piece: Piece | null; // pièce du dossier légal de CTA reconnue
 };
 
 export const normaliser = (t: string) =>
@@ -172,13 +221,16 @@ function facture(lignes: string[], t: string): NonNullable<Detection["facture"]>
 /** Détection à partir des lignes de texte (voir lecture-pdf) et du nom du fichier. */
 export function detecter(lignes: string[], nomFichier: string, clients: ClientConnu[], soi: Soi = {}): Detection {
   const texte = normaliser(lignes.join("\n"));
-  const type = typeDepuis(texte, nomFichier);
+  const detecte = typeDepuis(texte, nomFichier);
+  const piece = pieceDepuis(texte, nomFichier, detecte);
+  // Une pièce du dossier légal fixe le type (« Statuts CTA.pdf » sans texte : statuts, pas « autre »)
+  const type: TypeDocument = piece ? PIECE[piece].categorie : detecte;
   const base = nomFichier.replace(/\.[a-z0-9]+$/i, "").replace(/[_-]+/g, " ").trim();
   const client = type === "facture" || CATEGORIES_CLIENT.includes(type as Categorie) ? clientDepuis(lignes, texte, clients, soi) : null;
   if (type === "facture") {
     const { date, ...f } = facture(lignes, texte);
-    return { type, titre: f.numero && f.annee ? `Facture ${String(f.numero).padStart(3, "0")}-${String(f.annee).slice(2)}` : base, client, date, facture: f, texte: lignes.length > 0 };
+    return { type, titre: f.numero && f.annee ? `Facture ${String(f.numero).padStart(3, "0")}-${String(f.annee).slice(2)}` : base, client, date, facture: f, texte: lignes.length > 0, piece: null };
   }
   const d = texte.match(/\b(?:le|en date du|date)\s*:?\s*(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})\b/) ?? texte.match(DATE_RE);
-  return { type, titre: base || "Document", client, date: d ? dateIso(d[1]!, d[2]!, d[3]!) : null, facture: null, texte: lignes.length > 0 };
+  return { type, titre: base || "Document", client, date: d ? dateIso(d[1]!, d[2]!, d[3]!) : null, facture: null, texte: lignes.length > 0, piece };
 }
