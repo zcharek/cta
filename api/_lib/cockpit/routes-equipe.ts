@@ -286,7 +286,8 @@ export function routesEquipe(r: Routeur) {
         c.forfait_mensuel_dzd, c.jours_forfait, c.raison_sociale_facture, c.rc, c.nif,
         COALESCE((SELECT json_agg(a.profil_id) FROM affectations a WHERE a.client_id = c.id), '[]'::json) AS profil_ids,
         COALESCE((SELECT sum(t.valeur) FROM temps t
-                  WHERE t.client_id = c.id AND t.jour BETWEEN ${debut}::date AND ${fin}::date), 0)::float8 AS jours_mois
+                  WHERE t.client_id = c.id AND t.jour BETWEEN ${debut}::date AND ${fin}::date), 0)::float8 AS jours_mois,
+        (SELECT count(*) FROM users u WHERE u.client_id = c.id)::int AS comptes_site
       FROM clients c ORDER BY c.actif DESC, c.nom`;
     return json({ clients });
   });
@@ -352,7 +353,7 @@ export function routesEquipe(r: Routeur) {
     if (!client) throw new HttpError(404, "Client introuvable.");
     const voitDocuments = aOnglet(moi, "documents");
     const voitFactures = aOnglet(moi, "factures");
-    const [equipe, documents, factures] = await Promise.all([
+    const [equipe, documents, factures, comptesSite] = await Promise.all([
       sql`
         SELECT p.id, p.nom, p.role, p.fonction, p.actif,
           COALESCE((SELECT sum(t.valeur) FROM temps t JOIN semaines s ON s.id = t.semaine_id
@@ -378,11 +379,19 @@ export function routesEquipe(r: Routeur) {
                  ELSE 'envoyee' END AS statut
           FROM factures f WHERE f.client_id = ${id} ORDER BY f.annee DESC, f.numero DESC`
         : Promise.resolve(null),
+      // Contacts du client inscrits sur l'espace client du site, avec leur dernier questionnaire.
+      sql`
+        SELECT u.id, u.name AS nom, u.email, u.created_at::text AS inscrit_le,
+          (SELECT json_build_object('id', a.id, 'titre', a.title, 'statut', a.status, 'envoye_le', a.sent_at, 'repondu_le', a.submitted_at)
+             FROM assignments a WHERE a.user_id = u.id ORDER BY a.sent_at DESC LIMIT 1) AS dernier_envoi,
+          (SELECT count(*) FROM assignments a WHERE a.user_id = u.id)::int AS envois
+        FROM users u WHERE u.client_id = ${id} AND u.role = 'client' ORDER BY u.name`,
     ]);
     const [emises] = await sql`SELECT count(*)::int AS n FROM factures WHERE client_id = ${id} AND fichier IS NULL`;
     return json({
       client,
       equipe,
+      comptesSite,
       documents,
       factures: factures?.map((f) => ({ ...f, numero_affiche: numeroFacture(f.numero, f.annee) })) ?? null,
       // Factures émises par Cockpit : elles bloquent la suppression définitive.

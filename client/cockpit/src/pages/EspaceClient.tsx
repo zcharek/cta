@@ -4,14 +4,30 @@ import { api } from "../api";
 import { naviguer, surClicLien } from "../routeur";
 import { Avatar, Bouton, Carte, Chargement, EnTete, Erreur, Info, Pastille, ZoneTexte, classeChamp } from "../ui";
 
-// Espace client (portail des prospects et clients) piloté depuis Cockpit.
-// Routes : /espace-client · /espace-client/<compte> · /espace-client/reponses/<envoi>
+// Comptes de l'espace client du site, dans l'onglet Clients : prospects (comptes non rattachés), fiche d'un compte
+// (rattachement à un client, questionnaires envoyés) et réponses.
+// Routes : /reglages/clients/prospects · /reglages/clients/comptes/<compte> · /reglages/clients/reponses/<envoi>
 
-type Statut = "sent" | "in_progress" | "submitted";
-type Envoi = { id: string; titre: string; statut: Statut; envoye_le: string; repondu_le: string | null };
-type Compte = { id: string; nom: string; email: string; societe: string | null; telephone: string | null; inscrit_le: string; envois: Envoi[] };
+export const CHEMIN_PROSPECTS = "/reglages/clients/prospects";
+export const cheminCompte = (id: string) => `/reglages/clients/comptes/${id}`;
+export const cheminReponses = (id: string) => `/reglages/clients/reponses/${id}`;
+
+export type Statut = "sent" | "in_progress" | "submitted";
+export type Envoi = { id: string; titre: string; statut: Statut; envoye_le: string; repondu_le: string | null };
+type Compte = {
+  id: string;
+  nom: string;
+  email: string;
+  societe: string | null;
+  telephone: string | null;
+  inscrit_le: string;
+  client_id: string | null;
+  client_nom: string | null;
+  envois: Envoi[];
+};
 type Modele = { id: string; slug: string; titre: string; description: string | null };
-type Donnees = { comptes: Compte[]; questionnaires: Modele[] };
+type ClientCourt = { id: string; nom: string; actif: boolean };
+type Donnees = { comptes: Compte[]; questionnaires: Modele[]; clients: ClientCourt[] };
 
 const LIBELLE: Record<Statut, string> = { sent: "À compléter", in_progress: "En cours", submitted: "Répondu" };
 const STYLE: Record<Statut, string> = {
@@ -20,13 +36,13 @@ const STYLE: Record<Statut, string> = {
   submitted: "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200",
 };
 
-const date = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "");
+export const date = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "");
 
-function BadgeEnvoi({ statut }: { statut: Statut }) {
+export function BadgeEnvoi({ statut }: { statut: Statut }) {
   return <Pastille className={STYLE[statut]}>{LIBELLE[statut]}</Pastille>;
 }
 
-function Lien({ vers, children, className }: { vers: string; children: React.ReactNode; className?: string }) {
+export function Lien({ vers, children, className }: { vers: string; children: React.ReactNode; className?: string }) {
   return (
     <a href={`/cockpit${vers}`} onClick={(e) => surClicLien(e, vers)} className={className}>
       {children}
@@ -46,16 +62,68 @@ function useDonnees() {
   return { donnees, erreur, charger };
 }
 
-function Liste({ donnees }: { donnees: Donnees }) {
-  const { comptes } = donnees;
-  const sansQuestionnaire = comptes.filter((c) => c.envois.length === 0).length;
-  const avecReponses = comptes.filter((c) => c.envois.some((e) => e.statut === "submitted")).length;
+/** Sélecteur des deux vues de l'onglet Clients : les clients (entreprises) et les prospects (comptes du site non rattachés). */
+export function VuesClients({ actif, nbProspects }: { actif: "clients" | "prospects"; nbProspects?: number }) {
+  const [n, setN] = useState<number | undefined>(nbProspects);
+  useEffect(() => {
+    if (nbProspects !== undefined) return setN(nbProspects);
+    api<Donnees>("portail")
+      .then((d) => setN(d.comptes.filter((c) => !c.client_id).length))
+      .catch(() => setN(undefined));
+  }, [nbProspects]);
+  const vue = (cle: "clients" | "prospects", libelle: string, vers: string, compte?: number) => (
+    <Lien
+      vers={vers}
+      className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition ${actif === cle ? "bg-ck-surface text-ck-titre shadow-sm" : "text-ck-texte-2 hover:text-ck-titre"}`}
+    >
+      <span aria-current={actif === cle ? "page" : undefined}>{libelle}</span>
+      {compte !== undefined && compte > 0 && <span className="rounded-full bg-ck-orange px-2 py-0.5 text-xs text-white">{compte}</span>}
+    </Lien>
+  );
+  return (
+    <nav aria-label="Vues de l'onglet Clients" className="mb-6 inline-flex gap-1 rounded-xl bg-ck-surface-2 p-1">
+      {vue("clients", "Clients", "/reglages/clients")}
+      {vue("prospects", "Prospects", CHEMIN_PROSPECTS, n)}
+    </nav>
+  );
+}
+
+function LigneCompte({ c }: { c: Compte }) {
+  const dernier = c.envois[0];
+  return (
+    <li>
+      <Lien vers={cheminCompte(c.id)} className="flex flex-col gap-2 px-5 py-4 hover:bg-ck-surface-2 sm:flex-row sm:items-center">
+        <span className="flex min-w-0 flex-1 items-center gap-3">
+          <Avatar nom={c.nom} couleur="#2F5BD3" />
+          <span className="min-w-0">
+            <span className="block truncate font-bold text-ck-titre">
+              {c.nom}
+              {(c.client_nom ?? c.societe) && <span className="font-normal text-ck-texte-2"> · {c.client_nom ?? c.societe}</span>}
+            </span>
+            <span className="block truncate text-sm text-ck-texte-2">
+              {c.email} · inscrit le {date(c.inscrit_le)}
+            </span>
+          </span>
+        </span>
+        {dernier ? <BadgeEnvoi statut={dernier.statut} /> : <span className="text-sm font-bold text-ck-orange-texte">Questionnaire à envoyer →</span>}
+      </Lien>
+    </li>
+  );
+}
+
+/** Vue Prospects : comptes du site pas encore rattachés à un client ; en dessous, ceux déjà rattachés. */
+function Prospects({ donnees }: { donnees: Donnees }) {
+  const prospects = donnees.comptes.filter((c) => !c.client_id);
+  const rattaches = donnees.comptes.filter((c) => c.client_id);
+  const sansQuestionnaire = prospects.filter((c) => c.envois.length === 0).length;
+  const avecReponses = prospects.filter((c) => c.envois.some((e) => e.statut === "submitted")).length;
   return (
     <>
-      <EnTete titre="Espace" accent="client." sousTitre="Les comptes créés sur l'espace client du site, leurs questionnaires de cadrage et leurs réponses." />
+      <EnTete titre="Nos" accent="clients." sousTitre="Les personnes inscrites sur l'espace client du site. Rattachez-les à leur client une fois la relation engagée." />
+      <VuesClients actif="prospects" nbProspects={prospects.length} />
       <div className="mb-8 grid gap-4 sm:grid-cols-3">
         {[
-          [comptes.length, comptes.length > 1 ? "comptes clients" : "compte client"],
+          [prospects.length, prospects.length > 1 ? "prospects" : "prospect"],
           [sansQuestionnaire, "sans questionnaire"],
           [avecReponses, "avec réponses reçues"],
         ].map(([v, l]) => (
@@ -65,9 +133,9 @@ function Liste({ donnees }: { donnees: Donnees }) {
           </Carte>
         ))}
       </div>
-      {comptes.length === 0 ? (
+      {prospects.length === 0 ? (
         <Info>
-          Aucun compte pour l'instant. Les clients s'inscrivent depuis{" "}
+          Aucun prospect en attente. Les prospects s'inscrivent depuis{" "}
           <a href="/#/espace" className="font-semibold underline">
             l'espace client du site
           </a>
@@ -76,36 +144,114 @@ function Liste({ donnees }: { donnees: Donnees }) {
       ) : (
         <Carte className="!p-0">
           <ul className="divide-y divide-[color:var(--ck-bordure)]">
-            {comptes.map((c) => {
-              const dernier = c.envois[0];
-              return (
-                <li key={c.id}>
-                  <Lien vers={`/espace-client/${c.id}`} className="flex flex-col gap-2 px-5 py-4 hover:bg-ck-surface-2 sm:flex-row sm:items-center">
-                    <span className="flex min-w-0 flex-1 items-center gap-3">
-                      <Avatar nom={c.nom} couleur="#2F5BD3" />
-                      <span className="min-w-0">
-                        <span className="block truncate font-bold text-ck-titre">
-                          {c.nom}
-                          {c.societe && <span className="font-normal text-ck-texte-2"> · {c.societe}</span>}
-                        </span>
-                        <span className="block truncate text-sm text-ck-texte-2">
-                          {c.email} · inscrit le {date(c.inscrit_le)}
-                        </span>
-                      </span>
-                    </span>
-                    {dernier ? <BadgeEnvoi statut={dernier.statut} /> : <span className="text-sm font-bold text-ck-orange-texte">Questionnaire à envoyer →</span>}
-                  </Lien>
-                </li>
-              );
-            })}
+            {prospects.map((c) => (
+              <LigneCompte key={c.id} c={c} />
+            ))}
           </ul>
         </Carte>
+      )}
+      {rattaches.length > 0 && (
+        <section aria-labelledby="titre-rattaches" className="mt-10">
+          <h2 id="titre-rattaches" className="ck-titre mb-4 text-lg text-ck-texte-2">
+            Comptes rattachés à un client
+          </h2>
+          <Carte className="!p-0">
+            <ul className="divide-y divide-[color:var(--ck-bordure)]">
+              {rattaches.map((c) => (
+                <LigneCompte key={c.id} c={c} />
+              ))}
+            </ul>
+          </Carte>
+        </section>
       )}
     </>
   );
 }
 
-function FicheCompte({ compte, questionnaires, onEnvoye }: { compte: Compte; questionnaires: Modele[]; onEnvoye: () => void }) {
+/** Client auquel le compte est rattaché : choisir, créer depuis la société saisie, ou détacher. */
+function Rattachement({ compte, clients, onChange }: { compte: Compte; clients: ClientCourt[]; onChange: () => void }) {
+  const [occupe, setOccupe] = useState(false);
+  const [erreur, setErreur] = useState("");
+  const nomPropose = (compte.societe ?? "").trim() || compte.nom;
+  const existe = clients.some((c) => c.nom.toLowerCase() === nomPropose.toLowerCase());
+
+  async function modifier(corps: { clientId: string | null } | { creerClient: true }) {
+    setOccupe(true);
+    setErreur("");
+    try {
+      await api(`portail/comptes/${compte.id}`, { methode: "PATCH", corps });
+      onChange();
+    } catch (err) {
+      setErreur((err as Error).message);
+    } finally {
+      setOccupe(false);
+    }
+  }
+
+  return (
+    <Carte aria-labelledby="titre-rattachement">
+      <h2 id="titre-rattachement" className="ck-titre mb-1 text-xl">
+        Client
+      </h2>
+      {compte.client_id ? (
+        <div className="grid gap-3">
+          <p className="text-sm text-ck-texte-2">
+            Rattaché à{" "}
+            <Lien vers={`/reglages/clients/${compte.client_id}`} className="font-bold text-ck-titre hover:underline">
+              {compte.client_nom}
+            </Lien>
+            : ses questionnaires apparaissent dans le dossier du client.
+          </p>
+          <Bouton variante="contour" disabled={occupe} onClick={() => void modifier({ clientId: null })} className="justify-self-start">
+            Détacher (repasser en prospect)
+          </Bouton>
+        </div>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const v = new FormData(e.currentTarget).get("clientId");
+            if (v) void modifier({ clientId: String(v) });
+          }}
+          className="grid gap-3"
+        >
+          <p className="text-sm text-ck-texte-2">Prospect. Rattachez ce compte au client pour lequel la personne travaille.</p>
+          <label htmlFor="client-rattache" className="sr-only">
+            Client
+          </label>
+          <select id="client-rattache" name="clientId" required defaultValue="" className={classeChamp}>
+            <option value="" disabled>
+              Choisir un client…
+            </option>
+            {clients.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nom}
+                {c.actif ? "" : " (archivé)"}
+              </option>
+            ))}
+          </select>
+          <div className="flex flex-wrap gap-2">
+            <Bouton type="submit" disabled={occupe}>
+              Rattacher
+            </Bouton>
+            {!existe && (
+              <Bouton variante="contour" disabled={occupe} onClick={() => void modifier({ creerClient: true })}>
+                Créer le client « {nomPropose} »
+              </Bouton>
+            )}
+          </div>
+        </form>
+      )}
+      {erreur && (
+        <div className="mt-3">
+          <Erreur>{erreur}</Erreur>
+        </div>
+      )}
+    </Carte>
+  );
+}
+
+function FicheCompte({ compte, questionnaires, clients, onEnvoye }: { compte: Compte; questionnaires: Modele[]; clients: ClientCourt[]; onEnvoye: () => void }) {
   const [occupe, setOccupe] = useState(false);
   const [erreur, setErreur] = useState("");
   const [ok, setOk] = useState(false);
@@ -131,8 +277,11 @@ function FicheCompte({ compte, questionnaires, onEnvoye }: { compte: Compte; que
 
   return (
     <>
-      <Lien vers="/espace-client" className="mb-4 inline-block text-sm font-bold text-ck-orange-texte hover:underline">
-        ← Tous les comptes
+      <Lien
+        vers={compte.client_id ? `/reglages/clients/${compte.client_id}` : CHEMIN_PROSPECTS}
+        className="mb-4 inline-block text-sm font-bold text-ck-orange-texte hover:underline"
+      >
+        ← {compte.client_id ? `Dossier ${compte.client_nom}` : "Prospects"}
       </Lien>
       <EnTete titre={compte.nom} sousTitre={[compte.societe, compte.email, compte.telephone, `inscrit le ${date(compte.inscrit_le)}`].filter(Boolean).join(" · ")} />
       <div className="grid items-start gap-6 lg:grid-cols-5">
@@ -146,7 +295,7 @@ function FicheCompte({ compte, questionnaires, onEnvoye }: { compte: Compte; que
             <ul className="grid gap-3">
               {compte.envois.map((e) => (
                 <li key={e.id}>
-                  <Lien vers={`/espace-client/reponses/${e.id}`} className="ck-carte flex items-center justify-between gap-4 p-5 hover:ring-2 hover:ring-ck-orange">
+                  <Lien vers={cheminReponses(e.id)} className="ck-carte flex items-center justify-between gap-4 p-5 hover:ring-2 hover:ring-ck-orange">
                     <span>
                       <span className="block font-bold text-ck-titre">{e.titre}</span>
                       <span className="text-sm text-ck-texte-2">
@@ -161,7 +310,9 @@ function FicheCompte({ compte, questionnaires, onEnvoye }: { compte: Compte; que
             </ul>
           )}
         </section>
-        <Carte className="lg:col-span-2" aria-labelledby="titre-envoyer">
+        <div className="grid gap-6 lg:col-span-2">
+        <Rattachement compte={compte} clients={clients} onChange={onEnvoye} />
+        <Carte aria-labelledby="titre-envoyer">
           <h2 id="titre-envoyer" className="ck-titre mb-4 text-xl">
             Envoyer un questionnaire
           </h2>
@@ -195,6 +346,7 @@ function FicheCompte({ compte, questionnaires, onEnvoye }: { compte: Compte; que
             </Bouton>
           </form>
         </Carte>
+        </div>
       </div>
     </>
   );
@@ -229,7 +381,7 @@ function Reponses({ id }: { id: string }) {
   const sections = visibleSections(envoi.questionnaire.sections, envoi.reponses ?? {});
   return (
     <>
-      <Lien vers={`/espace-client/${envoi.compte_id}`} className="mb-4 inline-block text-sm font-bold text-ck-orange-texte hover:underline">
+      <Lien vers={cheminCompte(envoi.compte_id)} className="mb-4 inline-block text-sm font-bold text-ck-orange-texte hover:underline">
         ← {envoi.nom}
       </Lien>
       <EnTete
@@ -270,23 +422,32 @@ function Reponses({ id }: { id: string }) {
   );
 }
 
+/** Pages de l'espace client dans l'onglet Clients : chemin = /reglages/clients/(prospects | comptes/<id> | reponses/<id>). */
 export default function EspaceClient({ chemin }: { chemin: string }) {
-  const parties = chemin.split("/").filter(Boolean); // ["espace-client", ...]
+  const parties = chemin.split("/").filter(Boolean); // ["reglages", "clients", ...]
   const { donnees, erreur, charger } = useDonnees();
-  if (parties[1] === "reponses" && parties[2]) return <Reponses id={parties[2]} />;
+  if (parties[2] === "reponses" && parties[3]) return <Reponses id={parties[3]} />;
   if (!donnees) return erreur ? <Erreur>{erreur}</Erreur> : <Chargement />;
-  if (parties[1]) {
-    const compte = donnees.comptes.find((c) => c.id === parties[1]);
+  if (parties[2] === "comptes" && parties[3]) {
+    const compte = donnees.comptes.find((c) => c.id === parties[3]);
     if (!compte)
       return (
         <>
           <Erreur>Compte client introuvable.</Erreur>
-          <Bouton variante="contour" className="mt-4" onClick={() => naviguer("/espace-client")}>
-            Tous les comptes
+          <Bouton variante="contour" className="mt-4" onClick={() => naviguer(CHEMIN_PROSPECTS)}>
+            Prospects
           </Bouton>
         </>
       );
-    return <FicheCompte key={compte.id} compte={compte} questionnaires={donnees.questionnaires} onEnvoye={charger} />;
+    return <FicheCompte key={compte.id} compte={compte} questionnaires={donnees.questionnaires} clients={donnees.clients} onEnvoye={charger} />;
   }
-  return <Liste donnees={donnees} />;
+  return <Prospects donnees={donnees} />;
+}
+
+/** Ancienne adresse (/espace-client…) → nouvelle adresse dans l'onglet Clients. */
+export function nouvelleAdresseEspaceClient(chemin: string): string {
+  const p = chemin.split("/").filter(Boolean); // ["espace-client", ...]
+  if (p[1] === "reponses" && p[2]) return cheminReponses(p[2]);
+  if (p[1]) return cheminCompte(p[1]);
+  return CHEMIN_PROSPECTS;
 }

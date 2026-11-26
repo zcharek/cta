@@ -8,7 +8,7 @@ import Cabinets from "./pages/Cabinets";
 import Connexion from "./pages/Connexion";
 import DefinirMotDePasse from "./pages/DefinirMotDePasse";
 import Equipe from "./pages/Equipe";
-import EspaceClient from "./pages/EspaceClient";
+import EspaceClient, { nouvelleAdresseEspaceClient } from "./pages/EspaceClient";
 import MonProfil from "./pages/MonProfil";
 import Documents from "./pages/Documents";
 import DossierClient from "./pages/DossierClient";
@@ -75,6 +75,8 @@ export default function App() {
     if (chemin === "/reglages/equipe") naviguer("/reglages/collaborateurs", { remplacer: true });
     // Le message WhatsApp se configure maintenant dans une fenêtre de la page Cabinets
     if (chemin === "/reglages/whatsapp") naviguer("/cabinets?whatsapp=1", { remplacer: true });
+    // « Clients et questionnaires » a rejoint l'onglet Clients (vue Prospects, fiche du compte, réponses)
+    if (chemin === "/espace-client" || chemin.startsWith("/espace-client/")) naviguer(nouvelleAdresseEspaceClient(chemin), { remplacer: true });
   }, [chemin]);
 
   useEffect(() => {
@@ -93,7 +95,15 @@ export default function App() {
       "/recap": "Récap mensuel",
       "/cabinets": "Cabinets",
     };
-    const t = titres[chemin] ?? (chemin.startsWith("/espace-client") ? "Espace client" : chemin.startsWith("/reglages/clients/") ? "Dossier client" : undefined);
+    const t =
+      titres[chemin] ??
+      (chemin === "/reglages/clients/prospects"
+        ? "Prospects"
+        : /^\/reglages\/clients\/(comptes|reponses)\//.test(chemin)
+          ? "Espace client"
+          : chemin.startsWith("/reglages/clients/")
+            ? "Dossier client"
+            : undefined);
     document.title = t ? `${t} – Cockpit` : "Cockpit – Central Test Agency";
   }, [chemin]);
 
@@ -127,7 +137,7 @@ export default function App() {
   else if (chemin === "/validation") page = <Validation />;
   else if (chemin === "/recap") page = <RecapMensuel moi={moi} />;
   else if (chemin === "/cabinets") page = <Cabinets moi={moi} />;
-  else if (chemin === "/espace-client" || chemin.startsWith("/espace-client/")) page = <EspaceClient key={chemin} chemin={chemin} />;
+  else if (chemin === "/reglages/clients/prospects" || /^\/reglages\/clients\/(comptes|reponses)\/[0-9a-f-]{36}$/.test(chemin)) page = <EspaceClient key={chemin} chemin={chemin} />;
   else if (chemin === "/aucun-acces") page = <Bientot titre="Aucun onglet activé" description="Votre compte n'a accès à aucune page de Cockpit pour l'instant. Demandez au Founder, à un Co-Founder ou à un QA Manager d'activer vos onglets." />;
   else page = <Bientot titre="Page introuvable" description="Cette adresse ne correspond à aucune page de Cockpit." />;
 

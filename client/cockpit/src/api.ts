@@ -66,6 +66,8 @@ export type ClientAdmin = {
   actif: boolean;
   profil_ids: string[];
   jours_mois: number;
+  /** Comptes de l'espace client du site rattachés à ce client. */
+  comptes_site?: number;
 };
 
 export type CabinetCarte = {

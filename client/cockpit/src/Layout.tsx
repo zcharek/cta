@@ -26,7 +26,6 @@ const NAVIGATION: Groupe[] = [
       { chemin: "/documents", libelle: "Documents", icone: "dossier", onglet: "documents" },
     ],
   },
-  { titre: "Espace client", liens: [{ chemin: "/espace-client", libelle: "Clients et questionnaires", icone: "document", onglet: "espace_client" }] },
   {
     titre: "Réglages",
     liens: [

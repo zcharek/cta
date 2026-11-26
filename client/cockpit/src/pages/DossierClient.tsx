@@ -8,6 +8,7 @@ import { telechargerFacture } from "../documents";
 import { naviguer, surClicLien } from "../routeur";
 import { Avatar, Bouton, COULEUR_ROLE, Carte, Chargement, Erreur, Icone, Info, classeChamp } from "../ui";
 import { FenetreClient, supprimerClient } from "./Equipe";
+import { BadgeEnvoi, CHEMIN_PROSPECTS, Lien, cheminCompte, date as dateLongue, type Envoi } from "./EspaceClient";
 
 type Doc = {
   id: string;
@@ -36,9 +37,11 @@ type Facture = {
   statut: Statut;
 };
 type Membre = { id: string; nom: string; role: Role; fonction: string | null; actif: boolean; jours_mois: number };
+type CompteSite = { id: string; nom: string; email: string; inscrit_le: string; dernier_envoi: Envoi | null; envois: number };
 type Dossier = {
   client: ClientAdmin & { cree_le: string; jours_total: number };
   equipe: Membre[];
+  comptesSite: CompteSite[];
   documents: Doc[] | null; // null : pas l'onglet Documents
   factures: Facture[] | null; // null : pas l'onglet Factures
   facturesEmises: number;
@@ -387,6 +390,47 @@ export default function DossierClient({ id }: { id: string }) {
           )}
         </Carte>
       </div>
+
+      {/* ——— Espace client du site ——— */}
+      <section aria-labelledby="titre-espace" className="mt-10">
+        <div className="mb-4">
+          <h2 id="titre-espace" className="ck-titre text-xl">
+            Espace client
+          </h2>
+          <p className="mt-1 text-sm text-ck-texte-2">Les contacts de {c.nom} inscrits sur le site, et leurs questionnaires de cadrage.</p>
+        </div>
+        {d.comptesSite.length === 0 ? (
+          <p className="rounded-xl bg-ck-surface-2 px-4 py-6 text-center text-sm text-ck-texte-2">
+            Aucun compte rattaché.{" "}
+            <Lien vers={CHEMIN_PROSPECTS} className="font-semibold text-[#2f5bd3] hover:underline">
+              Rattacher un prospect
+            </Lien>
+          </p>
+        ) : (
+          <Carte className="!p-0">
+            <ul className="divide-y divide-[color:var(--ck-bordure)]">
+              {d.comptesSite.map((u) => (
+                <li key={u.id}>
+                  <Lien vers={cheminCompte(u.id)} className="flex flex-col gap-2 px-5 py-4 hover:bg-ck-surface-2 sm:flex-row sm:items-center">
+                    <span className="flex min-w-0 flex-1 items-center gap-3">
+                      <Avatar nom={u.nom} couleur="#2F5BD3" taille={38} />
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-bold text-ck-titre">{u.nom}</span>
+                        <span className="block truncate text-xs text-ck-texte-2">
+                          {u.email}
+                          {u.dernier_envoi ? ` · ${u.dernier_envoi.titre}, envoyé le ${dateLongue(u.dernier_envoi.envoye_le)}` : ` · inscrit le ${dateLongue(u.inscrit_le)}`}
+                          {u.envois > 1 ? ` (+${u.envois - 1})` : ""}
+                        </span>
+                      </span>
+                    </span>
+                    {u.dernier_envoi ? <BadgeEnvoi statut={u.dernier_envoi.statut} /> : <span className="text-sm font-bold text-ck-orange-texte">Questionnaire à envoyer →</span>}
+                  </Lien>
+                </li>
+              ))}
+            </ul>
+          </Carte>
+        )}
+      </section>
 
       {/* ——— Documents ——— */}
       <section aria-labelledby="titre-docs" className="mt-10">

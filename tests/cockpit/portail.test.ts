@@ -99,3 +99,55 @@ describe("espace client dans Cockpit", () => {
     expect((await appeler("POST", "portail/envois", { cookie: collab, corps: { compteId: clientId, questionnaireId } })).status).toBe(403);
   });
 });
+
+describe("rattachement d'un compte du site à un client (onglet Clients)", () => {
+  let admin: string;
+
+  beforeAll(async () => {
+    admin = (await creerProfil(sql, "qa_manager")).cookie;
+  });
+
+  it("sans onglet Clients, pas d'accès : l'ancien onglet Espace client n'existe plus", async () => {
+    const sansClients = await creerProfil(sql, "assistant");
+    await sql`UPDATE profils SET onglets = ARRAY['aujourdhui'] WHERE id = ${sansClients.id}`;
+    expect((await appeler("GET", "portail", { cookie: sansClients.cookie })).status).toBe(403);
+    expect((await appeler("PATCH", `portail/comptes/${clientId}`, { cookie: sansClients.cookie, corps: { clientId: null } })).status).toBe(403);
+    expect((await appeler("PATCH", `collaborateurs/${sansClients.id}`, { cookie: admin, corps: { onglets: ["espace_client"] } })).status).toBe(400);
+  });
+
+  it("un compte non rattaché est un prospect ; rattaché, il apparaît dans le dossier du client", async () => {
+    const [{ id: banque }] = (await sql`INSERT INTO clients (nom, tjm_dzd) VALUES ('Banque Test', 50000) RETURNING id`) as [{ id: string }];
+    expect((await appeler("GET", "portail", { cookie: admin })).data.comptes.find((c: { id: string }) => c.id === clientId)).toMatchObject({ client_id: null });
+
+    expect((await appeler("PATCH", `portail/comptes/${clientId}`, { cookie: admin, corps: { clientId: banque } })).status).toBe(200);
+    const compte = (await appeler("GET", "portail", { cookie: admin })).data.comptes.find((c: { id: string }) => c.id === clientId);
+    expect(compte).toMatchObject({ client_id: banque, client_nom: "Banque Test" });
+
+    const dossier = await appeler("GET", `clients/${banque}/dossier`, { cookie: admin });
+    expect(dossier.data.comptesSite).toEqual([expect.objectContaining({ id: clientId, nom: "Nadia Client", envois: 1, dernier_envoi: expect.objectContaining({ statut: "submitted" }) })]);
+    const liste = await appeler("GET", "clients", { cookie: admin });
+    expect(liste.data.clients.find((c: { id: string }) => c.id === banque).comptes_site).toBe(1);
+
+    // Détacher : le compte redevient un prospect
+    await appeler("PATCH", `portail/comptes/${clientId}`, { cookie: admin, corps: { clientId: null } });
+    expect((await appeler("GET", `clients/${banque}/dossier`, { cookie: admin })).data.comptesSite).toEqual([]);
+  });
+
+  it("crée le client depuis la société saisie à l'inscription, ou réutilise celui du même nom", async () => {
+    await sql`UPDATE users SET company = 'Société Nouvelle' WHERE id = ${clientId}`;
+    const r = await appeler("PATCH", `portail/comptes/${clientId}`, { cookie: admin, corps: { creerClient: true } });
+    expect(r.data).toMatchObject({ clientCree: true });
+    const [c] = await sql`SELECT nom, actif FROM clients WHERE id = ${r.data.clientId}`;
+    expect(c).toMatchObject({ nom: "Société Nouvelle", actif: true });
+    const encore = await appeler("PATCH", `portail/comptes/${clientId}`, { cookie: admin, corps: { creerClient: true } });
+    expect(encore.data).toEqual({ clientId: r.data.clientId, clientCree: false });
+  });
+
+  it("supprimer le client détache ses comptes sans les supprimer", async () => {
+    const [{ id: temp }] = (await sql`INSERT INTO clients (nom) VALUES ('Client Éphémère') RETURNING id`) as [{ id: string }];
+    await appeler("PATCH", `portail/comptes/${clientId}`, { cookie: admin, corps: { clientId: temp } });
+    expect((await appeler("DELETE", `clients/${temp}`, { cookie: admin })).status).toBe(200);
+    const [u] = await sql`SELECT client_id FROM users WHERE id = ${clientId}`;
+    expect(u).toEqual({ client_id: null });
+  });
+});

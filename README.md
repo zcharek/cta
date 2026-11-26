@@ -5,7 +5,7 @@ Ce dépôt contient trois choses, servies par un seul projet Vercel :
 | Partie | Adresse | Code |
 | --- | --- | --- |
 | Site vitrine | `/` | `client/src/pages` |
-| Espace client (questionnaires de cadrage) | `/#/espace`, `/#/admin` | `client/src/portal`, `api/auth`, `api/assignments`, `api/admin` |
+| Espace client (questionnaires de cadrage) | `/#/espace`, `/#/admin` ; dans Cockpit : onglet Clients, vue Prospects | `client/src/portal`, `api/auth`, `api/assignments`, `api/admin` |
 | **Cockpit**, l'outil interne (prospection VetCare et suivi des temps) | `/cockpit` | `client/cockpit`, `api/cockpit.ts`, `api/_lib/cockpit` |
 
 Stack : Vite + React + TypeScript + Tailwind pour l'interface, fonctions serverless Vercel pour l'API, Postgres chez Neon, authentification maison (bcrypt + JWT en cookie HttpOnly), e-mails par Resend.
@@ -118,9 +118,9 @@ Sans `RESEND_API_KEY` en local, l'e-mail n'est pas envoyé : le lien s'affiche d
 | Saisie des temps | tous | Grille lundi → vendredi par client ; un Collaborateur ne voit que la sienne, sans TJM |
 | Validation | admins | Semaines soumises à valider ou renvoyer, 8 dernières validées |
 | Récap mensuel | admins | Jours et montants HT par client et collaborateur, export CSV (UTF-8 avec BOM, « ; », virgule décimale) |
-| Clients et collaborateurs | admins | Clients (TJM, équipe), invitations, types, archivage |
+| Clients | admins | Deux vues : **Clients** (entreprises facturées : TJM, équipe, dossier avec timesheets, factures, documents et contacts de l'espace client) et **Prospects** (comptes de l'espace client du site non rattachés). Fiche d'un compte : rattachement à un client (ou création du client depuis la société saisie), envoi des questionnaires de cadrage, lecture des réponses |
+| Collaborateurs | admins | Invitations, types, onglets, archivage, journal des accès |
 | Message WhatsApp | admins | Modèle de message avec aperçu |
-| Espace client | admins | Comptes de l'espace client du site, envoi des questionnaires de cadrage, lecture des réponses |
 
 Règles métier principales : `shared/prospection.ts` (relances, WhatsApp, recherche, tri), `shared/import.ts` (lecture des fichiers, rapprochement, mise à jour), `shared/cockpit.ts` (temps, récap, CSV).
 

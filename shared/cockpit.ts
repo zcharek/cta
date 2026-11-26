@@ -54,7 +54,7 @@ export function peutGererRole(p: { role: Role; actif: boolean } | null | undefin
 }
 
 /** Onglets de Cockpit, activables utilisateur par utilisateur. */
-export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "factures", "paie", "documents", "espace_client", "clients", "collaborateurs", "whatsapp"] as const;
+export const ONGLETS = ["aujourdhui", "cabinets", "saisie", "validation", "recap", "factures", "paie", "documents", "clients", "collaborateurs", "whatsapp"] as const;
 export type Onglet = (typeof ONGLETS)[number];
 
 export const ONGLET_LABEL: Record<Onglet, string> = {
@@ -66,8 +66,7 @@ export const ONGLET_LABEL: Record<Onglet, string> = {
   factures: "Factures",
   paie: "Bulletins de paie",
   documents: "Documents (contrats, NDA, légal)",
-  espace_client: "Espace client",
-  clients: "Clients",
+  clients: "Clients et prospects (espace client)",
   collaborateurs: "Collaborateurs",
   whatsapp: "Message WhatsApp",
 };

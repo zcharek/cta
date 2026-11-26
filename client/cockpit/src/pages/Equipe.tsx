@@ -3,6 +3,7 @@ import { ONGLETS, ONGLET_LABEL, ROLES, aujourdhui, ROLES_ATTRIBUABLES, ROLE_DESC
 import type { DonneesDocumentRh, TypeDocumentRh } from "../../../../shared/documents-rh";
 import { api, type ClientAdmin, type Collaborateur, type EvenementJournal, type Invitation, type Moi } from "../api";
 import { telechargerDocumentRh } from "../documents";
+import { VuesClients } from "./EspaceClient";
 import { naviguer, surClicLien } from "../routeur";
 import { Avatar, BadgeAcces, BadgeRole, Bouton, COULEUR_ROLE, Carte, Champ, Chargement, ChiffreCle, EnTete, Erreur, Icone, Info, Modale, Pastille, ZoneTexte } from "../ui";
 
@@ -871,6 +872,8 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
         />
       )}
 
+      {vue === "clients" && <VuesClients actif="clients" />}
+
       <div className={`mb-8 grid grid-cols-1 gap-4 ${vue === "clients" ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4"}`}>
         {vue === "clients" ? (
           <>
@@ -940,8 +943,10 @@ export default function Equipe({ moi, vue }: { moi: Moi; vue: "clients" | "colla
                             )}{" "}
                             · {jours(c.jours_mois)} ce mois
                           </p>
-                          {(c.raison_sociale || c.numero_contrat) && (
-                            <p className="mt-0.5 truncate text-xs text-ck-texte-2">{[c.raison_sociale, c.numero_contrat].filter(Boolean).join(" · ")}</p>
+                          {(c.raison_sociale || c.numero_contrat || !!c.comptes_site) && (
+                            <p className="mt-0.5 truncate text-xs text-ck-texte-2">
+                              {[c.raison_sociale, c.numero_contrat, c.comptes_site ? `${c.comptes_site} compte${c.comptes_site > 1 ? "s" : ""} espace client` : null].filter(Boolean).join(" · ")}
+                            </p>
                           )}
                         </div>
                         <span
